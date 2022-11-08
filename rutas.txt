@@ -1,0 +1,18 @@
+/ 
+
+/login
+
+/bookings
+/bookings/:id
+
+/rooms
+/rooms/new
+/rooms/list
+/rooms/:id
+/rooms/:id/edit
+
+(por diseñar ambas)
+/users
+/users/new
+
+/contact
