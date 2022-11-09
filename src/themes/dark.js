@@ -5,4 +5,6 @@ export const DARK_THEME = {
   smallDivShadow: '#0000006E',
   menuGrey: '#686868',
   menuNavbarItems: '#686868',
+  buttonSidebarBground: '#135846',
+  buttonSidebarColor: '#ffffff',
 };

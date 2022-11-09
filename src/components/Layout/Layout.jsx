@@ -1,5 +1,6 @@
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useState } from 'react';
+import { MainCard, ImgHolder, ButtonSidebar } from '../Styles';
 import styled from 'styled-components';
 import {
   LeftArrow,
@@ -16,31 +17,35 @@ import {
   Calendar,
   Users,
   BottomArrow,
+  UpperArrow,
 } from '../../assets/icons';
 
 const HeaderDiv = styled.div`
-  position: sticky;
+  position: fixed;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 0 5px;
-  margin-left: ${({ sideBarState }) => (!sideBarState ? '0' : '25%')};
+  padding-left: ${({ sideBarState }) => (!sideBarState ? '5px' : '300px')};
   height: ${({ height }) => height};
   background-color: ${({ theme }) => theme.mainBground};
   color: ${({ theme }) => theme.mainColor};
+  width: 100%;
   box-shadow: 0px 3px 10px ${({ theme }) => theme.smallDivShadow};
-  transition: margin-left 0.4s ease-out;
+  transition: padding-left 0.4s ease-out;
   @media (min-width: 800px) {
     padding: 0 5%;
+    padding-left: ${({ sideBarState }) =>
+      !sideBarState ? '3%' : 'calc(300px + 3%)'};
   }
 `;
 
 const SideBarDiv = styled.div`
   position: fixed;
   top: 0;
-  left: ${({ sideBarState }) => (!sideBarState ? '-25%' : '0')};
+  left: ${({ sideBarState }) => (!sideBarState ? '-300px' : '0')};
   height: 100%;
-  width: 25%;
+  width: 300px;
   padding: 1rem 1.5rem;
   background-color: ${({ theme }) => theme.mainBground};
   color: ${({ theme }) => theme.mainColor};
@@ -59,9 +64,10 @@ const SideBarDiv = styled.div`
   nav {
     margin: 3rem 0;
     div {
-      padding: 1rem 0;
+      padding: 0.5rem 0;
     }
     .navbar-items {
+      position: relative;
       a {
         display: flex;
         align-items: center;
@@ -69,30 +75,47 @@ const SideBarDiv = styled.div`
         color: ${({ theme }) => theme.menuGrey};
         text-decoration: none;
         padding: 10px 0;
-        padding-left: 16px;
         font-size: 18px;
-        div {
-          display: flex;
-          align-items: center;
-          gap: 15px;
-          padding: 0;
-        }
       }
-      #nav-rooms {
-        justify-content: space-between;
+      &-dropdown {
+        padding: 0;
+        padding-left: 40px;
+        overflow: hidden;
+        height: ${({ roomDropdown }) => (!roomDropdown ? '0' : '100px')};
+        transition: height 0.4s ease-out;
+      }
+      #arrow-container {
+        cursor: pointer;
+        position: absolute;
+        top: 13px;
+        right: 0;
       }
     }
+  }
+`;
+
+const SidebarFooter = styled.div`
+  margin-top: 40px;
+  h3 {
+    font-size: 14px;
+  }
+  p {
+    font-size: 12px;
+    color: #799283;
   }
 `;
 
 const BodyDiv = styled.div`
   background-color: ${({ theme }) => theme.secondBground};
   color: ${({ theme }) => theme.mainColor};
-  padding: 0 5px;
-  margin-left: ${({ sideBarState }) => (!sideBarState ? '0' : '25%')};
+  padding: 15px;
+  padding-top: 105px;
+  min-height: 100vh;
+  margin-left: ${({ sideBarState }) => (!sideBarState ? '0' : '300px')};
   transition: margin-left 0.4s ease-out;
   @media (min-width: 800px) {
-    padding: 0 5%;
+    padding: 3%;
+    padding-top: calc(3% + 90px);
   }
 `;
 
@@ -103,21 +126,28 @@ const FlexDiv = styled.div`
   gap: ${({ gap }) => gap};
 `;
 
+const activeNavPage = {
+  color: '#E23428',
+  borderRadius: '6px',
+  borderLeft: '8px solid #E23428',
+  marginLeft: '-20px',
+  paddingLeft: '12px',
+  fontWeight: '700',
+};
+
+const activeNavSubPage = {
+  color: '#E23428',
+  borderBottom: '3px solid #e234286c',
+  fontWeight: '700',
+};
+
 export const Layout = ({ children, authProp, themeProp }) => {
   const navigate = useNavigate();
+  const [roomDropdown, setRoomDropdown] = useState(false);
   const [sideBarState, setSideBarState] = useState(false);
 
   const [auth, authHandler] = authProp;
   const [lightTheme, switchThemeHandler] = themeProp;
-
-  const activeNavPage = {
-    color: '#E23428',
-    borderRadius: '6px',
-    borderLeft: '8px solid #E23428',
-    marginLeft: '-20px',
-    paddingLeft: '28px',
-    fontWeight: '700',
-  };
 
   const logoutHandler = () => {
     authHandler(false);
@@ -128,9 +158,17 @@ export const Layout = ({ children, authProp, themeProp }) => {
     setSideBarState((prevState) => !prevState);
   };
 
+  const toggleRoomDropdown = () => {
+    setRoomDropdown((prevState) => !prevState);
+  };
+
+  const openRoomDropdown = () => {
+    setRoomDropdown(true);
+  };
+
   return (
     <>
-      <SideBarDiv sideBarState={sideBarState}>
+      <SideBarDiv sideBarState={sideBarState} roomDropdown={roomDropdown}>
         <div id='logo-container'>
           <Hotel height='45px' />
           <div>
@@ -152,20 +190,43 @@ export const Layout = ({ children, authProp, themeProp }) => {
             <NavLink
               to='/rooms'
               style={({ isActive }) => (isActive ? activeNavPage : undefined)}
-              id='nav-rooms'
+              onClick={openRoomDropdown}
             >
-              <div>
-                <Key height='25px' width='25px' />
-                Rooms
-              </div>
-              <BottomArrow width='25px' height='25px' />
+              <Key height='25px' width='25px' />
+              Rooms
             </NavLink>
+            <div id='arrow-container' onClick={toggleRoomDropdown}>
+              {!roomDropdown ? (
+                <BottomArrow width='25px' height='25px' />
+              ) : (
+                <UpperArrow width='25px' height='25px' />
+              )}
+            </div>
+            <div className='navbar-items-dropdown'>
+              <NavLink
+                to='/rooms/new'
+                style={({ isActive }) =>
+                  isActive ? activeNavSubPage : undefined
+                }
+                id='nav-rooms'
+              >
+                New room
+              </NavLink>
+              <NavLink
+                to='/rooms/list'
+                style={({ isActive }) =>
+                  isActive ? activeNavSubPage : undefined
+                }
+                id='nav-rooms'
+              >
+                List rooms
+              </NavLink>
+            </div>
           </div>
           <div className='navbar-items'>
             <NavLink
               to='/bookings'
               style={({ isActive }) => (isActive ? activeNavPage : undefined)}
-              end
             >
               <Calendar height='25px' width='25px' />
               Bookings
@@ -175,7 +236,6 @@ export const Layout = ({ children, authProp, themeProp }) => {
             <NavLink
               to='/contact'
               style={({ isActive }) => (isActive ? activeNavPage : undefined)}
-              end
             >
               <Mail width='25px' />
               Contact
@@ -185,13 +245,52 @@ export const Layout = ({ children, authProp, themeProp }) => {
             <NavLink
               to='/users'
               style={({ isActive }) => (isActive ? activeNavPage : undefined)}
-              end
             >
               <Users height='25px' width='25px' />
               Users
             </NavLink>
           </div>
         </nav>
+        <MainCard
+          style={{
+            backgroundColor: lightTheme ? '#FFFFFF' : '#292828',
+            boxShadow: '0px 20px 30px #00000014',
+            borderRadius: '18px',
+            marginTop: '60px',
+            textAlign: 'center',
+          }}
+        >
+          <ImgHolder
+            width='70px'
+            height='70px'
+            style={{
+              margin: 'auto',
+              marginTop: '-55px',
+            }}
+          />
+          <h3
+            style={{
+              marginTop: '15px',
+              fontWeight: '400',
+            }}
+          >
+            William Johanson
+          </h3>
+          <p
+            style={{
+              margin: '10px 0',
+              fontSize: '14px',
+              color: lightTheme ? '#B2B2B2' : '#686868',
+            }}
+          >
+            williamjohn@mail.com
+          </p>
+          <ButtonSidebar padding='15px 45px'>Contact Us</ButtonSidebar>
+        </MainCard>
+        <SidebarFooter>
+          <h3>Travl Hotel Admin Dashboard</h3>
+          <p>© 2022 All Rights Reserved</p>
+        </SidebarFooter>
       </SideBarDiv>
       <HeaderDiv height='90px' sideBarState={sideBarState}>
         <FlexDiv gap='20px'>

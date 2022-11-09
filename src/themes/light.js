@@ -5,4 +5,6 @@ export const LIGHT_THEME = {
   smallDivShadow: '#00000005',
   menuGrey: '#5d5449',
   menuNavbarItems: '#799283',
+  buttonSidebarBground: '#EBF1EF',
+  buttonSidebarColor: '#135846',
 };

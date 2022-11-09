@@ -12,3 +12,4 @@ export { Key } from './Key';
 export { Calendar } from './Calendar';
 export { Users } from './Users';
 export { BottomArrow } from './BottomArrow';
+export { UpperArrow } from './UpperArrow';
