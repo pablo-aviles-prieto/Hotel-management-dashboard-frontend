@@ -1,4 +1,4 @@
-import { Route, Routes, Navigate } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
@@ -12,7 +12,7 @@ import RoomEdit from './pages/RoomEdit';
 import Users from './pages/Users';
 import CreateUser from './pages/CreateUser';
 import Contact from './pages/Contact';
-import { NotFound, ProtectRoute, Header } from './components';
+import { NotFound, ProtectRoute, Layout } from './components';
 import { ThemeProvider } from 'styled-components';
 import { LIGHT_THEME, DARK_THEME } from './themes';
 
@@ -40,7 +40,7 @@ const App = () => {
 
   return (
     <ThemeProvider theme={lightTheme ? LIGHT_THEME : DARK_THEME}>
-      <Header auth={auth} authHandler={authHandler}>
+      <Layout authProp={[auth, authHandler]} themeProp={[lightTheme, switchThemeHandler]}>
         <Routes>
           <Route
             path='/'
@@ -64,7 +64,7 @@ const App = () => {
             <Route path='*' element={<NotFound />} />
           </Route>
         </Routes>
-      </Header>
+      </Layout>
     </ThemeProvider>
   );
 };
