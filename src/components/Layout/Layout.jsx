@@ -147,9 +147,9 @@ const activeNavSubPage = {
 };
 
 export const Layout = ({ children, authProp, themeProp }) => {
-  const navigate = useNavigate();
   const [roomDropdown, setRoomDropdown] = useState(false);
   const [sideBarState, setSideBarState] = useState(false);
+  const navigate = useNavigate();
 
   const [auth, authHandler] = authProp;
   const [lightTheme, switchThemeHandler] = themeProp;
