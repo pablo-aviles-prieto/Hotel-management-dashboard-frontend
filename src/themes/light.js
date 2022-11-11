@@ -7,4 +7,7 @@ export const LIGHT_THEME = {
   menuNavbarItems: '#799283',
   buttonSidebarBground: '#EBF1EF',
   buttonSidebarColor: '#135846',
+  buttonGreenBground: '#135846',
+  buttonGreenColor: '#fff',
+  borderColor: '#f5f5f5',
 };

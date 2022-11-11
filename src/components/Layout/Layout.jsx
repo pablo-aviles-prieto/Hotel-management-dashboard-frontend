@@ -81,7 +81,7 @@ const SideBarDiv = styled.div`
         padding: 0;
         padding-left: 40px;
         overflow: hidden;
-        height: ${({ roomDropdown }) => (!roomDropdown ? '0' : '100px')};
+        height: ${({ roomDropdown }) => (!roomDropdown ? '0' : '50px')};
         transition: height 0.4s ease-out;
       }
       #arrow-container {
@@ -91,6 +91,11 @@ const SideBarDiv = styled.div`
         right: 0;
       }
     }
+  }
+  &::-webkit-scrollbar {
+    width: 0px;
+    height: 0;
+    background: transparent;
   }
 `;
 
@@ -212,7 +217,7 @@ export const Layout = ({ children, authProp, themeProp }) => {
               >
                 New room
               </NavLink>
-              <NavLink
+              {/* <NavLink
                 to='/rooms/list'
                 style={({ isActive }) =>
                   isActive ? activeNavSubPage : undefined
@@ -220,7 +225,7 @@ export const Layout = ({ children, authProp, themeProp }) => {
                 id='nav-rooms'
               >
                 List rooms
-              </NavLink>
+              </NavLink> */}
             </div>
           </div>
           <div className='navbar-items'>
@@ -285,7 +290,7 @@ export const Layout = ({ children, authProp, themeProp }) => {
           >
             williamjohn@mail.com
           </p>
-          <ButtonSidebar padding='15px 45px'>Contact Us</ButtonSidebar>
+          <ButtonSidebar padding='15px 45px'>Edit</ButtonSidebar>
         </MainCard>
         <SidebarFooter>
           <h3>Travl Hotel Admin Dashboard</h3>

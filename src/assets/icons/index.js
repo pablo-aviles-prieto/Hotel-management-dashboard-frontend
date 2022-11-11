@@ -13,3 +13,4 @@ export { Calendar } from './Calendar';
 export { Users } from './Users';
 export { BottomArrow } from './BottomArrow';
 export { UpperArrow } from './UpperArrow';
+export { DotMenu } from './DotMenu';

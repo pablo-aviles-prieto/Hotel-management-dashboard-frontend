@@ -4,7 +4,6 @@ import Homepage from './pages/Homepage';
 import Login from './pages/Login';
 import Bookings from './pages/Bookings';
 import BookingDetails from './pages/BookingDetails';
-import Rooms from './pages/Rooms';
 import NewRoom from './pages/NewRoom';
 import RoomsList from './pages/RoomsList';
 import RoomDetails from './pages/RoomDetails';
@@ -40,7 +39,10 @@ const App = () => {
 
   return (
     <ThemeProvider theme={lightTheme ? LIGHT_THEME : DARK_THEME}>
-      <Layout authProp={[auth, authHandler]} themeProp={[lightTheme, switchThemeHandler]}>
+      <Layout
+        authProp={[auth, authHandler]}
+        themeProp={[lightTheme, switchThemeHandler]}
+      >
         <Routes>
           <Route
             path='/'
@@ -53,9 +55,8 @@ const App = () => {
           <Route path='*' element={<ProtectRoute auth={auth} />}>
             <Route path='bookings' element={<Bookings />} />
             <Route path='bookings/:id' element={<BookingDetails />} />
-            <Route path='rooms' element={<Rooms />} />
+            <Route path='rooms' element={<RoomsList />} />
             <Route path='rooms/new' element={<NewRoom />} />
-            <Route path='rooms/list' element={<RoomsList />} />
             <Route path='rooms/:id' element={<RoomDetails />} />
             <Route path='rooms/:id/edit' element={<RoomEdit />} />
             <Route path='users' element={<Users />} />

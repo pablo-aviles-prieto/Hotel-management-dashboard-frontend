@@ -7,4 +7,7 @@ export const DARK_THEME = {
   menuNavbarItems: '#686868',
   buttonSidebarBground: '#135846',
   buttonSidebarColor: '#ffffff',
+  buttonGreenBground: '#135846',
+  buttonGreenColor: '#fff',
+  borderColor: '#3D3D3D',
 };
