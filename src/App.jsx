@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
@@ -46,7 +46,7 @@ const App = () => {
               auth ? (
                 <Homepage onThemeChange={switchThemeHandler} />
               ) : (
-                <Login onSubmit={authHandler} auth={auth} />
+                <Navigate to='/login' replace />
               )
             }
           />

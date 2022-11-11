@@ -1,16 +1,20 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ onSubmit, auth }) => {
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const navigate = useNavigate();
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (usernameInput.trim() === 'test' && passwordInput.trim() === 'test123') {
-      onSubmit(true);
-    } else {
-      alert('Invalid username and password');
-    }
+    if (usernameInput.trim() !== 'test' && passwordInput.trim() !== 'test123')
+      return alert('Invalid username and password');
+
+    onSubmit(true);
+    setUsernameInput('');
+    setPasswordInput('');
+    navigate('/');
   };
 
   return (
@@ -21,6 +25,7 @@ const Login = ({ onSubmit, auth }) => {
           <div>
             <label htmlFor='username'>Username</label>
             <input
+              name='username'
               placeholder='test'
               value={usernameInput}
               id='username'
@@ -31,6 +36,7 @@ const Login = ({ onSubmit, auth }) => {
           <div>
             <label htmlFor='password'>Password</label>
             <input
+              name='password'
               placeholder='test123'
               value={passwordInput}
               id='password'

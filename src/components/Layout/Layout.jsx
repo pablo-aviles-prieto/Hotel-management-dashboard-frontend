@@ -182,42 +182,48 @@ export const Layout = ({ children, authProp, themeProp }) => {
           </div>
         </div>
         <nav>
-          <div className='navbar-items'>
-            <NavLink
-              to='/'
-              style={({ isActive }) => (isActive ? activeNavPage : undefined)}
-            >
-              <Dashboard height='25px' width='25px' />
-              Dashboard
-            </NavLink>
-          </div>
-          <div className='navbar-items'>
-            <NavLink
-              to='/rooms'
-              style={({ isActive }) => (isActive ? activeNavPage : undefined)}
-              onClick={openRoomDropdown}
-            >
-              <Key height='25px' width='25px' />
-              Rooms
-            </NavLink>
-            <div id='arrow-container' onClick={toggleRoomDropdown}>
-              {!roomDropdown ? (
-                <BottomArrow width='25px' height='25px' />
-              ) : (
-                <UpperArrow width='25px' height='25px' />
-              )}
-            </div>
-            <div className='navbar-items-dropdown'>
-              <NavLink
-                to='/rooms/new'
-                style={({ isActive }) =>
-                  isActive ? activeNavSubPage : undefined
-                }
-                id='nav-rooms'
-              >
-                New room
-              </NavLink>
-              {/* <NavLink
+          {auth ? (
+            <>
+              <div className='navbar-items'>
+                <NavLink
+                  to='/'
+                  style={({ isActive }) =>
+                    isActive ? activeNavPage : undefined
+                  }
+                >
+                  <Dashboard height='25px' width='25px' />
+                  Dashboard
+                </NavLink>
+              </div>
+              <div className='navbar-items'>
+                <NavLink
+                  to='/rooms'
+                  style={({ isActive }) =>
+                    isActive ? activeNavPage : undefined
+                  }
+                  onClick={openRoomDropdown}
+                >
+                  <Key height='25px' width='25px' />
+                  Rooms
+                </NavLink>
+                <div id='arrow-container' onClick={toggleRoomDropdown}>
+                  {!roomDropdown ? (
+                    <BottomArrow width='25px' height='25px' />
+                  ) : (
+                    <UpperArrow width='25px' height='25px' />
+                  )}
+                </div>
+                <div className='navbar-items-dropdown'>
+                  <NavLink
+                    to='/rooms/new'
+                    style={({ isActive }) =>
+                      isActive ? activeNavSubPage : undefined
+                    }
+                    id='nav-rooms'
+                  >
+                    New room
+                  </NavLink>
+                  {/* <NavLink
                 to='/rooms/list'
                 style={({ isActive }) =>
                   isActive ? activeNavSubPage : undefined
@@ -226,75 +232,95 @@ export const Layout = ({ children, authProp, themeProp }) => {
               >
                 List rooms
               </NavLink> */}
+                </div>
+              </div>
+              <div className='navbar-items'>
+                <NavLink
+                  to='/bookings'
+                  style={({ isActive }) =>
+                    isActive ? activeNavPage : undefined
+                  }
+                >
+                  <Calendar height='25px' width='25px' />
+                  Bookings
+                </NavLink>
+              </div>
+              <div className='navbar-items'>
+                <NavLink
+                  to='/contact'
+                  style={({ isActive }) =>
+                    isActive ? activeNavPage : undefined
+                  }
+                >
+                  <Mail width='25px' />
+                  Contact
+                </NavLink>
+              </div>
+              <div className='navbar-items'>
+                <NavLink
+                  to='/users'
+                  style={({ isActive }) =>
+                    isActive ? activeNavPage : undefined
+                  }
+                >
+                  <Users height='25px' width='25px' />
+                  Users
+                </NavLink>
+              </div>
+            </>
+          ) : (
+            <div className='navbar-items'>
+              <NavLink
+                to='/login'
+                style={({ isActive }) => (isActive ? activeNavPage : undefined)}
+              >
+                <Users height='25px' width='25px' />
+                Log in
+              </NavLink>
             </div>
-          </div>
-          <div className='navbar-items'>
-            <NavLink
-              to='/bookings'
-              style={({ isActive }) => (isActive ? activeNavPage : undefined)}
-            >
-              <Calendar height='25px' width='25px' />
-              Bookings
-            </NavLink>
-          </div>
-          <div className='navbar-items'>
-            <NavLink
-              to='/contact'
-              style={({ isActive }) => (isActive ? activeNavPage : undefined)}
-            >
-              <Mail width='25px' />
-              Contact
-            </NavLink>
-          </div>
-          <div className='navbar-items'>
-            <NavLink
-              to='/users'
-              style={({ isActive }) => (isActive ? activeNavPage : undefined)}
-            >
-              <Users height='25px' width='25px' />
-              Users
-            </NavLink>
-          </div>
+          )}
         </nav>
-        <MainCard
-          style={{
-            backgroundColor: lightTheme ? '#FFFFFF' : '#292828',
-            boxShadow: '0px 20px 30px #00000014',
-            borderRadius: '18px',
-            marginTop: '60px',
-            textAlign: 'center',
-          }}
-        >
-          <ImgHolder
-            width='70px'
-            height='70px'
+        {auth && (
+          <MainCard
             style={{
-              margin: 'auto',
-              marginTop: '-55px',
-            }}
-          />
-          <h3
-            style={{
-              marginTop: '15px',
-              fontWeight: '400',
+              backgroundColor: lightTheme ? '#FFFFFF' : '#292828',
+              boxShadow: '0px 20px 30px #00000014',
+              borderRadius: '18px',
+              marginTop: '60px',
+              textAlign: 'center',
             }}
           >
-            William Johanson
-          </h3>
-          <p
-            style={{
-              margin: '10px 0',
-              fontSize: '14px',
-              color: lightTheme ? '#B2B2B2' : '#686868',
-            }}
-          >
-            williamjohn@mail.com
-          </p>
-          <ButtonSidebar padding='15px 45px'>Edit</ButtonSidebar>
-        </MainCard>
+            <ImgHolder
+              width='70px'
+              height='70px'
+              style={{
+                margin: 'auto',
+                marginTop: '-55px',
+              }}
+            />
+            <h3
+              style={{
+                marginTop: '15px',
+                fontWeight: '400',
+              }}
+            >
+              William Johanson
+            </h3>
+            <p
+              style={{
+                margin: '10px 0',
+                fontSize: '14px',
+                color: lightTheme ? '#B2B2B2' : '#686868',
+              }}
+            >
+              williamjohn@mail.com
+            </p>
+            <ButtonSidebar padding='15px 45px'>Edit</ButtonSidebar>
+          </MainCard>
+        )}
         <SidebarFooter>
-          <h3>Travl Hotel Admin Dashboard</h3>
-          <p>© 2022 All Rights Reserved</p>
+          <h3>Hotel Admin Dashboard Demo</h3>
+          <p>© 2022 Pablo Avilés</p>
         </SidebarFooter>
       </SideBarDiv>
       <HeaderDiv height='90px' sideBarState={sideBarState}>
