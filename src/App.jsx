@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
@@ -20,13 +20,9 @@ const App = () => {
   const [lightTheme, setLightTheme] = useState(true);
 
   useEffect(() => {
-    if (auth) {
-      localStorage.setItem('AUTH', 'yes');
-      setAuth(true);
-    } else {
-      localStorage.removeItem('AUTH');
-      setAuth(false);
-    }
+    auth
+      ? localStorage.setItem('AUTH', 'yes')
+      : localStorage.removeItem('AUTH');
   }, [auth]);
 
   const authHandler = (boolean) => {
@@ -46,7 +42,13 @@ const App = () => {
         <Routes>
           <Route
             path='/'
-            element={<Homepage onThemeChange={switchThemeHandler} />}
+            element={
+              auth ? (
+                <Homepage onThemeChange={switchThemeHandler} />
+              ) : (
+                <Navigate to='/login' replace />
+              )
+            }
           />
           <Route
             path='/login'

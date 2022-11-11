@@ -1,17 +1,20 @@
-import { useRef } from 'react';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Login = ({ onSubmit, auth }) => {
-  const usernameInput = useRef(null);
-  const passwordInput = useRef(null);
+  const [usernameInput, setUsernameInput] = useState('');
+  const [passwordInput, setPasswordInput] = useState('');
+  const navigate = useNavigate();
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (
-      usernameInput.current.value.trim() === 'test' &&
-      passwordInput.current.value.trim() === 'test123'
-    ) {
-      onSubmit(true);
-    }
+    if (usernameInput.trim() !== 'test' && passwordInput.trim() !== 'test123')
+      return alert('Invalid username and password');
+
+    onSubmit(true);
+    setUsernameInput('');
+    setPasswordInput('');
+    navigate('/');
   };
 
   return (
@@ -22,19 +25,23 @@ const Login = ({ onSubmit, auth }) => {
           <div>
             <label htmlFor='username'>Username</label>
             <input
+              name='username'
               placeholder='test'
-              ref={usernameInput}
+              value={usernameInput}
               id='username'
               type='text'
+              onChange={(e) => setUsernameInput(e.target.value)}
             />
           </div>
           <div>
             <label htmlFor='password'>Password</label>
             <input
+              name='password'
               placeholder='test123'
-              ref={passwordInput}
+              value={passwordInput}
               id='password'
               type='password'
+              onChange={(e) => setPasswordInput(e.target.value)}
             />
           </div>
           <div>

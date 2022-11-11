@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import update from 'immutability-helper';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   ButtonGreen,
   InputSelect,
@@ -12,6 +12,7 @@ import { DotMenu } from '../assets/icons';
 import { CardDnd } from '../components';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import roomData from '../assets/data/rooms.json';
 
 const MenuContainer = styled.div`
   display: flex;
@@ -132,6 +133,24 @@ const RoomsList = () => {
       offerPrice: null,
     },
   ]);
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await fetch('../assets/data/rooms.json');
+  //       console.log('response', response);
+  //       if (response.ok) {
+  //         console.log('check');
+  //         const result = await response.json();
+  //         console.log('result', result);
+  //         return result;
+  //       }
+  //     } catch (error) {
+  //       console.log('Hubo un problema con la petición Fetch:' + error.message);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   const inputSelectHandler = (e) => {
     switch (e.target.value) {
