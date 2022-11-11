@@ -39,12 +39,18 @@ export const CardDnd = ({ id, index, moveCard, data, renderData }) => {
       moveCard(dragIndex, hoverIndex);
       item.index = hoverIndex;
     },
+    drop() {
+      console.log(`Element with ID ${id} dropped`);
+    },
   });
 
   const [{ isDragging }, drag] = useDrag({
     type: ItemTypes.CARD,
     item: () => {
       return { id, index };
+    },
+    options: {
+      dropEffect: 'move',
     },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),

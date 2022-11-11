@@ -58,67 +58,131 @@ const optionsSelect = [
     value: 'newest',
   },
   {
-    label: 'Status',
-    value: 'status',
+    label: 'Oldest',
+    value: 'oldest',
   },
   {
-    label: 'Price',
-    value: 'price',
+    label: 'Higher Price',
+    value: 'higher',
+  },
+  {
+    label: 'Lower Price',
+    value: 'lower',
+  },
+  {
+    label: 'Available',
+    value: 'available',
+  },
+  {
+    label: 'Booked',
+    value: 'booked',
   },
 ];
 
 const RoomsList = () => {
   const [roomsList, setRoomsList] = useState([
     {
-      id: 1,
-      roomId: '#0001',
-      roomName: 'Deluxe A-91234',
-      bedType: 'Double Bed',
-      roomFloor: 'A-1',
-      facilities:
-        'AC, Shower, Double Bed, Towel, Bath, Coffee Set, LED TV, Wifi',
-      ratePerNight: 145,
-      availability: true,
-      text: 'test1',
-    },
-    {
-      id: 2,
-      roomId: '#0002',
-      roomName: 'Deluxe A-43219',
-      bedType: 'Double Bed',
-      roomFloor: 'A-2',
-      facilities: 'AC, Shower, Double Bed, Towel, Bath, Coffee Set, Wifi',
-      ratePerNight: 199,
-      availability: false,
-      text: 'test2',
-    },
-    {
-      id: 3,
-      roomId: '#0003',
-      roomName: 'Deluxe A-51515',
-      bedType: 'Double Bed',
-      roomFloor: 'A-3',
-      facilities: 'AC, Shower, Double Bed, LED TV, Wifi',
-      ratePerNight: 119,
-      availability: true,
-      text: 'test3',
-    },
-    {
       id: 4,
-      roomId: '#0004',
+      photo: null,
+      roomNumber: '0004',
       roomName: 'Deluxe A-ASDA2',
       bedType: 'Double Bed',
       roomFloor: 'A-1',
       facilities:
         'AC, Shower, Double Bed, Towel, Bath, Coffee Set, LED TV, Wifi',
       ratePerNight: 150,
-      availability: false,
-      text: 'test4',
+      status: 'Booked',
+      offerPrice: null,
+    },
+    {
+      id: 3,
+      photo: null,
+      roomNumber: '0003',
+      roomName: 'Deluxe A-51515',
+      bedType: 'Double Bed',
+      roomFloor: 'A-3',
+      facilities: 'AC, Shower, Double Bed, LED TV, Wifi',
+      ratePerNight: 119,
+      status: 'Available',
+      offerPrice: null,
+    },
+    {
+      id: 2,
+      photo: null,
+      roomNumber: '0002',
+      roomName: 'Deluxe A-43219',
+      bedType: 'Double Bed',
+      roomFloor: 'A-2',
+      facilities: 'AC, Shower, Double Bed, Towel, Bath, Coffee Set, Wifi',
+      ratePerNight: 199,
+      status: 'Booked',
+      offerPrice: null,
+    },
+    {
+      id: 1,
+      photo: null,
+      roomNumber: '0001',
+      roomName: 'Deluxe A-91234',
+      bedType: 'Double Bed',
+      roomFloor: 'A-1',
+      facilities:
+        'AC, Shower, Double Bed, Towel, Bath, Coffee Set, LED TV, Wifi',
+      ratePerNight: 145,
+      status: 'Available',
+      offerPrice: null,
     },
   ]);
 
   const inputSelectHandler = (e) => {
-    console.log('e', e.target.value);
+    switch (e.target.value) {
+      case 'newest':
+        setRoomsList((prevState) => {
+          const newArr = [...prevState];
+          return newArr.sort((a, b) => +b.roomNumber - +a.roomNumber);
+        });
+        return;
+
+      case 'oldest': {
+        return setRoomsList((prevState) => {
+          const newArr = [...prevState];
+          return newArr.sort((a, b) => +a.roomNumber - +b.roomNumber);
+        });
+      }
+      case 'higher': {
+        return setRoomsList((prevState) => {
+          const newArr = [...prevState];
+          return newArr.sort((a, b) => +b.ratePerNight - +a.ratePerNight);
+        });
+      }
+      case 'lower': {
+        return setRoomsList((prevState) => {
+          const newArr = [...prevState];
+          return newArr.sort((a, b) => +a.ratePerNight - +b.ratePerNight);
+        });
+      }
+      case 'available': {
+        return setRoomsList((prevState) => {
+          const availableArr = prevState.filter(
+            (room) => room.status === 'Available'
+          );
+          const bookedArr = prevState.filter(
+            (room) => room.status === 'Booked'
+          );
+          return [...availableArr, ...bookedArr];
+        });
+      }
+      case 'booked': {
+        return setRoomsList((prevState) => {
+          const availableArr = prevState.filter(
+            (room) => room.status === 'Available'
+          );
+          const bookedArr = prevState.filter(
+            (room) => room.status === 'Booked'
+          );
+          return [...bookedArr, ...availableArr];
+        });
+      }
+    }
   };
 
   const moveCard = useCallback((dragIndex, hoverIndex) => {
@@ -139,7 +203,7 @@ const RoomsList = () => {
           <ImgHolder width='150px' height='77px'></ImgHolder>
           <div>
             <p style={{ color: '#799283', marginBottom: '10px' }}>
-              {room.roomId}
+              #{room.roomNumber}
             </p>
             <p>{room.roomName}</p>
           </div>
@@ -174,10 +238,10 @@ const RoomsList = () => {
         <ButtonListRooms
           style={{ marginRight: '20px' }}
           padding='12px 22px'
-          bground={room.availability ? '#5AD07A' : '#E23428'}
+          bground={room.status === 'Available' ? '#5AD07A' : '#E23428'}
           onClick={() => console.log('check btn')}
         >
-          {room.availability ? 'Available' : 'Booked'}
+          {room.status}
         </ButtonListRooms>
         <DotMenu
           style={{ cursor: 'pointer' }}
