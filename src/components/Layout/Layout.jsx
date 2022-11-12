@@ -34,9 +34,9 @@ const HeaderDiv = styled.div`
   box-shadow: 0px 3px 10px ${({ theme }) => theme.smallDivShadow};
   transition: padding-left 0.4s ease-out;
   @media (min-width: 800px) {
-    padding: 0 5%;
+    padding-right: 1.5%;
     padding-left: ${({ sideBarState }) =>
-      !sideBarState ? '3%' : 'calc(300px + 3%)'};
+      !sideBarState ? '1.5%' : 'calc(300px + 1.5%)'};
   }
 `;
 

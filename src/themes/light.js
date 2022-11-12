@@ -11,4 +11,5 @@ export const LIGHT_THEME = {
   buttonGreenColor: '#fff',
   borderColor: '#f5f5f5',
   bgroundSVGMiniCard: '#FFEDEC',
+  borderCardSeparator: '#EBEBEB',
 };
