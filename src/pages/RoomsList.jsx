@@ -1,18 +1,26 @@
 import styled from 'styled-components';
 import update from 'immutability-helper';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   ButtonGreen,
   InputSelect,
   MainCard,
   Table,
   ImgHolder,
+  PaginationButtons,
 } from '../components/Styles';
 import { DotMenu } from '../assets/icons';
 import { CardDnd } from '../components';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import {
+  paginationDataHandler,
+  numberOfPages,
+  paginationButtonsHandler,
+} from '../utils';
 import roomData from '../assets/data/rooms.json';
+
+const PAGINATION_OFFSET = 10;
 
 const MenuContainer = styled.div`
   display: flex;
@@ -81,76 +89,22 @@ const optionsSelect = [
 ];
 
 const RoomsList = () => {
-  const [roomsList, setRoomsList] = useState([
-    {
-      id: 4,
-      photo: null,
-      roomNumber: '0004',
-      roomName: 'Deluxe A-ASDA2',
-      bedType: 'Double Bed',
-      roomFloor: 'A-1',
-      facilities:
-        'AC, Shower, Double Bed, Towel, Bath, Coffee Set, LED TV, Wifi',
-      ratePerNight: 150,
-      status: 'Booked',
-      offerPrice: null,
-    },
-    {
-      id: 3,
-      photo: null,
-      roomNumber: '0003',
-      roomName: 'Deluxe A-51515',
-      bedType: 'Double Bed',
-      roomFloor: 'A-3',
-      facilities: 'AC, Shower, Double Bed, LED TV, Wifi',
-      ratePerNight: 119,
-      status: 'Available',
-      offerPrice: null,
-    },
-    {
-      id: 2,
-      photo: null,
-      roomNumber: '0002',
-      roomName: 'Deluxe A-43219',
-      bedType: 'Double Bed',
-      roomFloor: 'A-2',
-      facilities: 'AC, Shower, Double Bed, Towel, Bath, Coffee Set, Wifi',
-      ratePerNight: 199,
-      status: 'Booked',
-      offerPrice: null,
-    },
-    {
-      id: 1,
-      photo: null,
-      roomNumber: '0001',
-      roomName: 'Deluxe A-91234',
-      bedType: 'Double Bed',
-      roomFloor: 'A-1',
-      facilities:
-        'AC, Shower, Double Bed, Towel, Bath, Coffee Set, LED TV, Wifi',
-      ratePerNight: 145,
-      status: 'Available',
-      offerPrice: null,
-    },
-  ]);
+  const [page, setPage] = useState(1);
+  const [roomsList, setRoomsList] = useState(roomData);
+  const [roomsListSliced, setRoomsListSliced] = useState([]);
 
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await fetch('../assets/data/rooms.json');
-  //       console.log('response', response);
-  //       if (response.ok) {
-  //         console.log('check');
-  //         const result = await response.json();
-  //         console.log('result', result);
-  //         return result;
-  //       }
-  //     } catch (error) {
-  //       console.log('Hubo un problema con la petición Fetch:' + error.message);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
+  useEffect(() => {
+    const arrayToRender = paginationDataHandler(
+      roomsList,
+      PAGINATION_OFFSET,
+      page
+    );
+    setRoomsListSliced(arrayToRender);
+  }, [roomsList, PAGINATION_OFFSET, page]);
+
+  const totalPages = useMemo(() => {
+    return numberOfPages(roomsList.length, PAGINATION_OFFSET);
+  }, [roomsListSliced, PAGINATION_OFFSET]);
 
   const inputSelectHandler = (e) => {
     switch (e.target.value) {
@@ -159,28 +113,35 @@ const RoomsList = () => {
           const newArr = [...prevState];
           return newArr.sort((a, b) => +b.roomNumber - +a.roomNumber);
         });
+        setPage(1);
         return;
 
       case 'oldest': {
-        return setRoomsList((prevState) => {
+        setRoomsList((prevState) => {
           const newArr = [...prevState];
           return newArr.sort((a, b) => +a.roomNumber - +b.roomNumber);
         });
+        setPage(1);
+        return;
       }
       case 'higher': {
-        return setRoomsList((prevState) => {
+        setRoomsList((prevState) => {
           const newArr = [...prevState];
           return newArr.sort((a, b) => +b.ratePerNight - +a.ratePerNight);
         });
+        setPage(1);
+        return;
       }
       case 'lower': {
-        return setRoomsList((prevState) => {
+        setRoomsList((prevState) => {
           const newArr = [...prevState];
           return newArr.sort((a, b) => +a.ratePerNight - +b.ratePerNight);
         });
+        setPage(1);
+        return;
       }
       case 'available': {
-        return setRoomsList((prevState) => {
+        setRoomsList((prevState) => {
           const availableArr = prevState.filter(
             (room) => room.status === 'Available'
           );
@@ -189,9 +150,11 @@ const RoomsList = () => {
           );
           return [...availableArr, ...bookedArr];
         });
+        setPage(1);
+        return;
       }
       case 'booked': {
-        return setRoomsList((prevState) => {
+        setRoomsList((prevState) => {
           const availableArr = prevState.filter(
             (room) => room.status === 'Available'
           );
@@ -200,12 +163,14 @@ const RoomsList = () => {
           );
           return [...bookedArr, ...availableArr];
         });
+        setPage(1);
+        return;
       }
     }
   };
 
   const moveCard = useCallback((dragIndex, hoverIndex) => {
-    setRoomsList((prevRoomsList) =>
+    setRoomsListSliced((prevRoomsList) =>
       update(prevRoomsList, {
         $splice: [
           [dragIndex, 1],
@@ -219,8 +184,10 @@ const RoomsList = () => {
     <tr ref={ref} style={{ opacity: dragOpacity }} data-handler-id={handlerId}>
       <td>
         <FlexContainer>
-          <ImgHolder width='150px' height='77px'></ImgHolder>
-          <div>
+          <ImgHolder width='150px' height='77px'>
+            <img src={room.photo} alt='Photo from Hotel' />
+          </ImgHolder>
+          <div style={{ width: '73%' }}>
             <p style={{ color: '#799283', marginBottom: '10px' }}>
               #{room.roomNumber}
             </p>
@@ -230,7 +197,13 @@ const RoomsList = () => {
       </td>
       <td>{room.bedType}</td>
       <td>Floor {room.roomFloor}</td>
-      <td>{room.facilities}</td>
+      <td>
+        {room.facilities.map((facility) => (
+          <span key={facility} style={{ marginRight: '5px' }}>
+            {facility}
+          </span>
+        ))}
+      </td>
       <td>
         <p style={{ fontWeight: '700' }}>
           ${room.ratePerNight}
@@ -298,7 +271,7 @@ const RoomsList = () => {
       <DndProvider backend={HTML5Backend}>
         <TableCard borderRadius='20px' style={{ margin: '30px 0' }}>
           <Table>
-            <thead>
+            <thead id='card-header'>
               <tr>
                 <th>Room name</th>
                 <th>Bed Type</th>
@@ -309,7 +282,7 @@ const RoomsList = () => {
               </tr>
             </thead>
             <tbody style={{ fontSize: '15px' }}>
-              {roomsList.map((room, i) => (
+              {roomsListSliced.map((room, i) => (
                 <CardDnd
                   key={room.id}
                   id={room.id}
@@ -323,6 +296,14 @@ const RoomsList = () => {
           </Table>
         </TableCard>
       </DndProvider>
+      <PaginationButtons>
+        <p>
+          Showing {roomsListSliced.length} of {roomsList.length} Data
+        </p>
+          <div id='pagination-container'>
+            {paginationButtonsHandler(page, totalPages, setPage)}
+          </div>
+      </PaginationButtons>
     </>
   );
 };

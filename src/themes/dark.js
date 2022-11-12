@@ -10,4 +10,5 @@ export const DARK_THEME = {
   buttonGreenBground: '#135846',
   buttonGreenColor: '#fff',
   borderColor: '#3D3D3D',
+  bgroundSVGMiniCard: '#E234281C',
 };

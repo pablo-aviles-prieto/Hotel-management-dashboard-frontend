@@ -10,4 +10,5 @@ export const LIGHT_THEME = {
   buttonGreenBground: '#135846',
   buttonGreenColor: '#fff',
   borderColor: '#f5f5f5',
+  bgroundSVGMiniCard: '#FFEDEC',
 };

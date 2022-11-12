@@ -31,6 +31,7 @@ const Login = ({ onSubmit, auth }) => {
               id='username'
               type='text'
               onChange={(e) => setUsernameInput(e.target.value)}
+              autoComplete='username'
             />
           </div>
           <div>
@@ -42,6 +43,7 @@ const Login = ({ onSubmit, auth }) => {
               id='password'
               type='password'
               onChange={(e) => setPasswordInput(e.target.value)}
+              autoComplete='current-password'
             />
           </div>
           <div>

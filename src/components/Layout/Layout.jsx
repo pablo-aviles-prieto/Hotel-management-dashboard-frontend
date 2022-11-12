@@ -115,12 +115,14 @@ const BodyDiv = styled.div`
   color: ${({ theme }) => theme.mainColor};
   padding: 15px;
   padding-top: 105px;
-  min-height: 100vh;
   margin-left: ${({ sideBarState }) => (!sideBarState ? '0' : '300px')};
   transition: margin-left 0.4s ease-out;
   @media (min-width: 800px) {
-    padding: 3%;
-    padding-top: calc(3% + 90px);
+    padding: 1.5%;
+    padding-top: calc(1.5% + 90px);
+  }
+  @media (max-width: 1400px) {
+    width: 100%;
   }
 `;
 
