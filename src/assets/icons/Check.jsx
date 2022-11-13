@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-export const RightArrow = (props) => (
+export const Check = (props) => (
   <svg
     className='w-6 h-6'
     fill='none'
@@ -13,9 +13,7 @@ export const RightArrow = (props) => (
       strokeLinecap='round'
       strokeLinejoin='round'
       strokeWidth={2}
-      d='m9 5 7 7-7 7'
+      d='m9 12 2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z'
     />
   </svg>
 );
-
-export default RightArrow

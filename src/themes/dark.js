@@ -12,4 +12,5 @@ export const DARK_THEME = {
   borderColor: '#3D3D3D',
   bgroundSVGMiniCard: '#E234281C',
   borderCardSeparator: '#3D3D3D',
+  greyToWhite: '#fff',
 };

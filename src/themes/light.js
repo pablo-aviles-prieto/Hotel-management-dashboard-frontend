@@ -12,4 +12,5 @@ export const LIGHT_THEME = {
   borderColor: '#f5f5f5',
   bgroundSVGMiniCard: '#FFEDEC',
   borderCardSeparator: '#EBEBEB',
+  greyToWhite: '#4E4E4E',
 };

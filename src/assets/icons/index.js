@@ -1,5 +1,6 @@
 export { LeftArrow } from './LeftArrow';
 export { RightArrow } from './RightArrow';
+export { Check } from './Check';
 export { Mail } from './Mail';
 export { Bell } from './Bell';
 export { Logout } from './Logout';
@@ -16,3 +17,4 @@ export { BottomArrow } from './BottomArrow';
 export { UpperArrow } from './UpperArrow';
 export { DotMenu } from './DotMenu';
 export { Bed } from './Bed';
+export { XCircle } from './XCircle';
