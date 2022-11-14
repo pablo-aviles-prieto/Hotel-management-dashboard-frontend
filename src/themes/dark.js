@@ -13,4 +13,11 @@ export const DARK_THEME = {
   bgroundSVGMiniCard: '#E234281C',
   borderCardSeparator: '#3D3D3D',
   greyToWhite: '#fff',
+  darkGreyToLightGrey: '#686868',
+  blackToWhite: '#E8F2EF',
+  lightGreenToGrey: '#3D3D3D',
+  greyToGreen: '#135846',
+  greener: '#5AD07A26',
+  reder: '#E2342826',
+  yellower: '#64630140',
 };

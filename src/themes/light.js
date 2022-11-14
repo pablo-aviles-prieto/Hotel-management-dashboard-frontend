@@ -13,4 +13,11 @@ export const LIGHT_THEME = {
   bgroundSVGMiniCard: '#FFEDEC',
   borderCardSeparator: '#EBEBEB',
   greyToWhite: '#4E4E4E',
+  darkGreyToLightGrey: '#6E6E6E',
+  blackToWhite: '#212121',
+  lightGreenToGrey: '#EEF9F2',
+  greyToGreen: '#799283',
+  greener: '#E8FFEE',
+  reder: '#FFEDEC',
+  yellower: '#f8f7ac',
 };

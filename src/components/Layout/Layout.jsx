@@ -131,6 +131,29 @@ const FlexDiv = styled.div`
   align-items: center;
   justify-content: center;
   gap: ${({ gap }) => gap};
+  .badge-container {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #135846;
+    &-icon {
+      color: #fff;
+      position: absolute;
+      top: -17px;
+      right: -17px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      width: 30px;
+      height: 30px;
+      font-size: 12px;
+      background-color: #e23428;
+      border: 2px solid ${({ theme }) => theme.mainBground};
+    }
+  }
 `;
 
 const activeNavPage = {
@@ -147,6 +170,9 @@ const activeNavSubPage = {
   borderBottom: '3px solid #e234286c',
   fontWeight: '700',
 };
+
+const DUMMY_DATA1 = 0;
+const DUMMY_DATA2 = 87;
 
 export const Layout = ({ children, authProp, themeProp }) => {
   const [roomDropdown, setRoomDropdown] = useState(false);
@@ -225,15 +251,6 @@ export const Layout = ({ children, authProp, themeProp }) => {
                   >
                     New room
                   </NavLink>
-                  {/* <NavLink
-                to='/rooms/list'
-                style={({ isActive }) =>
-                  isActive ? activeNavSubPage : undefined
-                }
-                id='nav-rooms'
-              >
-                List rooms
-              </NavLink> */}
                 </div>
               </div>
               <div className='navbar-items'>
@@ -345,29 +362,42 @@ export const Layout = ({ children, authProp, themeProp }) => {
           </h3>
         </FlexDiv>
         <FlexDiv gap='30px'>
-          <Mail
-            height='25px'
-            style={{ cursor: 'pointer' }}
-            onClick={() => navigate('/contact')}
-          />
-          <Bell
-            height='25px'
-            style={{ cursor: 'pointer' }}
+          <div className='badge-container' onClick={() => navigate('/contact')}>
+            <Mail height='25px' />
+            <div
+              className='badge-container-icon'
+              style={{ display: DUMMY_DATA1 ? 'flex' : 'none' }}
+            >
+              {DUMMY_DATA1}
+            </div>
+          </div>
+          <div
+            className='badge-container'
             onClick={() => navigate('/bookings')}
-          />
-          {auth ? (
-            <Logout
-              height='25px'
-              onClick={logoutHandler}
-              style={{ cursor: 'pointer' }}
-            />
-          ) : (
-            <Login
-              height='25px'
-              style={{ cursor: 'pointer' }}
-              onClick={() => navigate('/login')}
-            />
-          )}
+          >
+            <Bell height='25px' />
+            <div
+              className='badge-container-icon'
+              style={{ display: DUMMY_DATA2 ? 'flex' : 'none' }}
+            >
+              {DUMMY_DATA2}
+            </div>
+          </div>
+          <div className='badge-container'>
+            {auth ? (
+              <Logout
+                height='25px'
+                onClick={logoutHandler}
+                style={{ cursor: 'pointer' }}
+              />
+            ) : (
+              <Login
+                height='25px'
+                style={{ cursor: 'pointer' }}
+                onClick={() => navigate('/login')}
+              />
+            )}
+          </div>
           <FlexDiv
             style={{
               cursor: 'pointer',

@@ -8,6 +8,7 @@ import {
   Table,
   ImgHolder,
   PaginationButtons,
+  MenuContainer,
 } from '../components/Styles';
 import { DotMenu } from '../assets/icons';
 import { CardDnd } from '../components';
@@ -21,29 +22,6 @@ import {
 import roomData from '../assets/data/rooms.json';
 
 const PAGINATION_OFFSET = 10;
-
-const MenuContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  #links-container {
-    display: flex;
-    a {
-      padding: 5px 15px;
-      border-bottom: 2px solid #d7d7d8;
-    }
-    .link-active {
-      border-color: #135846;
-      color: #135846;
-      font-weight: 700;
-    }
-  }
-  #buttons-container {
-    button {
-      margin-right: 25px;
-    }
-  }
-`;
 
 const FlexContainer = styled.div`
   display: flex;
@@ -249,9 +227,11 @@ const RoomsList = () => {
     <>
       <MenuContainer>
         <div id='links-container'>
-          <a className='link-active'>All Rooms</a>
-          <a>Active Employee</a>
-          <a>Inactive Employee</a>
+          <a href='#' className='link-active'>
+            All Rooms
+          </a>
+          <a href='#'>Active Employee</a>
+          <a href='#'>Inactive Employee</a>
         </div>
         <div id='buttons-container'>
           <ButtonGreen padding='13px 35px'>+ New Room</ButtonGreen>
@@ -300,9 +280,9 @@ const RoomsList = () => {
         <p>
           Showing {roomsListSliced.length} of {roomsList.length} Data
         </p>
-          <div id='pagination-container'>
-            {paginationButtonsHandler(page, totalPages, setPage)}
-          </div>
+        <div id='pagination-container'>
+          {paginationButtonsHandler(page, totalPages, setPage)}
+        </div>
       </PaginationButtons>
     </>
   );
