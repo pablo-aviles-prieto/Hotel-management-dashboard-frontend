@@ -140,8 +140,6 @@ const DUMMY_ARRAY_BOOKINGS = [
 ];
 
 const Bookings = () => {
-  const [] = useState([]);
-
   const inputSelectHandler = (e) => {
     console.log('option selected =>', e.target.value);
   };
@@ -230,6 +228,7 @@ const Bookings = () => {
                     <ButtonForRequest
                       onClick={() => console.log('Modal in progress')}
                       padding='10px 25px'
+                      className='btnReq'
                     >
                       View Notes
                     </ButtonForRequest>

@@ -40,5 +40,18 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "react-test-renderer": "^18.2.0"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "swiper/react": "swiper/react/swiper-react.js",
+      "swiper/css": "swiper/swiper.min.css"
+    },
+    "transform": {},
+    "transformIgnorePatterns": [
+      "node_modules/(?!(swiper|ssr-window|dom7)/)"
+    ]
   }
 }
