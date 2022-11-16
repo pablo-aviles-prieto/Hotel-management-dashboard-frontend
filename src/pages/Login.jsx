@@ -8,18 +8,18 @@ const Login = ({ onSubmit, auth }) => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (usernameInput.trim() !== 'test' && passwordInput.trim() !== 'test123')
+    if (usernameInput.trim() !== 'test' || passwordInput.trim() !== 'test123')
       return alert('Invalid username and password');
 
     onSubmit(true);
     setUsernameInput('');
     setPasswordInput('');
-    navigate('/');
+    navigate('/', { replace: true });
   };
 
   return (
     <>
-      <h1>Login page</h1>
+      <h1 id='login-title'>Login page</h1>
       {!auth ? (
         <form onSubmit={submitHandler}>
           <div>

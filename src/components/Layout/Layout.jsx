@@ -201,7 +201,7 @@ export const Layout = ({ children, authProp, themeProp }) => {
 
   return (
     <>
-      <SideBarDiv sideBarState={sideBarState} roomDropdown={roomDropdown}>
+      <SideBarDiv id='sidebar-menu' sideBarState={sideBarState} roomDropdown={roomDropdown}>
         <div id='logo-container'>
           <Hotel height='45px' />
           <div>
@@ -342,7 +342,7 @@ export const Layout = ({ children, authProp, themeProp }) => {
           <p>© 2022 Pablo Avilés</p>
         </SidebarFooter>
       </SideBarDiv>
-      <HeaderDiv height='90px' sideBarState={sideBarState}>
+      <HeaderDiv id='header-menu' height='90px' sideBarState={sideBarState}>
         <FlexDiv gap='20px'>
           {!sideBarState ? (
             <RightArrow
