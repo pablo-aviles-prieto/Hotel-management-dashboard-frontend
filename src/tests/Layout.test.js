@@ -1,8 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
-import { Layout } from './Layout';
-import HomePage from '../../pages/Homepage';
-import { ButtonSidebar } from '../Styles';
+import { Layout } from '../components';
 import '@testing-library/jest-dom/extend-expect';
 
 describe('Layout', () => {

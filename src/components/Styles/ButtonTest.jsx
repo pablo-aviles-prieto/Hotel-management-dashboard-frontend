@@ -6,7 +6,7 @@ const ButtonTestGreen = styled.button`
   border: 0;
   border-radius: 14px;
   color: ${({ btnColor }) => btnColor};
-  background-color: ${({ theme }) => theme.buttonGreenBground};
+  background-color: ${({ theme }) => theme.blackToWhite};
 `;
 
 export const ButtonTest = ({ children, color, pad }) => {
