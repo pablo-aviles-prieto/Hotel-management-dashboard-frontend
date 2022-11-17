@@ -78,11 +78,11 @@ const RoomsList = () => {
       page
     );
     setRoomsListSliced(arrayToRender);
-  }, [roomsList, PAGINATION_OFFSET, page]);
+  }, [roomsList, page]);
 
   const totalPages = useMemo(() => {
     return numberOfPages(roomsList.length, PAGINATION_OFFSET);
-  }, [roomsListSliced, PAGINATION_OFFSET]);
+  }, [roomsList.length]);
 
   const inputSelectHandler = (e) => {
     switch (e.target.value) {
@@ -144,6 +144,8 @@ const RoomsList = () => {
         setPage(1);
         return;
       }
+      default:
+        return;
     }
   };
 
@@ -163,7 +165,7 @@ const RoomsList = () => {
       <td>
         <FlexContainer>
           <ImgHolder width='150px' height='77px'>
-            <img src={room.photo} alt='Photo from Hotel' />
+            <img src={room.photo} alt='View of the Hotel' />
           </ImgHolder>
           <div style={{ width: '73%' }}>
             <p style={{ color: '#799283', marginBottom: '10px' }}>

@@ -1,4 +1,4 @@
-const cypress = require('cypress')
+const cypress = require('cypress');
 
 cypress
   .run({
@@ -7,8 +7,8 @@ cypress
     video: false,
   })
   .then((results) => {
-    console.log(results)
+    console.log('Tests OK');
   })
   .catch((err) => {
-    console.error(err)
-  })
+    console.error('ERROR', err);
+  });

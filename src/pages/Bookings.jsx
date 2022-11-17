@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
   MenuContainer,
   MainCard,
@@ -6,8 +6,18 @@ import {
   Table,
   ImgHolder,
   ButtonSidebar,
+  PaginationButtons,
 } from '../components/Styles';
+import {
+  paginationDataHandler,
+  numberOfPages,
+  paginationButtonsHandler,
+} from '../utils';
 import styled from 'styled-components';
+import { Modal } from '../components';
+import bookingsData from '../assets/data/bookings.json';
+
+const PAGINATION_OFFSET = 10;
 
 const InputSelectInverted = styled(InputSelect)`
   cursor: pointer;
@@ -86,60 +96,29 @@ const optionsSelect2 = [
   },
 ];
 
-const DUMMY_ARRAY_BOOKINGS = [
-  {
-    id: '#001',
-    user: { name: 'Manolete García', picture: '' },
-    orderDate: 'Oct 30th 2022 02:21 AM',
-    checkIn: {
-      date: 'Nov 2nd, 2022',
-      hour: '9:46 PM',
-    },
-    checkOut: {
-      date: 'Nov 4th, 2022',
-      hour: '6:26 PM',
-    },
-    specialRequest:
-      'I would like to have a huge teddy panda bear to cuddle him at night. Thank you in advance!',
-    roomType: 'Deluxe A-02',
-    status: 'check in',
-  },
-  {
-    id: '#002',
-    user: { name: 'Manolito García', picture: '' },
-    orderDate: 'Oct 30th 2022 05:21 PM',
-    checkIn: {
-      date: 'Nov 3nd, 2022',
-      hour: '2:46 PM',
-    },
-    checkOut: {
-      date: 'Nov 6th, 2022',
-      hour: '7:26 PM',
-    },
-    specialRequest: null,
-    roomType: 'Deluxe C-02',
-    status: 'check out',
-  },
-  {
-    id: '#003',
-    user: { name: 'Manolon García', picture: '' },
-    orderDate: 'Oct 30th 2022 08:51 PM',
-    checkIn: {
-      date: 'Nov 5nd, 2022',
-      hour: '4:46 PM',
-    },
-    checkOut: {
-      date: 'Nov 7th, 2022',
-      hour: '8:26 PM',
-    },
-    specialRequest:
-      'Would love to have a blue picture of Michael Jackson in the nightstand',
-    roomType: 'Deluxe A-06',
-    status: 'in progress',
-  },
-];
-
 const Bookings = () => {
+  const [modalState, setModalState] = useState('');
+  const [page, setPage] = useState(1);
+  const [bookingsList, setBookingsList] = useState(bookingsData);
+  const [bookingsListSliced, setbookingsListSliced] = useState([]);
+
+  useEffect(() => {
+    const arrayToRender = paginationDataHandler(
+      bookingsList,
+      PAGINATION_OFFSET,
+      page
+    );
+    setbookingsListSliced(arrayToRender);
+  }, [bookingsList, page]);
+
+  const totalPages = useMemo(() => {
+    return numberOfPages(bookingsList.length, PAGINATION_OFFSET);
+  }, [bookingsList.length]);
+
+  const closeModalHandler = () => {
+    setModalState('');
+  };
+
   const inputSelectHandler = (e) => {
     console.log('option selected =>', e.target.value);
   };
@@ -149,6 +128,13 @@ const Bookings = () => {
 
   return (
     <>
+      {modalState && (
+        <Modal
+          title={modalState.title}
+          message={modalState.message}
+          closeModalHandler={closeModalHandler}
+        />
+      )}
       <MenuContainer>
         <div id='links-container'>
           <a href='#' className='link-active'>
@@ -198,19 +184,21 @@ const Bookings = () => {
             </tr>
           </thead>
           <tbody style={{ fontSize: '15px' }}>
-            {DUMMY_ARRAY_BOOKINGS.map((bookings) => (
+            {bookingsListSliced.map((bookings) => (
               <tr key={bookings.id}>
                 <td>
                   <FlexContainer>
                     <ImgHolder width='40px' height='40px'>
-                      {/* <img
+                      <img
                         src={bookings.user.picture}
-                        alt={`Picture of ${bookings.user.name}`}
-                      /> */}
+                        alt={`Avatar from ${bookings.user.name}`}
+                      />
                     </ImgHolder>
                     <div>
                       <p>{bookings.user.name}</p>
-                      <p style={{ color: '#799283' }}>{bookings.id}</p>
+                      <p style={{ color: '#799283' }}>
+                        #{bookings.bookingNumber}
+                      </p>
                     </div>
                   </FlexContainer>
                 </td>
@@ -226,9 +214,13 @@ const Bookings = () => {
                 <td>
                   {bookings.specialRequest ? (
                     <ButtonForRequest
-                      onClick={() => console.log('Modal in progress')}
+                      onClick={() =>
+                        setModalState({
+                          title: `Request from ${bookings.user.name}`,
+                          message: bookings.specialRequest,
+                        })
+                      }
                       padding='10px 25px'
-                      className='btnReq'
                     >
                       View Notes
                     </ButtonForRequest>
@@ -259,6 +251,14 @@ const Bookings = () => {
           </tbody>
         </Table>
       </TableCard>
+      <PaginationButtons>
+        <p>
+          Showing {bookingsListSliced.length} of {bookingsList.length} Data
+        </p>
+        <div id='pagination-container'>
+          {paginationButtonsHandler(page, totalPages, setPage)}
+        </div>
+      </PaginationButtons>
     </>
   );
 };
