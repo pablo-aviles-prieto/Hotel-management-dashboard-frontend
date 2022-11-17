@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/Hotel-management-dashboard/static/css/main.492d954c.css",
-    "main.js": "/Hotel-management-dashboard/static/js/main.7f7a35f7.js",
+    "main.js": "/Hotel-management-dashboard/static/js/main.bfebcfc9.js",
     "index.html": "/Hotel-management-dashboard/index.html",
     "static/media/LeftArrowLong.svg": "/Hotel-management-dashboard/static/media/LeftArrowLong.5bf98b123651208e2b15e18187da6fbd.svg",
     "static/media/RightArrowLong.svg": "/Hotel-management-dashboard/static/media/RightArrowLong.56e05ccfe2098ea3164ed766f8185da6.svg",
     "main.492d954c.css.map": "/Hotel-management-dashboard/static/css/main.492d954c.css.map",
-    "main.7f7a35f7.js.map": "/Hotel-management-dashboard/static/js/main.7f7a35f7.js.map"
+    "main.bfebcfc9.js.map": "/Hotel-management-dashboard/static/js/main.bfebcfc9.js.map"
   },
   "entrypoints": [
     "static/css/main.492d954c.css",
-    "static/js/main.7f7a35f7.js"
+    "static/js/main.bfebcfc9.js"
   ]
 }
