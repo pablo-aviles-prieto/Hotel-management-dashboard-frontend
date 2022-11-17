@@ -1,6 +1,6 @@
 # Hotel management dashboard
 
-Demo app dashboard to manage all the 
+Demo app dashboard to manage all the internal structure of a hotel
 
 ## Built With
 
