@@ -7,3 +7,4 @@ export { InputSelect } from './InputSelect';
 export { Table } from './Table';
 export { PaginationButtons } from './PaginationButtons';
 export { MenuContainer } from './MenuContainer';
+export { FlexContainer } from './FlexContainer';

@@ -21,6 +21,7 @@ import {
 } from '../../assets/icons';
 
 const HeaderDiv = styled.div`
+  z-index: 2;
   position: fixed;
   display: flex;
   justify-content: space-between;
@@ -51,7 +52,7 @@ const SideBarDiv = styled.div`
   color: ${({ theme }) => theme.mainColor};
   overflow: auto;
   transition: left 0.4s ease-out;
-  z-index: 1;
+  z-index: 3;
   #logo-container {
     display: flex;
     align-items: center;
@@ -201,7 +202,11 @@ export const Layout = ({ children, authProp, themeProp }) => {
 
   return (
     <>
-      <SideBarDiv id='sidebar-menu' sideBarState={sideBarState} roomDropdown={roomDropdown}>
+      <SideBarDiv
+        id='sidebar-menu'
+        sideBarState={sideBarState}
+        roomDropdown={roomDropdown}
+      >
         <div id='logo-container'>
           <Hotel height='45px' />
           <div>

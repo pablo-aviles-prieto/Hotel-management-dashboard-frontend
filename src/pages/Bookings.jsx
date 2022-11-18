@@ -7,6 +7,7 @@ import {
   ImgHolder,
   ButtonSidebar,
   PaginationButtons,
+  FlexContainer
 } from '../components/Styles';
 import {
   paginationDataHandler,
@@ -30,12 +31,7 @@ const InputSelectInverted = styled(InputSelect)`
 
 const TableCard = styled(MainCard)`
   padding: 0;
-`;
-
-const FlexContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  margin: 30px 0;
 `;
 
 const ButtonForRequest = styled(ButtonSidebar)`
@@ -170,7 +166,7 @@ const Bookings = () => {
           </InputSelect>
         </div>
       </MenuContainer>
-      <TableCard borderRadius='20px' style={{ margin: '30px 0' }}>
+      <TableCard borderRadius='20px'>
         <Table>
           <thead id='card-header'>
             <tr>
