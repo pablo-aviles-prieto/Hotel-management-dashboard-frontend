@@ -3,7 +3,7 @@ describe('User auth', () => {
     cy.visit('http://localhost:3000/login');
   });
 
-  it('is working correctly and redirects to home', () => {
+  it('fails when introducing incorrect username', () => {
     cy.get('input[name="username"]')
       .type('manolete')
       .should('have.value', 'manolete')
@@ -17,7 +17,21 @@ describe('User auth', () => {
     });
   });
 
-  it('users loggin flow', () => {
+  it('fails when introducing incorrect password', () => {
+    cy.get('input[name="username"]')
+      .type('test')
+      .should('have.value', 'test')
+      .get('input[name="password"]')
+      .type('test1234')
+      .should('have.value', 'test1234');
+
+    cy.get('button[type="submit"]').click();
+    cy.on('window:alert', (str) => {
+      expect(str).to.equal(`Invalid username and password`);
+    });
+  });
+
+  it('works correctly with correct user data', () => {
     cy.get('input[name="username"]')
       .type('test')
       .should('have.value', 'test')
