@@ -77,6 +77,9 @@ const SideBarDiv = styled.div`
         text-decoration: none;
         padding: 10px 0;
         font-size: 18px;
+        &:hover {
+          color: rgb(226, 52, 40);
+        }
       }
       &-dropdown {
         padding: 0;

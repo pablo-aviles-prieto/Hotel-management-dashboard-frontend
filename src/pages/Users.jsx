@@ -91,7 +91,8 @@ const Users = () => {
         <div id='buttons-container'>
           <InputText
             style={{ marginRight: '20px' }}
-            padding='10px 10px'
+            borderRadius='8px'
+            padding='10px'
             type='text'
             id='search-user'
             placeholder='Search user...'

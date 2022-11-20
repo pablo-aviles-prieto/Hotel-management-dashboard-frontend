@@ -152,6 +152,7 @@ const BottomSection = styled.section`
       }
       &-btns {
         cursor: pointer;
+        min-width: 80px;
         svg {
           margin-left: 10px;
         }
