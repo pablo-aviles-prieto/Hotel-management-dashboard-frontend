@@ -1,6 +1,6 @@
 const onBtnClick = (setPage, i) => {
   setPage(i + 1);
-  document.getElementById('card-header')?.scrollIntoView();
+  document.getElementById('links-container')?.scrollIntoView();
 };
 
 export const numberOfPages = (totalLength, offset) => {

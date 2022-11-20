@@ -7,7 +7,7 @@ import {
   ImgHolder,
   ButtonSidebar,
   PaginationButtons,
-  FlexContainer
+  FlexContainer,
 } from '../components/Styles';
 import {
   paginationDataHandler,
@@ -32,6 +32,7 @@ const InputSelectInverted = styled(InputSelect)`
 const TableCard = styled(MainCard)`
   padding: 0;
   margin: 30px 0;
+  margin-top: 50px;
 `;
 
 const ButtonForRequest = styled(ButtonSidebar)`

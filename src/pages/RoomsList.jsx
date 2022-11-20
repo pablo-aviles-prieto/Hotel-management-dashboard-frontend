@@ -251,7 +251,10 @@ const RoomsList = () => {
         </div>
       </MenuContainer>
       <DndProvider backend={HTML5Backend}>
-        <TableCard borderRadius='20px' style={{ margin: '30px 0' }}>
+        <TableCard
+          borderRadius='20px'
+          style={{ marginTop: '50px', marginBottom: '30px' }}
+        >
           <Table>
             <thead id='card-header'>
               <tr>

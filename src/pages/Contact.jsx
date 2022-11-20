@@ -110,6 +110,9 @@ const ArchiveAnchor = styled.a`
   color: #e23428;
   text-decoration: none;
   font-weight: 700;
+  &:hover {
+    text-decoration: underline;
+  }
 `;
 
 const optionsSelect = [
@@ -284,7 +287,7 @@ const Contact = () => {
         </div>
       </SliderSection>
       <MenuContainer
-        style={{ margin: '30px', marginTop: '40px', marginBottom: '20px' }}
+        style={{ margin: '30px', marginTop: '40px', marginBottom: '50px' }}
       >
         <div id='links-container'>
           <a href='#' className='link-active'>
