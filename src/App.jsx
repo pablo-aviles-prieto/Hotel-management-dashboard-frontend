@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
 import Bookings from './pages/Bookings';
@@ -14,20 +14,11 @@ import Contact from './pages/Contact';
 import { NotFound, ProtectRoute, Layout } from './components';
 import { ThemeProvider } from 'styled-components';
 import { LIGHT_THEME, DARK_THEME } from './themes';
+import { AuthContext } from './store/auth-context';
 
 const App = () => {
-  const [auth, setAuth] = useState(!!localStorage.getItem('AUTH'));
   const [lightTheme, setLightTheme] = useState(true);
-
-  useEffect(() => {
-    auth
-      ? localStorage.setItem('AUTH', 'yes')
-      : localStorage.removeItem('AUTH');
-  }, [auth]);
-
-  const authHandler = (boolean) => {
-    setAuth(boolean);
-  };
+  const { authStatus, loginHandler } = useContext(AuthContext);
 
   const switchThemeHandler = () => {
     setLightTheme((prevState) => !prevState);
@@ -35,26 +26,20 @@ const App = () => {
 
   return (
     <ThemeProvider theme={lightTheme ? LIGHT_THEME : DARK_THEME}>
-      <Layout
-        authProp={[auth, authHandler]}
-        themeProp={[lightTheme, switchThemeHandler]}
-      >
+      <Layout themeProp={[lightTheme, switchThemeHandler]}>
         <Routes>
           <Route
             path='/'
             element={
-              auth ? (
+              authStatus.authed? (
                 <Homepage onThemeChange={switchThemeHandler} />
               ) : (
                 <Navigate to='/login' replace />
               )
             }
           />
-          <Route
-            path='/login'
-            element={<Login onSubmit={authHandler} auth={auth} />}
-          />
-          <Route path='*' element={<ProtectRoute auth={auth} />}>
+          <Route path='/login' element={<Login />} />
+          <Route path='*' element={<ProtectRoute />}>
             <Route path='bookings' element={<Bookings />} />
             <Route path='bookings/:id' element={<BookingDetails />} />
             <Route path='rooms' element={<RoomsList />} />

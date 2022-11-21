@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InputText, ButtonGreen } from '../components/Styles';
+import { AuthContext } from '../store/auth-context';
 import styled from 'styled-components';
 
 const StyledForm = styled.form`
@@ -16,17 +17,21 @@ const StyledLabel = styled.label`
   color: ${({ theme }) => theme.darkGreyToLightGrey};
 `;
 
-const Login = ({ onSubmit, auth }) => {
+const Login = () => {
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const { authStatus, loginHandler, logoutHandler } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (usernameInput.trim() !== 'test' || passwordInput.trim() !== 'test123')
+    if (
+      usernameInput.trim() !== 'test@test.com' ||
+      passwordInput.trim() !== 'test123'
+    )
       return alert('Invalid username and password');
 
-    onSubmit(true);
+    loginHandler({ email: usernameInput, name: 'test name' });
     setUsernameInput('');
     setPasswordInput('');
     navigate('/', { replace: true });
@@ -34,7 +39,7 @@ const Login = ({ onSubmit, auth }) => {
 
   return (
     <div style={{ height: '82.9vh' }}>
-      {!auth ? (
+      {!authStatus.authed ? (
         <>
           <h1 id='login-title'>Login page</h1>
           <StyledForm onSubmit={submitHandler}>
@@ -44,7 +49,7 @@ const Login = ({ onSubmit, auth }) => {
                 borderRadius='4px'
                 padding='5px'
                 name='username'
-                placeholder='test'
+                placeholder='test@test.com'
                 value={usernameInput}
                 id='username'
                 type='text'
@@ -77,7 +82,7 @@ const Login = ({ onSubmit, auth }) => {
         <>
           <h1>Welcome again!</h1>
           <div style={{ marginTop: '20px' }}>
-            <ButtonGreen padding='10px 40px' onClick={() => onSubmit(false)}>
+            <ButtonGreen padding='10px 40px' onClick={() => logoutHandler()}>
               Log out
             </ButtonGreen>
           </div>

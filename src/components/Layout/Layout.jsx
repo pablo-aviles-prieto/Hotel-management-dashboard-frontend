@@ -1,6 +1,7 @@
 import { useNavigate, NavLink } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { MainCard, ImgHolder, ButtonSidebar } from '../Styles';
+import { AuthContext } from '../../store/auth-context';
 import styled from 'styled-components';
 import {
   LeftArrow,
@@ -178,16 +179,16 @@ const activeNavSubPage = {
 const DUMMY_DATA1 = 0;
 const DUMMY_DATA2 = 87;
 
-export const Layout = ({ children, authProp, themeProp }) => {
+export const Layout = ({ children, themeProp }) => {
   const [roomDropdown, setRoomDropdown] = useState(false);
   const [sideBarState, setSideBarState] = useState(false);
+  const { authStatus, logoutHandler: logoutCtx } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [auth, authHandler] = authProp;
   const [lightTheme, switchThemeHandler] = themeProp;
 
   const logoutHandler = () => {
-    authHandler(false);
+    logoutCtx();
     navigate('/login', { replace: true });
   };
 
@@ -218,7 +219,7 @@ export const Layout = ({ children, authProp, themeProp }) => {
           </div>
         </div>
         <nav>
-          {auth ? (
+          {authStatus.authed ? (
             <>
               <div className='navbar-items'>
                 <NavLink
@@ -307,7 +308,7 @@ export const Layout = ({ children, authProp, themeProp }) => {
             </div>
           )}
         </nav>
-        {auth && (
+        {authStatus.authed && (
           <MainCard
             style={{
               backgroundColor: lightTheme ? '#FFFFFF' : '#292828',
@@ -392,7 +393,7 @@ export const Layout = ({ children, authProp, themeProp }) => {
             </div>
           </div>
           <div className='badge-container'>
-            {auth ? (
+            {authStatus.authed ? (
               <Logout
                 height='25px'
                 onClick={logoutHandler}
