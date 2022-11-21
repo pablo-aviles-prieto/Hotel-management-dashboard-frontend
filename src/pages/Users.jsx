@@ -1,5 +1,4 @@
 import {
-  AlternativeCard,
   ImgHolder,
   InputSelect,
   InputText,
@@ -9,7 +8,6 @@ import {
   FlexContainer,
   PaginationButtons,
 } from '../components/Styles';
-import { Navigation } from 'swiper';
 import { useState, useEffect, useMemo } from 'react';
 import { Phone } from '../assets/icons';
 import {
@@ -19,8 +17,6 @@ import {
   reorderByOldestDate,
 } from '../utils';
 import styled from 'styled-components';
-import RightArrowIcon from '../assets/icons/RightArrowLong.svg';
-import LeftArrowIcon from '../assets/icons/LeftArrowLong.svg';
 import usersData from '../assets/data/users.json';
 
 const PAGINATION_OFFSET = 10;
