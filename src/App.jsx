@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { useState, useEffect, useContext } from 'react';
+import { useState, useContext } from 'react';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
 import Bookings from './pages/Bookings';
@@ -18,7 +18,7 @@ import { AuthContext } from './store/auth-context';
 
 const App = () => {
   const [lightTheme, setLightTheme] = useState(true);
-  const { authStatus, loginHandler } = useContext(AuthContext);
+  const { authStatus } = useContext(AuthContext);
 
   const switchThemeHandler = () => {
     setLightTheme((prevState) => !prevState);
@@ -31,7 +31,7 @@ const App = () => {
           <Route
             path='/'
             element={
-              authStatus.authed? (
+              authStatus.authed ? (
                 <Homepage onThemeChange={switchThemeHandler} />
               ) : (
                 <Navigate to='/login' replace />
