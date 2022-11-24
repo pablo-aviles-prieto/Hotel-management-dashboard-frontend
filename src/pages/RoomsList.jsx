@@ -15,6 +15,7 @@ import { DotMenu } from '../assets/icons';
 import { CardDnd } from '../components';
 import { useSelector, useDispatch } from 'react-redux';
 import { DndProvider } from 'react-dnd';
+import { useNavigate } from 'react-router-dom';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
   paginationDataHandler,
@@ -75,9 +76,10 @@ const RoomsList = () => {
   const [roomsListSliced, setRoomsListSliced] = useState([]);
   const roomsListRedux = useSelector((state) => state.rooms.roomList);
   const statusAPI = useSelector((state) => state.rooms.status);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  console.log('statusAPI', statusAPI);
+  console.log('roomsListRedux', roomsListRedux);
 
   useEffect(() => {
     dispatch(fetchRooms(roomData));
@@ -183,7 +185,7 @@ const RoomsList = () => {
           style={{ cursor: 'pointer' }}
           width='25px'
           height='35px'
-          onClick={() => console.log('check menu dots')}
+          onClick={() => navigate(`/rooms/${room.id}`)}
         />
       </td>
     </tr>
@@ -200,7 +202,12 @@ const RoomsList = () => {
           <a href='#'>Inactive Employee</a>
         </div>
         <div id='buttons-container'>
-          <ButtonGreen padding='13px 35px'>+ New Room</ButtonGreen>
+          <ButtonGreen
+            onClick={() => navigate(`/rooms/new`)}
+            padding='13px 35px'
+          >
+            + New Room
+          </ButtonGreen>
           <InputSelect
             padding='13px 25px'
             positionArrowY='5px'
@@ -216,7 +223,7 @@ const RoomsList = () => {
       </MenuContainer>
       {statusAPI === 'loading' ? (
         <h1
-          style={{ textAlign: 'center', marginTop: '200px', fontSize: '40px' }}
+          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
           Loading
         </h1>
