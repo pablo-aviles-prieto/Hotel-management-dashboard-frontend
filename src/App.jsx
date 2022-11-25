@@ -11,6 +11,8 @@ import RoomEdit from './pages/RoomEdit';
 import Users from './pages/Users';
 import CreateUser from './pages/CreateUser';
 import Contact from './pages/Contact';
+import BookingEdit from './pages/BookingEdit';
+import NewBooking from './pages/NewBooking';
 import { NotFound, ProtectRoute, Layout } from './components';
 import { ThemeProvider } from 'styled-components';
 import { LIGHT_THEME, DARK_THEME } from './themes';
@@ -41,7 +43,9 @@ const App = () => {
           <Route path='/login' element={<Login />} />
           <Route path='*' element={<ProtectRoute />}>
             <Route path='bookings' element={<Bookings />} />
+            <Route path='bookings/new' element={<NewBooking />} />
             <Route path='bookings/:id' element={<BookingDetails />} />
+            <Route path='bookings/:id/edit' element={<BookingEdit />} />
             <Route path='rooms' element={<RoomsList />} />
             <Route path='rooms/new' element={<NewRoom />} />
             <Route path='rooms/:id' element={<RoomDetails />} />

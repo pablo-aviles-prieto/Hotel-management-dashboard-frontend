@@ -180,7 +180,12 @@ const RoomEdit = () => {
     setAmenitiesSelect(value);
   };
 
-  if (statusAPI === 'loading') return <h1>Editing room...</h1>;
+  if (statusAPI === 'loading')
+    return (
+      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
+        Editing room...
+      </h1>
+    );
 
   return (
     <MainCard borderRadius='16px'>

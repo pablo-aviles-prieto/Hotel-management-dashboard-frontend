@@ -110,7 +110,6 @@ const RoomsList = () => {
   }, [filteredRoomsList.length]);
 
   const inputSelectHandler = (e) => {
-    console.log('e.target.value', e.target.value);
     setOderBy(e.target.value);
     setPage(1);
   };
@@ -225,7 +224,7 @@ const RoomsList = () => {
         <h1
           style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
-          Loading
+          Loading rooms...
         </h1>
       ) : (
         <>

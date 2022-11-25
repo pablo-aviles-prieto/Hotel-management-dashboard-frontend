@@ -20,4 +20,6 @@ export const DARK_THEME = {
   greener: '#5AD07A26',
   reder: '#E2342826',
   yellower: '#64630140',
+  calendarColor: 'dark',
+  calendarPicker: 'invert(0.1)',
 };

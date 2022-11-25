@@ -19,12 +19,11 @@ const RoomDetails = () => {
   const params = useParams();
   const { id } = params;
 
-  console.log('statusAPI', statusAPI);
-  console.log('roomRedux', roomRedux);
+  // console.log('statusAPI', statusAPI);
+  // console.log('roomRedux', roomRedux);
 
   useEffect(() => {
     const filteredRoom = roomData.filter((room) => room.id === +id);
-    // console.log('filteredRoom', filteredRoom);
     dispatch(fetchSingleRoom(filteredRoom));
   }, [dispatch, id]);
 
@@ -39,15 +38,15 @@ const RoomDetails = () => {
   if (statusAPI === 'loading')
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Loading
+        Loading room...
       </h1>
     );
 
   if (roomRedux.length === 0)
     return (
       <h1>
-        We couldn't find the room selected. Please check the ID is correct and
-        try again
+        We couldn't find the room selected. Please check the ID and if it's
+        correct try again later!
       </h1>
     );
 

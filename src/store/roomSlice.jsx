@@ -89,7 +89,7 @@ export const roomSlice = createSlice({
       .addCase(deleteRoom.fulfilled, (state, action) => {
         const { rooms, id } = action.payload;
         const filteredArr = rooms.filter((obj) => obj.id !== id);
-        console.log('filteredArr', filteredArr);
+        console.log('filteredArr roomSlice', filteredArr);
         state.roomList = filteredArr;
         state.status = 'idle';
       })

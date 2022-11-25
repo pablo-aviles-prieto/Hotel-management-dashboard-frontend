@@ -113,7 +113,6 @@ const NewRoom = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  console.log('statusAPI', statusAPI);
   console.log('roomsListRedux', roomsListRedux);
 
   const submitHandler = (e) => {
@@ -163,7 +162,7 @@ const NewRoom = () => {
     setAmenitiesSelect(value);
   };
 
-  if (statusAPI === 'loading') return <h1>Saving data...</h1>;
+  if (statusAPI === 'loading') return <h1>Saving room data...</h1>;
 
   return (
     <MainCard borderRadius='16px'>
