@@ -1,6 +1,6 @@
 const onBtnClick = (setPage, i) => {
   setPage(i + 1);
-  document.getElementById('links-container')?.scrollIntoView();
+  document.getElementById('pages-container')?.scrollIntoView();
 };
 
 export const numberOfPages = (totalLength, offset) => {

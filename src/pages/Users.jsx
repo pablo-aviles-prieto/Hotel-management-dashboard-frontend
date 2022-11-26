@@ -10,11 +10,14 @@ import {
 } from '../components/Styles';
 import { useState, useEffect, useMemo } from 'react';
 import { Phone } from '../assets/icons';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchUsers } from '../store/userSlice';
+import { reorderHandler } from '../utils';
+import { useNavigate } from 'react-router-dom';
 import {
   paginationDataHandler,
   numberOfPages,
   paginationButtonsHandler,
-  reorderByOldestDate,
 } from '../utils';
 import styled from 'styled-components';
 import usersData from '../assets/data/users.json';
@@ -29,45 +32,78 @@ const StyledParagraph = styled.p`
 
 const optionsSelect = [
   {
-    label: 'Oldest',
-    value: 'oldest',
+    label: 'Newest',
+    value: 'startDate1',
   },
   {
-    label: 'Newest',
-    value: 'newest',
+    label: 'Oldest',
+    value: 'startDate0',
   },
   {
     label: 'From A-Z',
-    value: 'alphabet a-z',
+    value: 'name0',
   },
   {
     label: 'From Z-A',
-    value: 'alphabet z-a',
+    value: 'name1',
   },
 ];
 
 const Users = () => {
   const [searchInput, setSearchInput] = useState('');
   const [page, setPage] = useState(1);
-  const [usersList, setUsersList] = useState(usersData);
+  const [orderBy, setOderBy] = useState('startDate1');
+  const [internalPage, setInternalPage] = useState('id');
   const [usersListSliced, setUsersListSliced] = useState([]);
+  const [filteredUsersList, setFilteredUsersList] = useState([]);
+  const usersListRedux = useSelector((state) => state.users.usersList);
+  const statusAPI = useSelector((state) => state.users.status);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  // console.log('usersListRedux', usersListRedux);
+  // console.log('statusAPI', statusAPI);
 
   useEffect(() => {
-    const newArr = reorderByOldestDate(usersList);
+    dispatch(fetchUsers(usersData));
+  }, [dispatch]);
+
+  useEffect(() => {
+    const usersList = [...usersListRedux];
+    const orderValue = orderBy.replace(/\d+/g, '');
+    const orderDirection = orderBy.replace(/\D+/g, '');
+
+    const filteredUsers = usersList.filter((user) =>
+      user.name.toLowerCase().includes(searchInput.toLowerCase())
+    );
+
+    const filteredUsersPage =
+      internalPage === 'id'
+        ? filteredUsers
+        : filteredUsers.filter((user) => user.status === internalPage);
+
+    const filteredReorderedUsers = reorderHandler({
+      array: filteredUsersPage,
+      orderValue,
+      orderDirection,
+    });
+
     const arrayToRender = paginationDataHandler(
-      newArr,
+      filteredReorderedUsers,
       PAGINATION_OFFSET,
       page
     );
     setUsersListSliced(arrayToRender);
-  }, [usersList, page]);
+    setFilteredUsersList(filteredReorderedUsers);
+  }, [usersListRedux, orderBy, page, searchInput, internalPage]);
 
   const totalPages = useMemo(() => {
-    return numberOfPages(usersList.length, PAGINATION_OFFSET);
-  }, [usersList.length]);
+    return numberOfPages(filteredUsersList.length, PAGINATION_OFFSET);
+  }, [filteredUsersList.length]);
 
   const inputSelectHandler = (e) => {
-    console.log('option selected =>', e.target.value);
+    setOderBy(e.target.value);
+    setPage(1);
   };
 
   const dateHandler = (date) => {
@@ -77,12 +113,25 @@ const Users = () => {
   return (
     <>
       <MenuContainer style={{ marginBottom: '50px' }}>
-        <div id='links-container'>
-          <a href='#' className='link-active'>
+        <div id='pages-container'>
+          <p
+            className={internalPage === 'id' ? 'active-page' : ''}
+            onClick={() => setInternalPage('id')}
+          >
             All Employee
-          </a>
-          <a href='#'>Active Employee</a>
-          <a href='#'>Inactive Employee</a>
+          </p>
+          <p
+            className={internalPage === 'Active' ? 'active-page' : ''}
+            onClick={() => setInternalPage('Active')}
+          >
+            Active Employee
+          </p>
+          <p
+            className={internalPage === 'Inactive' ? 'active-page' : ''}
+            onClick={() => setInternalPage('Inactive')}
+          >
+            Inactive Employee
+          </p>
         </div>
         <div id='buttons-container'>
           <InputText
@@ -108,67 +157,84 @@ const Users = () => {
           </InputSelect>
         </div>
       </MenuContainer>
-      <MainCard borderRadius='20px' style={{ padding: '0' }}>
-        <Table>
-          <thead id='card-header'>
-            <tr>
-              <th style={{ width: '320px' }}>Name</th>
-              <th>Job Desk</th>
-              <th style={{ width: '200px' }}>Schedule</th>
-              <th style={{ width: '200px' }}>Contact</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody style={{ fontSize: '15px' }}>
-            {usersListSliced.map((user) => (
-              <tr key={user.id}>
-                <td>
-                  <FlexContainer>
-                    <ImgHolder width=' 80px' height='80px'>
-                      <img src={user.photo} alt={user.name} />
-                    </ImgHolder>
-                    <div>
-                      <p style={{ fontWeight: '700' }}>{user.name}</p>
-                      <StyledParagraph>#{user.id}</StyledParagraph>
-                      <StyledParagraph>
-                        Joined on {dateHandler(user.startDate)}
-                      </StyledParagraph>
-                    </div>
-                  </FlexContainer>
-                </td>
-                <td>{user.job.description}</td>
-                <td>
-                  <p style={{ fontWeight: '700' }}>{user.job.schedule}</p>
-                  <p style={{ color: '#135846' }}>Check schedule</p>
-                </td>
-                <td>
-                  <FlexContainer>
-                    <Phone width='20px' height='20px' />
-                    <p style={{ fontWeight: '700' }}>{user.contact}</p>
-                  </FlexContainer>
-                </td>
-                <td>
-                  <p style={{ fontWeight: '700' }}>
-                    {user.status ? (
-                      <span style={{ color: '#5AD07A' }}>Active</span>
-                    ) : (
-                      <span style={{ color: '#E23428' }}>Inactive</span>
-                    )}
-                  </p>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </MainCard>
-      <PaginationButtons style={{ margin: '50px 0' }}>
-        <p>
-          Showing {usersListSliced.length} of {usersList.length} Data
-        </p>
-        <div id='pagination-container'>
-          {paginationButtonsHandler(page, totalPages, setPage)}
-        </div>
-      </PaginationButtons>
+      {statusAPI === 'loading' ? (
+        <h1
+          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
+        >
+          Loading users...
+        </h1>
+      ) : (
+        <>
+          <MainCard borderRadius='20px' style={{ padding: '0' }}>
+            <Table>
+              <thead id='card-header'>
+                <tr>
+                  <th style={{ width: '320px' }}>Name</th>
+                  <th>Job Desk</th>
+                  <th style={{ width: '200px' }}>Schedule</th>
+                  <th style={{ width: '200px' }}>Contact</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody style={{ fontSize: '15px' }}>
+                {usersListSliced.map((user) => (
+                  <tr key={user.id}>
+                    <td>
+                      <FlexContainer>
+                        <ImgHolder width=' 80px' height='80px'>
+                          <img src={user.photo} alt={user.name} />
+                        </ImgHolder>
+                        <div>
+                          <p style={{ fontWeight: '700' }}>{user.name}</p>
+                          <StyledParagraph>#{user.id}</StyledParagraph>
+                          <StyledParagraph>
+                            Joined on {dateHandler(user.startDate)}
+                          </StyledParagraph>
+                        </div>
+                      </FlexContainer>
+                    </td>
+                    <td>{user.job.description}</td>
+                    <td>
+                      <p style={{ fontWeight: '700' }}>{user.job.schedule}</p>
+                      <p style={{ color: '#135846' }}>Check schedule</p>
+                    </td>
+                    <td>
+                      <FlexContainer>
+                        <Phone width='20px' height='20px' />
+                        <p style={{ fontWeight: '700' }}>{user.contact}</p>
+                      </FlexContainer>
+                    </td>
+                    <td>
+                      <p
+                        onClick={() => navigate(`/users/${user.id}`)}
+                        style={{ fontWeight: '700', cursor: 'pointer' }}
+                      >
+                        <span
+                          style={{
+                            color:
+                              user.status === 'Active' ? '#5AD07A' : '#E23428',
+                          }}
+                        >
+                          {user.status}
+                        </span>
+                      </p>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </MainCard>
+          <PaginationButtons style={{ margin: '50px 0' }}>
+            <p>
+              Showing {usersListSliced.length} of {filteredUsersList.length}{' '}
+              Data
+            </p>
+            <div id='pagination-container'>
+              {paginationButtonsHandler(page, totalPages, setPage)}
+            </div>
+          </PaginationButtons>
+        </>
+      )}
     </>
   );
 };

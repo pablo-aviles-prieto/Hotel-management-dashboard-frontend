@@ -4,15 +4,16 @@ import Homepage from './pages/Homepage';
 import Login from './pages/Login';
 import Bookings from './pages/Bookings';
 import BookingDetails from './pages/BookingDetails';
-import NewRoom from './pages/NewRoom';
+import BookingEdit from './pages/BookingEdit';
+import NewBooking from './pages/NewBooking';
 import RoomsList from './pages/RoomsList';
+import NewRoom from './pages/NewRoom';
 import RoomDetails from './pages/RoomDetails';
 import RoomEdit from './pages/RoomEdit';
 import Users from './pages/Users';
-import CreateUser from './pages/CreateUser';
+import NewUser from './pages/NewUser';
+import UserDetails from './pages/UserDetails';
 import Contact from './pages/Contact';
-import BookingEdit from './pages/BookingEdit';
-import NewBooking from './pages/NewBooking';
 import { NotFound, ProtectRoute, Layout } from './components';
 import { ThemeProvider } from 'styled-components';
 import { LIGHT_THEME, DARK_THEME } from './themes';
@@ -51,7 +52,8 @@ const App = () => {
             <Route path='rooms/:id' element={<RoomDetails />} />
             <Route path='rooms/:id/edit' element={<RoomEdit />} />
             <Route path='users' element={<Users />} />
-            <Route path='users/new' element={<CreateUser />} />
+            <Route path='users/new' element={<NewUser />} />
+            <Route path='users/:id' element={<UserDetails />} />
             <Route path='contact' element={<Contact />} />
             <Route path='*' element={<NotFound />} />
           </Route>

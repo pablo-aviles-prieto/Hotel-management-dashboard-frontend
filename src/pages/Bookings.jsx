@@ -19,6 +19,7 @@ import {
 import { fetchBookings } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { Modal } from '../components';
+import { reorderHandler } from '../utils';
 import bookingsData from '../assets/data/bookings.json';
 
 const PAGINATION_OFFSET = 10;
@@ -122,12 +123,9 @@ const Bookings = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // console.log('bookingsListRedux', bookingsListRedux);
-  // console.log('statusAPI', statusAPI);
-
   useEffect(() => {
     dispatch(fetchBookings(bookingsData));
-  }, [dispatch, fetchBookings, bookingsData]);
+  }, [dispatch]);
 
   useEffect(() => {
     const filteredBookings = [...bookingsListRedux];
@@ -137,55 +135,19 @@ const Bookings = () => {
     // const orderValue = JSON.parse(orderBy).replace(/\d+/g, '');
     // const orderDirection = JSON.parse(orderBy).replace(/\D+/g, '');
 
-    // filteredRooms.sort((a, b) => {
-    //   if (orderValue === 'user[name]') {
-    //     if (a.user['name'] > b.user['name'])
-    //       return orderDirection === '0' ? 1 : -1;
-    //     if (a.user['name'] < b.user['name'])
-    //       return orderDirection === '0' ? -1 : 1;
-    //     return 0;
-    //   } else if (
-    //     orderValue === 'checkIn[date]' ||
-    //     orderValue === 'checkOut[date]'
-    //   ) {
-    //     // Cant convert it to a date obj with the data used on the users.json, need to write it when the backend is operative and I get a valid date obj or string to convert as date obj
-    //     return;
-    //   } else {
-    //     if (a[orderValue] > b[orderValue])
-    //       return orderDirection === '0' ? 1 : -1;
-    //     if (a[orderValue] < b[orderValue])
-    //       return orderDirection === '0' ? -1 : 1;
-    //     return 0;
-    //   }
-    // });
-
-    const getObjValue = ({ obj, value }) => {
-      const search = Array.isArray(value) ? value : [value];
-      return search.reduce((acc, key) => {
-        // console.log('obj', obj);
-        // console.log('key', key);
-        // console.log('obj[key]', obj[key]);
-        // console.log('value', value);
-        return acc[key] !== 'undefined' ? acc[key] : undefined;
-      }, obj);
-    };
-
-    filteredBookings.sort((a, b) => {
-      const aObj = getObjValue({ obj: a, value: orderValue });
-      const bObj = getObjValue({ obj: b, value: orderValue });
-
-      if (aObj > bObj) return orderDirection === 0 ? 1 : -1;
-      if (aObj < bObj) return orderDirection === 0 ? -1 : 1;
-      return 0;
+    const filteredReorderedBookings = reorderHandler({
+      array: filteredBookings,
+      orderValue,
+      orderDirection,
     });
 
     const arrayToRender = paginationDataHandler(
-      filteredBookings,
+      filteredReorderedBookings,
       PAGINATION_OFFSET,
       page
     );
     setBookingsListSliced(arrayToRender);
-    setFilteredBookingsList(filteredBookings);
+    setFilteredBookingsList(filteredReorderedBookings);
   }, [bookingsListRedux, orderBy, page]);
 
   const totalPages = useMemo(() => {
@@ -218,14 +180,14 @@ const Bookings = () => {
         />
       )}
       <MenuContainer>
-        <div id='links-container'>
-          <a href='#' className='link-active'>
+        <div id='pages-container'>
+          <p className='active-page' style={{ cursor: 'auto' }}>
             All Guest
-          </a>
-          <a href='#'>Pending</a>
-          <a href='#'>Booked</a>
-          <a href='#'>Canceled</a>
-          <a href='#'>Refund</a>
+          </p>
+          <p style={{ cursor: 'auto' }}>Pending</p>
+          <p style={{ cursor: 'auto' }}>Booked</p>
+          <p style={{ cursor: 'auto' }}>Canceled</p>
+          <p style={{ cursor: 'auto' }}>Refund</p>
         </div>
         <div id='buttons-container'>
           <InputSelectInverted

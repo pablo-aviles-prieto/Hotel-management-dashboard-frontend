@@ -17,6 +17,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { DndProvider } from 'react-dnd';
 import { useNavigate } from 'react-router-dom';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { reorderHandler } from '../utils';
 import {
   paginationDataHandler,
   numberOfPages,
@@ -83,26 +84,26 @@ const RoomsList = () => {
 
   useEffect(() => {
     dispatch(fetchRooms(roomData));
-  }, [dispatch, fetchRooms, roomData]);
+  }, [dispatch]);
 
   useEffect(() => {
     const filteredRooms = [...roomsListRedux];
     const orderValue = orderBy.replace(/\d+/g, '');
     const orderDirection = orderBy.replace(/\D+/g, '');
 
-    filteredRooms.sort((a, b) => {
-      if (a[orderValue] > b[orderValue]) return orderDirection === '0' ? 1 : -1;
-      if (a[orderValue] < b[orderValue]) return orderDirection === '0' ? -1 : 1;
-      return 0;
+    const filteredReorderedRooms = reorderHandler({
+      array: filteredRooms,
+      orderValue,
+      orderDirection,
     });
 
     const arrayToRender = paginationDataHandler(
-      filteredRooms,
+      filteredReorderedRooms,
       PAGINATION_OFFSET,
       page
     );
     setRoomsListSliced(arrayToRender);
-    setFilteredRoomsList(filteredRooms);
+    setFilteredRoomsList(filteredReorderedRooms);
   }, [roomsListRedux, orderBy, page]);
 
   const totalPages = useMemo(() => {
@@ -193,12 +194,10 @@ const RoomsList = () => {
   return (
     <>
       <MenuContainer>
-        <div id='links-container'>
-          <a href='#' className='link-active'>
+        <div id='pages-container'>
+          <p className='active-page' style={{ cursor: 'auto' }}>
             All Rooms
-          </a>
-          <a href='#'>Active Employee</a>
-          <a href='#'>Inactive Employee</a>
+          </p>
         </div>
         <div id='buttons-container'>
           <ButtonGreen

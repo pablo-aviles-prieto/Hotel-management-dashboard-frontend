@@ -290,11 +290,11 @@ const Contact = () => {
       <MenuContainer
         style={{ margin: '30px', marginTop: '40px', marginBottom: '50px' }}
       >
-        <div id='links-container'>
-          <a href='#' className='link-active'>
+        <div id='pages-container'>
+          <p className='active-page' style={{ cursor: 'auto' }}>
             All Contacts
-          </a>
-          <a href='#'>Archived</a>
+          </p>
+          <p style={{ cursor: 'auto' }}>Archived</p>
         </div>
         <div id='buttons-container'>
           <InputSelect

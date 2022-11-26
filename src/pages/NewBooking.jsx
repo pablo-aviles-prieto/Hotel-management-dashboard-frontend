@@ -59,20 +59,20 @@ const bookingStatusOptions = [
   },
 ];
 
-const bookingUsersOptions = [
-  {
-    label: 'Select a user',
-  },
-  {
-    label: 'Manolito',
-  },
-  {
-    label: 'Pepito',
-  },
-  {
-    label: 'Chanquete',
-  },
-];
+// const bookingUsersOptions = [
+//   {
+//     label: 'Select a user',
+//   },
+//   {
+//     label: 'Manolito',
+//   },
+//   {
+//     label: 'Pepito',
+//   },
+//   {
+//     label: 'Chanquete',
+//   },
+// ];
 
 const NewBooking = () => {
   const [bookingNumberInput, setBookingNumberInput] = useState('');
@@ -82,7 +82,7 @@ const NewBooking = () => {
   const [bookingSpecialRequestInput, setBookingSpecialRequestInput] =
     useState('');
   const [bookingStatusSelect, setBookingStatusSelect] = useState('check in');
-  const [bookingUserSelect, setBookingUserSelect] = useState('Select a user');
+  const [bookingUserInput, setBookingUserInput] = useState('');
   const bookingRedux = useSelector((state) => state.bookings.bookingsList);
   const statusAPI = useSelector((state) => state.bookings.status);
   const navigate = useNavigate();
@@ -100,11 +100,11 @@ const NewBooking = () => {
       roomType: bookingRoomTypeInput,
       specialRequest: bookingSpecialRequestInput,
       status: bookingStatusSelect,
-      user: { name: bookingUserSelect },
+      user: { name: bookingUserInput },
     };
 
     if (
-      bookingUserSelect === 'Select a user' ||
+      !bookingUserInput.trim() ||
       !bookingNumberInput ||
       !bookingCheckInInput ||
       !bookingCheckOutInput ||
@@ -129,31 +129,19 @@ const NewBooking = () => {
       <h1>Create new booking</h1>
       <StyledForm onSubmit={submitHandler}>
         <div>
-          <StyledLabel htmlFor='booking-user'>User booking</StyledLabel>
-          <InputSelect
-            style={{
-              borderRadius: '4px',
-              paddingRight: '62px',
-              fontWeight: '400',
-              minWidth: '175px',
-            }}
+          <StyledLabel htmlFor='booking-user'>
+            User booking<span style={{ color: 'red' }}>*</span>
+          </StyledLabel>
+          <InputText
+            borderRadius='4px'
+            padding='5px'
+            name='booking-user'
+            placeholder='Full name...'
+            value={bookingUserInput}
             id='booking-user'
-            padding='8px 5px'
-            positionArrowY='0'
-            placeholder='Chose a user'
-            value={bookingUserSelect}
-            onChange={(e) => setBookingUserSelect(e.target.value)}
-          >
-            {bookingUsersOptions.map((option) => (
-              <option
-                key={option.label}
-                value={option.label}
-                disabled={option.label === 'Select a user' ? true : false}
-              >
-                {option.label}
-              </option>
-            ))}
-          </InputSelect>
+            type='text'
+            onChange={(e) => setBookingUserInput(e.target.value)}
+          />
         </div>
         <div>
           <StyledLabel htmlFor='booking-number'>
