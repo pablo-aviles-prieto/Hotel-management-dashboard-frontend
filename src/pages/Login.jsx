@@ -38,7 +38,7 @@ const Login = () => {
   };
 
   return (
-    <div style={{ height: '82.9vh' }}>
+    <div>
       {!authStatus.authed ? (
         <>
           <h1 id='login-title'>Login page</h1>

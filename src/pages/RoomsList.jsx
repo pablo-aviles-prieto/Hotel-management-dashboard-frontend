@@ -10,10 +10,14 @@ import {
   PaginationButtons,
   MenuContainer,
 } from '../components/Styles';
+import { fetchRooms } from '../store/roomSlice';
 import { DotMenu } from '../assets/icons';
 import { CardDnd } from '../components';
+import { useSelector, useDispatch } from 'react-redux';
 import { DndProvider } from 'react-dnd';
+import { useNavigate } from 'react-router-dom';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { reorderHandler } from '../utils';
 import {
   paginationDataHandler,
   numberOfPages,
@@ -42,111 +46,73 @@ const ButtonListRooms = styled(ButtonGreen)`
 const optionsSelect = [
   {
     label: 'Newest',
-    value: 'newest',
+    value: 'id1',
   },
   {
     label: 'Oldest',
-    value: 'oldest',
+    value: 'id0',
   },
   {
     label: 'Higher Price',
-    value: 'higher',
+    value: 'ratePerNight1',
   },
   {
     label: 'Lower Price',
-    value: 'lower',
+    value: 'ratePerNight0',
   },
   {
     label: 'Available',
-    value: 'available',
+    value: 'status0',
   },
   {
     label: 'Booked',
-    value: 'booked',
+    value: 'status1',
   },
 ];
 
 const RoomsList = () => {
   const [page, setPage] = useState(1);
-  const [roomsList, setRoomsList] = useState(roomData);
+  const [orderBy, setOderBy] = useState('id1');
+  const [filteredRoomsList, setFilteredRoomsList] = useState([]);
   const [roomsListSliced, setRoomsListSliced] = useState([]);
+  const roomsListRedux = useSelector((state) => state.rooms.roomList);
+  const statusAPI = useSelector((state) => state.rooms.status);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  console.log('roomsListRedux', roomsListRedux);
 
   useEffect(() => {
+    dispatch(fetchRooms(roomData));
+  }, [dispatch]);
+
+  useEffect(() => {
+    const filteredRooms = [...roomsListRedux];
+    const orderValue = orderBy.replace(/\d+/g, '');
+    const orderDirection = orderBy.replace(/\D+/g, '');
+
+    const filteredReorderedRooms = reorderHandler({
+      array: filteredRooms,
+      orderValue,
+      orderDirection,
+    });
+
     const arrayToRender = paginationDataHandler(
-      roomsList,
+      filteredReorderedRooms,
       PAGINATION_OFFSET,
       page
     );
     setRoomsListSliced(arrayToRender);
-  }, [roomsList, page]);
+    setFilteredRoomsList(filteredReorderedRooms);
+  }, [roomsListRedux, orderBy, page]);
 
   const totalPages = useMemo(() => {
-    return numberOfPages(roomsList.length, PAGINATION_OFFSET);
-  }, [roomsList.length]);
+    return numberOfPages(filteredRoomsList.length, PAGINATION_OFFSET);
+  }, [filteredRoomsList.length]);
 
   const inputSelectHandler = (e) => {
-    switch (e.target.value) {
-      case 'newest':
-        setRoomsList((prevState) => {
-          const newArr = [...prevState];
-          return newArr.sort((a, b) => +b.roomNumber - +a.roomNumber);
-        });
-        setPage(1);
-        return;
-
-      case 'oldest': {
-        setRoomsList((prevState) => {
-          const newArr = [...prevState];
-          return newArr.sort((a, b) => +a.roomNumber - +b.roomNumber);
-        });
-        setPage(1);
-        return;
-      }
-      case 'higher': {
-        setRoomsList((prevState) => {
-          const newArr = [...prevState];
-          return newArr.sort((a, b) => +b.ratePerNight - +a.ratePerNight);
-        });
-        setPage(1);
-        return;
-      }
-      case 'lower': {
-        setRoomsList((prevState) => {
-          const newArr = [...prevState];
-          return newArr.sort((a, b) => +a.ratePerNight - +b.ratePerNight);
-        });
-        setPage(1);
-        return;
-      }
-      case 'available': {
-        setRoomsList((prevState) => {
-          const availableArr = prevState.filter(
-            (room) => room.status === 'Available'
-          );
-          const bookedArr = prevState.filter(
-            (room) => room.status === 'Booked'
-          );
-          return [...availableArr, ...bookedArr];
-        });
-        setPage(1);
-        return;
-      }
-      case 'booked': {
-        setRoomsList((prevState) => {
-          const availableArr = prevState.filter(
-            (room) => room.status === 'Available'
-          );
-          const bookedArr = prevState.filter(
-            (room) => room.status === 'Booked'
-          );
-          return [...bookedArr, ...availableArr];
-        });
-        setPage(1);
-        return;
-      }
-      default:
-        return;
-    }
+    setOderBy(e.target.value);
+    setPage(1);
   };
 
   const moveCard = useCallback((dragIndex, hoverIndex) => {
@@ -219,7 +185,7 @@ const RoomsList = () => {
           style={{ cursor: 'pointer' }}
           width='25px'
           height='35px'
-          onClick={() => console.log('check menu dots')}
+          onClick={() => navigate(`/rooms/${room.id}`)}
         />
       </td>
     </tr>
@@ -228,67 +194,81 @@ const RoomsList = () => {
   return (
     <>
       <MenuContainer>
-        <div id='links-container'>
-          <a href='#' className='link-active'>
+        <div id='pages-container'>
+          <p className='active-page' style={{ cursor: 'auto' }}>
             All Rooms
-          </a>
-          <a href='#'>Active Employee</a>
-          <a href='#'>Inactive Employee</a>
+          </p>
         </div>
         <div id='buttons-container'>
-          <ButtonGreen padding='13px 35px'>+ New Room</ButtonGreen>
+          <ButtonGreen
+            onClick={() => navigate(`/rooms/new`)}
+            padding='13px 35px'
+          >
+            + New Room
+          </ButtonGreen>
           <InputSelect
             padding='13px 25px'
             positionArrowY='5px'
             onChange={inputSelectHandler}
           >
             {optionsSelect.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option key={option.label} value={option.value}>
                 {option.label}
               </option>
             ))}
           </InputSelect>
         </div>
       </MenuContainer>
-      <DndProvider backend={HTML5Backend}>
-        <TableCard
-          borderRadius='20px'
-          style={{ marginTop: '50px', marginBottom: '30px' }}
+      {statusAPI === 'loading' ? (
+        <h1
+          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
-          <Table>
-            <thead id='card-header'>
-              <tr>
-                <th>Room name</th>
-                <th>Bed Type</th>
-                <th>Room Floor</th>
-                <th style={{ width: '300px' }}>Facilities</th>
-                <th>Rate</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody style={{ fontSize: '15px' }}>
-              {roomsListSliced.map((room, i) => (
-                <CardDnd
-                  key={room.id}
-                  id={room.id}
-                  index={i}
-                  data={room}
-                  renderData={renderRoomRow}
-                  moveCard={moveCard}
-                />
-              ))}
-            </tbody>
-          </Table>
-        </TableCard>
-      </DndProvider>
-      <PaginationButtons>
-        <p>
-          Showing {roomsListSliced.length} of {roomsList.length} Data
-        </p>
-        <div id='pagination-container'>
-          {paginationButtonsHandler(page, totalPages, setPage)}
-        </div>
-      </PaginationButtons>
+          Loading rooms...
+        </h1>
+      ) : (
+        <>
+          <DndProvider backend={HTML5Backend}>
+            <TableCard
+              borderRadius='20px'
+              style={{ marginTop: '50px', marginBottom: '30px' }}
+            >
+              <Table>
+                <thead id='card-header'>
+                  <tr>
+                    <th>Room name</th>
+                    <th>Bed Type</th>
+                    <th>Room Floor</th>
+                    <th style={{ width: '300px' }}>Facilities</th>
+                    <th>Rate</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody style={{ fontSize: '15px' }}>
+                  {roomsListSliced.map((room, i) => (
+                    <CardDnd
+                      key={room.id}
+                      id={room.id}
+                      index={i}
+                      data={room}
+                      renderData={renderRoomRow}
+                      moveCard={moveCard}
+                    />
+                  ))}
+                </tbody>
+              </Table>
+            </TableCard>
+          </DndProvider>
+          <PaginationButtons>
+            <p>
+              Showing {roomsListSliced.length} of {filteredRoomsList.length}{' '}
+              Data
+            </p>
+            <div id='pagination-container'>
+              {paginationButtonsHandler(page, totalPages, setPage)}
+            </div>
+          </PaginationButtons>
+        </>
+      )}
     </>
   );
 };

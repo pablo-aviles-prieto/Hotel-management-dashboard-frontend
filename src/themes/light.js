@@ -20,4 +20,6 @@ export const LIGHT_THEME = {
   greener: '#E8FFEE',
   reder: '#FFEDEC',
   yellower: '#f8f7ac',
+  calendarColor: 'inherit',
+  calendarPicker: 'invert(0.3)',
 };

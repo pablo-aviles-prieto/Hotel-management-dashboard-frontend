@@ -275,13 +275,13 @@ export const Layout = ({ children, themeProp }) => {
               </div>
               <div className='navbar-items'>
                 <NavLink
-                  to='/contact'
+                  to='/contacts'
                   style={({ isActive }) =>
                     isActive ? activeNavPage : undefined
                   }
                 >
                   <Mail width='25px' />
-                  Contact
+                  Contacts
                 </NavLink>
               </div>
               <div className='navbar-items'>

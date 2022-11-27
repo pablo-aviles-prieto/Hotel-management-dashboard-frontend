@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import {
   MenuContainer,
   MainCard,
@@ -14,8 +16,10 @@ import {
   numberOfPages,
   paginationButtonsHandler,
 } from '../utils';
+import { fetchBookings } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { Modal } from '../components';
+import { reorderHandler } from '../utils';
 import bookingsData from '../assets/data/bookings.json';
 
 const PAGINATION_OFFSET = 10;
@@ -66,20 +70,31 @@ const ButtonStatusYellow = styled(ButtonForRequest)`
 const optionsSelect1 = [
   {
     label: 'Newest',
-    value: 'newest',
+    value: { value: 'bookingNumber', sort: 1 },
+    // value: 'bookingNumber1',
   },
   {
-    label: 'Guest',
-    value: 'guest',
+    label: 'Oldest',
+    value: { value: 'bookingNumber', sort: 0 },
+    // value: 'bookingNumber0',
   },
   {
-    label: 'Check in',
-    value: 'check in',
+    label: 'Guest A-Z',
+    value: { value: ['user', 'name'], sort: 0 },
   },
   {
-    label: 'Check out',
-    value: 'check out',
+    label: 'Guest Z-A',
+    value: { value: ['user', 'name'], sort: 1 },
+    // value: 'user[name]1',
   },
+  // {
+  //   label: 'Check in',
+  //   value: { value: ['checkIn', 'date'], sort: 0 },
+  // },
+  // {
+  //   label: 'Check out',
+  //   value: { value: ['checkIn', 'date'], sort: 1 },
+  // },
 ];
 
 const optionsSelect2 = [
@@ -96,31 +111,63 @@ const optionsSelect2 = [
 const Bookings = () => {
   const [modalState, setModalState] = useState('');
   const [page, setPage] = useState(1);
+  const [filteredBookingsList, setFilteredBookingsList] = useState([]);
+  const [orderBy, setOderBy] = useState(
+    JSON.stringify({ value: 'bookingNumber', sort: 1 })
+  );
+  // const [orderBy, setOderBy] = useState('bookingNumber1');
   const [bookingsList, setBookingsList] = useState(bookingsData);
-  const [bookingsListSliced, setbookingsListSliced] = useState([]);
+  const [bookingsListSliced, setBookingsListSliced] = useState([]);
+  const bookingsListRedux = useSelector((state) => state.bookings.bookingsList);
+  const statusAPI = useSelector((state) => state.bookings.status);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    dispatch(fetchBookings(bookingsData));
+  }, [dispatch]);
+
+  useEffect(() => {
+    const filteredBookings = [...bookingsListRedux];
+    const parsedObj = JSON.parse(orderBy);
+    const orderValue = parsedObj.value;
+    const orderDirection = parsedObj.sort;
+    // const orderValue = JSON.parse(orderBy).replace(/\d+/g, '');
+    // const orderDirection = JSON.parse(orderBy).replace(/\D+/g, '');
+
+    const filteredReorderedBookings = reorderHandler({
+      array: filteredBookings,
+      orderValue,
+      orderDirection,
+    });
+
     const arrayToRender = paginationDataHandler(
-      bookingsList,
+      filteredReorderedBookings,
       PAGINATION_OFFSET,
       page
     );
-    setbookingsListSliced(arrayToRender);
-  }, [bookingsList, page]);
+    setBookingsListSliced(arrayToRender);
+    setFilteredBookingsList(filteredReorderedBookings);
+  }, [bookingsListRedux, orderBy, page]);
 
   const totalPages = useMemo(() => {
-    return numberOfPages(bookingsList.length, PAGINATION_OFFSET);
-  }, [bookingsList.length]);
+    return numberOfPages(filteredBookingsList.length, PAGINATION_OFFSET);
+  }, [filteredBookingsList.length]);
 
   const closeModalHandler = () => {
     setModalState('');
   };
 
   const inputSelectHandler = (e) => {
-    console.log('option selected =>', e.target.value);
+    setOderBy(e.target.value);
+    setPage(1);
   };
   const inputDateSelectHandler = (e) => {
     console.log('option selected =>', e.target.value);
+  };
+
+  const singleBookingHandler = (id) => {
+    navigate(`/bookings/${id}`);
   };
 
   return (
@@ -133,14 +180,14 @@ const Bookings = () => {
         />
       )}
       <MenuContainer>
-        <div id='links-container'>
-          <a href='#' className='link-active'>
+        <div id='pages-container'>
+          <p className='active-page' style={{ cursor: 'auto' }}>
             All Guest
-          </a>
-          <a href='#'>Pending</a>
-          <a href='#'>Booked</a>
-          <a href='#'>Canceled</a>
-          <a href='#'>Refund</a>
+          </p>
+          <p style={{ cursor: 'auto' }}>Pending</p>
+          <p style={{ cursor: 'auto' }}>Booked</p>
+          <p style={{ cursor: 'auto' }}>Canceled</p>
+          <p style={{ cursor: 'auto' }}>Refund</p>
         </div>
         <div id='buttons-container'>
           <InputSelectInverted
@@ -160,102 +207,125 @@ const Bookings = () => {
             onChange={inputSelectHandler}
           >
             {optionsSelect1.map((option) => (
-              <option key={option.value} value={option.value}>
+              <option key={option.label} value={JSON.stringify(option.value)}>
                 {option.label}
               </option>
             ))}
           </InputSelect>
         </div>
       </MenuContainer>
-      <TableCard borderRadius='20px'>
-        <Table>
-          <thead id='card-header'>
-            <tr>
-              <th>Guest</th>
-              <th>Order Date</th>
-              <th>Check In</th>
-              <th>Check Out</th>
-              <th>Special Request</th>
-              <th>Room Type</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody style={{ fontSize: '15px' }}>
-            {bookingsListSliced.map((bookings) => (
-              <tr key={bookings.id}>
-                <td>
-                  <FlexContainer>
-                    <ImgHolder width='40px' height='40px'>
-                      <img
-                        src={bookings.user.picture}
-                        alt={`Avatar from ${bookings.user.name}`}
-                      />
-                    </ImgHolder>
-                    <div>
-                      <p>{bookings.user.name}</p>
-                      <p style={{ color: '#799283' }}>
-                        #{bookings.bookingNumber}
-                      </p>
-                    </div>
-                  </FlexContainer>
-                </td>
-                <td>{bookings.orderDate}</td>
-                <td>
-                  <p>{bookings.checkIn.date}</p>
-                  <p>{bookings.checkIn.hour}</p>
-                </td>
-                <td>
-                  <p>{bookings.checkOut.date}</p>
-                  <p>{bookings.checkOut.hour}</p>
-                </td>
-                <td>
-                  {bookings.specialRequest ? (
-                    <ButtonForRequest
-                      onClick={() =>
-                        setModalState({
-                          title: `Request from ${bookings.user.name}`,
-                          message: bookings.specialRequest,
-                        })
-                      }
-                      padding='10px 25px'
-                    >
-                      View Notes
-                    </ButtonForRequest>
-                  ) : (
-                    <ButtonForNoRequest padding='10px 25px'>
-                      View Notes
-                    </ButtonForNoRequest>
-                  )}
-                </td>
-                <td>{bookings.roomType}</td>
-                <td>
-                  {bookings.status === 'check in' ? (
-                    <ButtonStatusGreen padding='10px 30px'>
-                      Booked
-                    </ButtonStatusGreen>
-                  ) : bookings.status === 'check out' ? (
-                    <ButtonStatusRed padding='10px 31px'>
-                      Refund
-                    </ButtonStatusRed>
-                  ) : (
-                    <ButtonStatusYellow padding='10px 17px'>
-                      In progress
-                    </ButtonStatusYellow>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </TableCard>
-      <PaginationButtons>
-        <p>
-          Showing {bookingsListSliced.length} of {bookingsList.length} Data
-        </p>
-        <div id='pagination-container'>
-          {paginationButtonsHandler(page, totalPages, setPage)}
-        </div>
-      </PaginationButtons>
+      {statusAPI === 'loading' ? (
+        <h1
+          style={{
+            textAlign: 'center',
+            padding: '100px 0',
+            fontSize: '30px',
+          }}
+        >
+          Loading bookings...
+        </h1>
+      ) : (
+        <>
+          <TableCard borderRadius='20px'>
+            <Table>
+              <thead id='card-header'>
+                <tr>
+                  <th>Guest</th>
+                  <th>Order Date</th>
+                  <th>Check In</th>
+                  <th>Check Out</th>
+                  <th>Special Request</th>
+                  <th>Room Type</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody style={{ fontSize: '15px' }}>
+                {bookingsListSliced.map((bookings) => (
+                  <tr key={bookings.id}>
+                    <td>
+                      <FlexContainer>
+                        <ImgHolder width='40px' height='40px'>
+                          <img
+                            src={bookings.user.picture}
+                            alt={`Avatar from ${bookings.user.name}`}
+                          />
+                        </ImgHolder>
+                        <div>
+                          <p>{bookings.user.name}</p>
+                          <p style={{ color: '#799283' }}>
+                            #{bookings.bookingNumber}
+                          </p>
+                        </div>
+                      </FlexContainer>
+                    </td>
+                    <td>{bookings.orderDate}</td>
+                    <td>
+                      <p>{bookings.checkIn.date}</p>
+                      <p>{bookings.checkIn.hour}</p>
+                    </td>
+                    <td>
+                      <p>{bookings.checkOut.date}</p>
+                      <p>{bookings.checkOut.hour}</p>
+                    </td>
+                    <td>
+                      {bookings.specialRequest ? (
+                        <ButtonForRequest
+                          onClick={() =>
+                            setModalState({
+                              title: `Request from ${bookings.user.name}`,
+                              message: bookings.specialRequest,
+                            })
+                          }
+                          padding='10px 25px'
+                        >
+                          View Notes
+                        </ButtonForRequest>
+                      ) : (
+                        <ButtonForNoRequest padding='10px 25px'>
+                          View Notes
+                        </ButtonForNoRequest>
+                      )}
+                    </td>
+                    <td>{bookings.roomType}</td>
+                    <td>
+                      {bookings.status === 'check in' ? (
+                        <ButtonStatusGreen
+                          onClick={() => singleBookingHandler(bookings.id)}
+                          padding='10px 30px'
+                        >
+                          Booked
+                        </ButtonStatusGreen>
+                      ) : bookings.status === 'check out' ? (
+                        <ButtonStatusRed
+                          onClick={() => singleBookingHandler(bookings.id)}
+                          padding='10px 31px'
+                        >
+                          Refund
+                        </ButtonStatusRed>
+                      ) : (
+                        <ButtonStatusYellow
+                          onClick={() => singleBookingHandler(bookings.id)}
+                          padding='10px 17px'
+                        >
+                          In progress
+                        </ButtonStatusYellow>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </TableCard>
+          <PaginationButtons>
+            <p>
+              Showing {bookingsListSliced.length} of {bookingsList.length} Data
+            </p>
+            <div id='pagination-container'>
+              {paginationButtonsHandler(page, totalPages, setPage)}
+            </div>
+          </PaginationButtons>
+        </>
+      )}
     </>
   );
 };
