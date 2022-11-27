@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/Hotel-management-dashboard/static/css/main.492d954c.css",
-    "main.js": "/Hotel-management-dashboard/static/js/main.8150de55.js",
-    "index.html": "/Hotel-management-dashboard/index.html",
-    "static/media/LeftArrowLong.svg": "/Hotel-management-dashboard/static/media/LeftArrowLong.5bf98b123651208e2b15e18187da6fbd.svg",
-    "static/media/RightArrowLong.svg": "/Hotel-management-dashboard/static/media/RightArrowLong.56e05ccfe2098ea3164ed766f8185da6.svg",
-    "main.492d954c.css.map": "/Hotel-management-dashboard/static/css/main.492d954c.css.map",
-    "main.8150de55.js.map": "/Hotel-management-dashboard/static/js/main.8150de55.js.map"
+    "main.css": "/static/css/main.492d954c.css",
+    "main.js": "/static/js/main.a841da7b.js",
+    "index.html": "/index.html",
+    "static/media/LeftArrowLong.svg": "/static/media/LeftArrowLong.5bf98b123651208e2b15e18187da6fbd.svg",
+    "static/media/RightArrowLong.svg": "/static/media/RightArrowLong.56e05ccfe2098ea3164ed766f8185da6.svg",
+    "main.492d954c.css.map": "/static/css/main.492d954c.css.map",
+    "main.a841da7b.js.map": "/static/js/main.a841da7b.js.map"
   },
   "entrypoints": [
     "static/css/main.492d954c.css",
-    "static/js/main.8150de55.js"
+    "static/js/main.a841da7b.js"
   ]
 }
