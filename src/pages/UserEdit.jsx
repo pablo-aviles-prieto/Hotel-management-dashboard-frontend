@@ -1,13 +1,14 @@
+import { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
+  MainCard,
+  InputSelect,
   InputText,
   ButtonGreen,
-  InputSelect,
-  MainCard,
+  ImgHolder,
 } from '../components/Styles';
-import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import { createUser } from '../store/userSlice';
+import { updateUser } from '../store/userSlice';
 import styled from 'styled-components';
 import usersData from '../assets/data/users.json';
 
@@ -45,7 +46,7 @@ const userStatusOptions = [
   },
 ];
 
-const NewUser = () => {
+const UserEdit = () => {
   const [userPhotoInput, setUserPhotoInput] = useState([]);
   const [userNameInput, setUserNameInput] = useState('');
   const [userJobSelect, setUserJobSelect] = useState('Manager');
@@ -57,46 +58,72 @@ const NewUser = () => {
   const statusAPI = useSelector((state) => state.users.status);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const params = useParams();
+  const { id } = params;
 
   console.log('usersListRedux', usersListRedux);
+
+  useEffect(() => {
+    setUserNameInput(usersListRedux[0].name);
+    setUserJobSelect(usersListRedux[0].job.position);
+    setUserEmailInput(usersListRedux[0].email);
+    // setUserPasswordInput(usersListRedux[0].ratePerNight);
+    setUserPhoneInput(usersListRedux[0].contact);
+    setUserStatusSelect(usersListRedux[0].status);
+  }, [usersListRedux]);
 
   const submitHandler = (e) => {
     e.preventDefault();
 
-    const objToSave = {
-      // id will be inserted on back. Photo will be handled aswell with multer on back.
-      id: usersData.length + 1,
-      photo:
-        'https://www.pngkey.com/png/detail/308-3081138_contact-avatar-generic.png',
-      //   photo: userPhotoInput,
-      name: userNameInput,
-      job: { position: userJobSelect },
-      email: userEmailInput,
-      password: userPasswordInput,
-      contact: userPhoneInput,
-      startDate: new Date().toLocaleDateString(),
-      status: userStatusSelect,
-    };
-
     if (
       !userNameInput.trim() ||
       !userEmailInput.trim() ||
-      !userPasswordInput.trim() ||
       !userPhoneInput.trim()
     ) {
       return alert('Please, fill all the required inputs');
     }
 
-    dispatch(createUser({ usersList: usersData, objToInsert: objToSave }));
-    // navigate('/users', { replace: true });
+    const objToUpdate = {
+      id: +id,
+      //   photo: userPhotoInput,
+      name: userNameInput,
+      job: { position: userJobSelect },
+      email: userEmailInput,
+      // password: userPasswordInput,
+      contact: userPhoneInput,
+      status: userStatusSelect,
+    };
+
+    dispatch(updateUser({ usersList: usersData, objToUpdate }));
+    navigate(`/users/${id}`, { replace: true });
   };
 
-  if (statusAPI === 'loading') return <h1>Saving user data...</h1>;
+  if (statusAPI === 'loading')
+    return (
+      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
+        Editing user...
+      </h1>
+    );
 
   return (
     <MainCard borderRadius='16px'>
-      <h1>Create new user</h1>
+      <h1>Editing user {id}</h1>
       <StyledForm onSubmit={submitHandler}>
+        <ImgHolder width='200px' height='200px' style={{ margin: '50px 0' }}>
+          <img
+            src={usersListRedux[0].photo}
+            alt={`Pic of ${usersListRedux[0].name}`}
+          />
+        </ImgHolder>
+        <div>
+          <StyledLabel htmlFor='user-images'>Upload images</StyledLabel>
+          <input
+            type='file'
+            id='user-images'
+            onChange={(e) => setUserPhotoInput(e.target.files)}
+            accept='image/jpg,image/png'
+          />
+        </div>
         <div>
           <StyledLabel htmlFor='user-name'>
             Name<span style={{ color: 'red' }}>*</span>
@@ -110,17 +137,6 @@ const NewUser = () => {
             id='user-name'
             type='text'
             onChange={(e) => setUserNameInput(e.target.value)}
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='user-images'>
-            Upload image<span style={{ color: 'red' }}>*</span>{' '}
-          </StyledLabel>
-          <input
-            type='file'
-            id='user-images'
-            onChange={(e) => setUserPhotoInput(e.target.files)}
-            accept='image/jpg,image/png'
           />
         </div>
         <div>
@@ -139,9 +155,7 @@ const NewUser = () => {
           />
         </div>
         <div>
-          <StyledLabel htmlFor='user-password'>
-            Password<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
+          <StyledLabel htmlFor='user-password'>Password</StyledLabel>
           <InputText
             borderRadius='4px'
             padding='5px'
@@ -154,16 +168,16 @@ const NewUser = () => {
           />
         </div>
         <div>
-          <StyledLabel htmlFor='user-contact'>
+          <StyledLabel htmlFor='user-phone'>
             Contact number<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
           <InputText
             borderRadius='4px'
             padding='5px'
-            name='user-contact'
+            name='user-phone'
             placeholder='contact number...'
             value={userPhoneInput}
-            id='user-contact'
+            id='user-phone'
             type='text'
             onChange={(e) => setUserPhoneInput(e.target.value)}
           />
@@ -177,7 +191,6 @@ const NewUser = () => {
               borderRadius: '4px',
               paddingRight: '62px',
               fontWeight: '400',
-              minWidth: '175px',
             }}
             id='user-job-position'
             padding='8px 5px'
@@ -193,7 +206,7 @@ const NewUser = () => {
           </InputSelect>
         </div>
         <div>
-          <StyledLabel htmlFor='user-status'>
+          <StyledLabel htmlFor='user-job-position'>
             Status<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
           <InputSelect
@@ -201,9 +214,8 @@ const NewUser = () => {
               borderRadius: '4px',
               paddingRight: '62px',
               fontWeight: '400',
-              minWidth: '175px',
             }}
-            id='user-status'
+            id='user-job-position'
             padding='8px 5px'
             positionArrowY='0'
             value={userStatusSelect}
@@ -216,7 +228,7 @@ const NewUser = () => {
             ))}
           </InputSelect>
         </div>
-        <div style={{ marginTop: '25px' }}>
+        <div>
           <ButtonGreen padding='10px 52px' type='submit'>
             Save user
           </ButtonGreen>
@@ -226,4 +238,4 @@ const NewUser = () => {
   );
 };
 
-export default NewUser;
+export default UserEdit;

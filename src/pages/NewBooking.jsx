@@ -59,21 +59,6 @@ const bookingStatusOptions = [
   },
 ];
 
-// const bookingUsersOptions = [
-//   {
-//     label: 'Select a user',
-//   },
-//   {
-//     label: 'Manolito',
-//   },
-//   {
-//     label: 'Pepito',
-//   },
-//   {
-//     label: 'Chanquete',
-//   },
-// ];
-
 const NewBooking = () => {
   const [bookingNumberInput, setBookingNumberInput] = useState('');
   const [bookingCheckInInput, setBookingCheckInInput] = useState('');

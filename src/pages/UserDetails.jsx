@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchSingleUser } from '../store/userSlice';
+import { fetchSingleUser, deleteUser } from '../store/userSlice';
 import styled from 'styled-components';
 import { MainCard, ButtonGreen, ImgHolder } from '../components/Styles';
 import usersData from '../assets/data/users.json';
@@ -20,7 +20,7 @@ const UserDetails = () => {
   const { id } = params;
 
   // console.log('statusAPI', statusAPI);
-  // console.log('userRedux', userRedux);
+  console.log('userRedux', userRedux);
 
   useEffect(() => {
     const filteredUser = usersData.filter((user) => user.id === +id);
@@ -31,7 +31,7 @@ const UserDetails = () => {
     if (window.confirm('Are you sure you want to delete this room?') === false)
       return;
 
-    // dispatch(deleteRoom({ roomsList: roomData, id: +id }));
+    dispatch(deleteUser({ usersList: usersData, id: +id }));
     navigate('/users/', { replace: true });
   };
 

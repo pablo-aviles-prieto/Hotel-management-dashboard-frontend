@@ -7,10 +7,14 @@ import {
   MainCard,
   FlexContainer,
   PaginationButtons,
+  ButtonGreen,
 } from '../components/Styles';
 import { Check, XCircle, Star } from '../assets/icons';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper';
+import { useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchContacts } from '../store/contactSlice';
 import { useState, useEffect, useMemo } from 'react';
 import {
   paginationDataHandler,
@@ -18,9 +22,9 @@ import {
   paginationButtonsHandler,
 } from '../utils';
 import styled from 'styled-components';
+import { reorderHandler } from '../utils';
 import RightArrowIcon from '../assets/icons/RightArrowLong.svg';
 import LeftArrowIcon from '../assets/icons/LeftArrowLong.svg';
-import commentsData from '../assets/data/comments.json';
 
 const PAGINATION_OFFSET = 5;
 
@@ -107,9 +111,10 @@ const SliderSection = styled.section`
   }
 `;
 
-const ArchiveAnchor = styled.a`
+const ArchiveBtn = styled(ButtonGreen)`
   color: #e23428;
   text-decoration: none;
+  background-color: transparent;
   font-weight: 700;
   &:hover {
     text-decoration: underline;
@@ -119,42 +124,77 @@ const ArchiveAnchor = styled.a`
 const optionsSelect = [
   {
     label: 'Newest',
-    value: 'newest',
+    value: 'date1',
   },
   {
     label: 'Oldest',
-    value: 'oldest',
+    value: 'date0',
   },
   {
     label: 'Top rated',
-    value: 'top rated',
+    value: 'rate1',
   },
   {
     label: 'Low rated',
-    value: 'low rated',
+    value: 'rate0',
   },
 ];
 
 const Contact = () => {
   const [page, setPage] = useState(1);
-  const [commentsList, setCommentsList] = useState(commentsData);
+  const [orderBy, setOderBy] = useState('date1');
+  const [internalPage, setInternalPage] = useState('id');
   const [commentsListSliced, setCommentsListSliced] = useState([]);
+  const [filteredContactsList, setFilteredContactsList] = useState([]);
+  const contactListRedux = useSelector((state) => state.contacts.contactList);
+  const statusAPI = useSelector((state) => state.contacts.status);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  console.log('contactListRedux', contactListRedux);
+  console.log('statusAPI', statusAPI);
 
   useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
+
+  useEffect(() => {
+    const contactList = [...contactListRedux];
+    const orderValue = orderBy.replace(/\d+/g, '');
+    const orderDirection = orderBy.replace(/\D+/g, '');
+
+    const filteredContactsPage =
+      internalPage === 'id'
+        ? contactList
+        : contactList.filter((contact) => contact?.archived === true);
+
+    const filteredReorderedContacts = reorderHandler({
+      array: filteredContactsPage,
+      orderValue,
+      orderDirection,
+    });
+
     const arrayToRender = paginationDataHandler(
-      commentsList,
+      filteredReorderedContacts,
       PAGINATION_OFFSET,
       page
     );
     setCommentsListSliced(arrayToRender);
-  }, [commentsList, page]);
+    setFilteredContactsList(filteredReorderedContacts);
+  }, [contactListRedux, orderBy, page, internalPage]);
 
   const totalPages = useMemo(() => {
-    return numberOfPages(commentsList.length, PAGINATION_OFFSET);
-  }, [commentsList.length]);
+    return numberOfPages(filteredContactsList.length, PAGINATION_OFFSET);
+  }, [filteredContactsList.length]);
+
+  const archiveContactHandler = (id) => {
+    console.log('id contact pressed =>', id);
+    // Have to update the contact obj and add the archived prop with a true value
+  };
 
   const inputSelectHandler = (e) => {
-    console.log('option selected =>', e.target.value);
+    setOderBy(e.target.value);
+    setPage(1);
   };
 
   const starsRateToRender = (rate) => Math.ceil(rate / 20);
@@ -291,10 +331,18 @@ const Contact = () => {
         style={{ margin: '30px', marginTop: '40px', marginBottom: '50px' }}
       >
         <div id='pages-container'>
-          <p className='active-page' style={{ cursor: 'auto' }}>
+          <p
+            className={internalPage === 'id' ? 'active-page' : ''}
+            onClick={() => setInternalPage('id')}
+          >
             All Contacts
           </p>
-          <p style={{ cursor: 'auto' }}>Archived</p>
+          <p
+            className={internalPage === 'Archived' ? 'active-page' : ''}
+            onClick={() => setInternalPage('Archived')}
+          >
+            Archived
+          </p>
         </div>
         <div id='buttons-container'>
           <InputSelect
@@ -310,56 +358,81 @@ const Contact = () => {
           </InputSelect>
         </div>
       </MenuContainer>
-      <MainCard borderRadius='20px' style={{ padding: '0', margin: '0 30px' }}>
-        <Table>
-          <thead id='card-header'>
-            <tr>
-              <th>Order ID</th>
-              <th>Date</th>
-              <th>Customer</th>
-              <th>Comment</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody style={{ fontSize: '15px' }}>
-            {commentsListSliced.map((comment) => (
-              <tr key={comment.id}>
-                <td>#{comment.id}</td>
-                <td>{dateHandler(comment.date)}</td>
-                <td>
-                  <p>{comment.user.name}</p>
-                </td>
-                <td>
-                  <FlexContainer>
-                    {[...Array(starsRateToRender(comment.rate))].map((_, i) => (
-                      <div key={i}>
-                        <Star
-                          stroke='transparent'
-                          fill='#135846'
-                          width='22px'
-                          height='22px'
-                        />
-                      </div>
-                    ))}
-                  </FlexContainer>
-                  <p>{comment.message.body}</p>
-                </td>
-                <td>
-                  <ArchiveAnchor href='#'>Archive</ArchiveAnchor>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </MainCard>
-      <PaginationButtons style={{ margin: '50px 30px' }}>
-        <p>
-          Showing {commentsListSliced.length} of {commentsList.length} Data
-        </p>
-        <div id='pagination-container'>
-          {paginationButtonsHandler(page, totalPages, setPage)}
-        </div>
-      </PaginationButtons>
+      {statusAPI === 'loading' ? (
+        <h1
+          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
+        >
+          Loading contacts...
+        </h1>
+      ) : (
+        <>
+          <MainCard
+            borderRadius='20px'
+            style={{ padding: '0', margin: '0 30px' }}
+          >
+            <Table>
+              <thead id='card-header'>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Date</th>
+                  <th>Customer</th>
+                  <th>Comment</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody style={{ fontSize: '15px' }}>
+                {commentsListSliced.map((contact) => (
+                  <tr key={contact.id}>
+                    <td
+                      style={{ cursor: 'pointer' }}
+                      onClick={() => navigate(`/contacts/${contact.id}`)}
+                    >
+                      #{contact.id}
+                    </td>
+                    <td>{dateHandler(contact.date)}</td>
+                    <td>
+                      <p>{contact.user.name}</p>
+                    </td>
+                    <td>
+                      <FlexContainer>
+                        {[...Array(starsRateToRender(contact.rate))].map(
+                          (_, i) => (
+                            <div key={i}>
+                              <Star
+                                stroke='transparent'
+                                fill='#135846'
+                                width='22px'
+                                height='22px'
+                              />
+                            </div>
+                          )
+                        )}
+                      </FlexContainer>
+                      <p>{contact.message.body}</p>
+                    </td>
+                    <td>
+                      <ArchiveBtn
+                        onClick={() => archiveContactHandler(contact.id)}
+                      >
+                        Archive
+                      </ArchiveBtn>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </MainCard>
+          <PaginationButtons style={{ margin: '50px 30px' }}>
+            <p>
+              Showing {commentsListSliced.length} of {contactListRedux.length}{' '}
+              Data
+            </p>
+            <div id='pagination-container'>
+              {paginationButtonsHandler(page, totalPages, setPage)}
+            </div>
+          </PaginationButtons>
+        </>
+      )}
     </>
   );
 };

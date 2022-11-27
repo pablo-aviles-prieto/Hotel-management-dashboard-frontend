@@ -30,25 +30,25 @@ export const createUser = createAsyncThunk(
   }
 );
 
-// export const updateBooking = createAsyncThunk(
-//   'booking/updateBooking',
-//   // async ({ url, fetchProps }) => {
-//   async ({ bookingsList, objToUpdate }) => {
-//     // const response = await mockRealAPI({ url, fetchProps });
-//     const bookings = await mockAPICall(bookingsList);
-//     return { bookings, objToUpdate };
-//   }
-// );
+export const updateUser = createAsyncThunk(
+  'user/updateUser',
+  // async ({ url, fetchProps }) => {
+  async ({ usersList, objToUpdate }) => {
+    // const response = await mockRealAPI({ url, fetchProps });
+    const users = await mockAPICall(usersList);
+    return { users, objToUpdate };
+  }
+);
 
-// export const deleteBooking = createAsyncThunk(
-//   'booking/deleteBooking',
-//   // async ({ url, fetchProps }) => {
-//   async ({ bookingsList, id }) => {
-//     // const response = await mockRealAPI({ url, fetchProps });
-//     const bookings = await mockAPICall(bookingsList);
-//     return { bookings, id };
-//   }
-// );
+export const deleteUser = createAsyncThunk(
+  'user/deleteUser',
+  // async ({ url, fetchProps }) => {
+  async ({ usersList, id }) => {
+    // const response = await mockRealAPI({ url, fetchProps });
+    const users = await mockAPICall(usersList);
+    return { users, id };
+  }
+);
 
 export const userSlice = createSlice({
   name: 'user',
@@ -58,21 +58,35 @@ export const userSlice = createSlice({
     builder
       .addCase(createUser.fulfilled, (state, action) => {
         const { users, objToInsert } = action.payload;
-        const newObjToInsert = {
-          ...objToInsert,
-          id: users.length + 1,
-          photo:
-            'https://www.pngkey.com/png/detail/308-3081138_contact-avatar-generic.png',
-          startDate: new Date().toLocaleDateString(),
-        };
         state.status = 'idle';
-        state.usersList = [...users, newObjToInsert];
+        state.usersList = [...users, objToInsert];
+      })
+      .addCase(updateUser.fulfilled, (state, action) => {
+        const { users, objToUpdate } = action.payload;
+        const newUsersArr = [...users];
+        const indexOfObj = newUsersArr.findIndex(
+          (obj) => obj.id === objToUpdate.id
+        );
+        newUsersArr[indexOfObj] = {
+          ...newUsersArr[indexOfObj],
+          ...objToUpdate,
+        };
+        state.usersList = newUsersArr;
+        state.status = 'idle';
+      })
+      .addCase(deleteUser.fulfilled, (state, action) => {
+        const { users, id } = action.payload;
+        const filteredArr = users.filter((obj) => obj.id !== id);
+        console.log('filteredArr userSlice', filteredArr);
+        state.usersList = filteredArr;
+        state.status = 'idle';
       })
       .addMatcher(
         isAnyOf(
           fetchUsers.pending,
           fetchSingleUser.pending,
-          createUser.pending
+          createUser.pending,
+          deleteUser.pending
         ),
         (state) => {
           state.status = 'loading';
@@ -89,7 +103,8 @@ export const userSlice = createSlice({
         isAnyOf(
           fetchUsers.rejected,
           fetchSingleUser.rejected,
-          createUser.rejected
+          createUser.rejected,
+          deleteUser.rejected
         ),
         (state) => {
           state.status = 'failed';

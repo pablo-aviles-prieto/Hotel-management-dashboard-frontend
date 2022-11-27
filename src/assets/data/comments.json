@@ -11,7 +11,8 @@
       "subject": "I dont know what to write here",
       "body": "Everything was fine until the last day where i had to take a shower with cold water"
     },
-    "rate": 19
+    "rate": 19,
+    "archived": true
   },
   {
     "id": 2,
