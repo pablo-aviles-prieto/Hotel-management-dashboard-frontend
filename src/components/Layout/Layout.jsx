@@ -187,6 +187,8 @@ export const Layout = ({ children, themeProp }) => {
 
   const [lightTheme, switchThemeHandler] = themeProp;
 
+  console.log('authStatus', authStatus);
+
   const logoutHandler = () => {
     logoutCtx();
     navigate('/login', { replace: true });
@@ -332,7 +334,7 @@ export const Layout = ({ children, themeProp }) => {
                 fontWeight: '400',
               }}
             >
-              William Johanson
+              {authStatus.name}
             </h3>
             <p
               style={{
@@ -341,7 +343,7 @@ export const Layout = ({ children, themeProp }) => {
                 color: lightTheme ? '#B2B2B2' : '#686868',
               }}
             >
-              williamjohn@mail.com
+              {authStatus.email}
             </p>
             <ButtonSidebar padding='15px 45px'>Edit</ButtonSidebar>
           </MainCard>
