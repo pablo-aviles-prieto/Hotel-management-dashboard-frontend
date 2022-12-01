@@ -32,11 +32,11 @@ const TooltipContainer = styled.div`
   }
 `;
 
-export const BarChart = ({ data }) => {
+export const BarChart = ({ data, containerWidth }) => {
   const [tooltip, setTooltip] = useState(null);
 
   const margin = { top: 10, right: 62, bottom: 40, left: 40 };
-  const width = 600 - margin.left - margin.right;
+  const width = containerWidth - margin.left - margin.right;
   const height = 300 - margin.top - margin.bottom;
 
   const labels = data.map(({ label }) => label);

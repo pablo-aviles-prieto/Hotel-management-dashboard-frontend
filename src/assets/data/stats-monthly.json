@@ -1,0 +1,14 @@
+[
+  { "label": "Jan", "values": { "occupancy": 70, "sales": 175400 } },
+  { "label": "Feb", "values": { "occupancy": 52, "sales": 125975 } },
+  { "label": "Mar", "values": { "occupancy": 41, "sales": 120852 } },
+  { "label": "Apr", "values": { "occupancy": 14, "sales": 73561 } },
+  { "label": "May", "values": { "occupancy": 26, "sales": 82829 } },
+  { "label": "Jun", "values": { "occupancy": 75, "sales": 192201 } },
+  { "label": "Jul", "values": { "occupancy": 83, "sales": 221019 } },
+  { "label": "Aug", "values": { "occupancy": 95, "sales": 242111 } },
+  { "label": "Sep", "values": { "occupancy": 88, "sales": 230919 } },
+  { "label": "Oct", "values": { "occupancy": 49, "sales": 141822 } },
+  { "label": "Nov", "values": { "occupancy": 21, "sales": 62819 } },
+  { "label": "Dec", "values": { "occupancy": 28, "sales": 73013 } }
+]

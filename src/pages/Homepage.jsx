@@ -1,4 +1,9 @@
-import { MainCard, AlternativeCard, ImgHolder } from '../components/Styles';
+import {
+  MainCard,
+  AlternativeCard,
+  ImgHolder,
+  MenuContainer,
+} from '../components/Styles';
 import {
   Bed,
   CalendarV2,
@@ -7,13 +12,18 @@ import {
   Check,
   XCircle,
 } from '../assets/icons';
+import { BarChart } from '../components';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper';
+import { useRef, useState } from 'react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import styled from 'styled-components';
+import { useContainerDimensions } from '../utils';
 import RightArrowIcon from '../assets/icons/RightArrowLong.svg';
 import LeftArrowIcon from '../assets/icons/LeftArrowLong.svg';
+import statsWeekly from '../assets/data/stats-weekly.json';
+import statsMonthly from '../assets/data/stats-monthly.json';
 
 const TopSection = styled.section`
   display: flex;
@@ -162,6 +172,10 @@ const BottomSection = styled.section`
 `;
 
 const Homepage = () => {
+  const [statsToShow, setStatsToShow] = useState('weekly');
+  const divStatsRef = useRef(null);
+  const { width: statsContainerWidth } = useContainerDimensions(divStatsRef);
+
   return (
     <>
       <TopSection id='top-container'>
@@ -230,7 +244,61 @@ const Homepage = () => {
         </div>
         <div id='mid-right-container' className='side-container'>
           <MainCard className='side-container-top-card' borderRadius='16px'>
-            <h1>Stats</h1>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <h3>Reservation stats</h3>
+              <MenuContainer>
+                <div id='pages-container'>
+                  <p
+                    onClick={() => setStatsToShow('weekly')}
+                    className={statsToShow === 'weekly' ? 'active-page' : ''}
+                  >
+                    Weekly
+                  </p>
+                  <p
+                    onClick={() => setStatsToShow('monthly')}
+                    className={statsToShow === 'monthly' ? 'active-page' : ''}
+                  >
+                    Monthly
+                  </p>
+                </div>
+              </MenuContainer>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '50px' }}>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div
+                  style={{
+                    width: '13px',
+                    height: '13px',
+                    backgroundColor: '#135846',
+                    marginRight: '20px',
+                  }}
+                />
+                Occupancy
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <div
+                  style={{
+                    width: '13px',
+                    height: '13px',
+                    backgroundColor: '#e23428',
+                    marginRight: '20px',
+                  }}
+                />
+                Sales
+              </div>
+            </div>
+            <div ref={divStatsRef}>
+              <BarChart
+                data={statsToShow === 'weekly' ? statsWeekly : statsMonthly}
+                containerWidth={statsContainerWidth}
+              />
+            </div>
           </MainCard>
         </div>
       </MidSection>
