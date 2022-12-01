@@ -117,6 +117,7 @@ const SidebarFooter = styled.div`
 
 const BodyDiv = styled.div`
   background-color: ${({ theme }) => theme.secondBground};
+  min-width: 1000px;
   color: ${({ theme }) => theme.mainColor};
   padding: 15px;
   padding-top: 105px;

@@ -1,0 +1,9 @@
+[
+  { "label": "Mon", "values": { "occupancy": 80, "sales": 65400 } },
+  { "label": "Tue", "values": { "occupancy": 20, "sales": 15400 } },
+  { "label": "Wed", "values": { "occupancy": 61, "sales": 36100 } },
+  { "label": "Thu", "values": { "occupancy": 5, "sales": 7853 } },
+  { "label": "Fri", "values": { "occupancy": 96, "sales": 72829 } },
+  { "label": "Sat", "values": { "occupancy": 88, "sales": 68201 } },
+  { "label": "Sun", "values": { "occupancy": 65, "sales": 42819 } }
+]
