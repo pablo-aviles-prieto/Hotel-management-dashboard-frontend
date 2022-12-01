@@ -1,22 +1,18 @@
-import { BarChart } from './D3Components/BarChart';
-import { GroupedBarChart } from './D3Components/GroupedBarChart';
-import { GroupedBarChart2 } from './D3Components/GroupedBarChart-bkup';
+import { BarChart } from './BarChart/BarChart';
 
-const DATA = [
-  { label: 'Apples', value: 100, value2: 40 },
-  { label: 'Bananas', value: 200, value2: 90 },
-  { label: 'Oranges', value: 50, value2: 120 },
-  { label: 'Kiwis', value: 150, value2: 10 },
-];
-
-const GROUPED_BAR_CHART_DATA = [
-  { label: 'Monday', values: [60, 84] },
-  { label: 'Tuesday', values: [160, 200] },
-  { label: 'Wednesday', values: [60, 40] },
-  { label: 'Thursday', values: [60, 40] },
-  { label: 'Friday', values: [60, 40] },
-  { label: 'Saturday', values: [60, 40] },
-  { label: 'Sunday', values: [60, 40] },
+const DUMMY_MONTHLY_SALES_OCCUPANCY = [
+  { label: 'Jan', values: { occupancy: 70, sales: 175400 } },
+  { label: 'Feb', values: { occupancy: 52, sales: 125975 } },
+  { label: 'Mar', values: { occupancy: 41, sales: 120852 } },
+  { label: 'Apr', values: { occupancy: 14, sales: 73561 } },
+  { label: 'May', values: { occupancy: 26, sales: 82829 } },
+  { label: 'June', values: { occupancy: 75, sales: 192201 } },
+  { label: 'July', values: { occupancy: 83, sales: 221019 } },
+  { label: 'Aug', values: { occupancy: 95, sales: 242111 } },
+  { label: 'Sep', values: { occupancy: 88, sales: 230919 } },
+  { label: 'Oct', values: { occupancy: 49, sales: 141822 } },
+  { label: 'Nov', values: { occupancy: 21, sales: 62819 } },
+  { label: 'Dec', values: { occupancy: 28, sales: 73013 } },
 ];
 
 const DUMMY_WEEKLY_SALES_OCCUPANCY = [
@@ -32,10 +28,9 @@ const DUMMY_WEEKLY_SALES_OCCUPANCY = [
 export const D3Component = () => {
   return (
     <>
-      <h1>Manolito</h1>
-      <BarChart data={DATA} />
-      <GroupedBarChart data={DUMMY_WEEKLY_SALES_OCCUPANCY} />
-      <GroupedBarChart2 data={GROUPED_BAR_CHART_DATA} />
+      <h1>D3</h1>
+      <BarChart data={DUMMY_WEEKLY_SALES_OCCUPANCY} />
+      {/* <BarChart data={DUMMY_MONTHLY_SALES_OCCUPANCY} /> */}
     </>
   );
 };

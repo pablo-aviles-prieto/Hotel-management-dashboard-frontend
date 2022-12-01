@@ -1,4 +1,4 @@
-export const Barsv2 = ({
+export const Bar = ({
   x,
   y,
   width,
@@ -12,14 +12,14 @@ export const Barsv2 = ({
   return (
     <path
       d={`
-      m${x},${y + radius}
-      a${radius},${radius} 0 0 1 ${radius},${-radius}
-      h${width - 2 * radius}
-      a${radius},${radius} 0 0 1 ${radius},${radius}
-      v${height - radius}
-      h-${width}
-      z
-    `}
+        m${x},${y + radius}
+        a${radius},${radius} 0 0 1 ${radius},${-radius}
+        h${width - 2 * radius}
+        a${radius},${radius} 0 0 1 ${radius},${radius}
+        v${height - radius}
+        h-${width}
+        z
+      `}
       fill={color}
       onMouseEnter={(event) => onMouseEnter(event)}
       onMouseLeave={onMouseLeave}

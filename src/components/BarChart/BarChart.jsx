@@ -1,7 +1,11 @@
 import * as d3 from 'd3';
 import styled from 'styled-components';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { keyframes } from 'styled-components';
+import { Bar } from './Bar';
+import { BottomAxis } from './BottomAxis';
+import { LeftAxis } from './LeftAxis';
+import { RightAxis } from './RightAxis';
 
 const fadeIn = keyframes`
  0% { transform: scale(0.8) translate(-0.5em, -0.5em); opacity: 0 }
@@ -13,10 +17,10 @@ const TooltipContainer = styled.div`
   pointer-events: none;
   padding: 0.75em;
   box-sizing: border-box;
-  background-color: #ffffff;
+  background-color: ${({ theme }) => theme.borderColor};
   border-radius: 0.5em;
   box-shadow: 0 0.25em 1em 0 rgba(0, 0, 0, 0.15);
-  animation: ${fadeIn} 0.25s ease;
+  animation: ${fadeIn} 0.3s ease;
   font-size: 0.9em;
   span {
     text-align: center;
@@ -28,34 +32,10 @@ const TooltipContainer = styled.div`
   }
 `;
 
-function Bar({ x, y, width, height, color, onMouseEnter, onMouseLeave }) {
-  const radius = height === 0 ? 0 : width * 0.15;
-
-  return (
-    <path
-      d={`
-      m${x},${y + radius}
-      a${radius},${radius} 0 0 1 ${radius},${-radius}
-      h${width - 2 * radius}
-      a${radius},${radius} 0 0 1 ${radius},${radius}
-      v${height - radius}
-      h-${width}
-      z
-    `}
-      fill={color}
-      onMouseEnter={(event) => onMouseEnter(event)}
-      onMouseLeave={onMouseLeave}
-    />
-  );
-}
-
-export function GroupedBarChart({ data }) {
+export const BarChart = ({ data }) => {
   const [tooltip, setTooltip] = useState(null);
-  const axisBottomRef = useRef(null);
-  const axisLeftRef = useRef(null);
-  const axisRightRef = useRef(null);
 
-  const margin = { top: 10, right: 60, bottom: 35, left: 30 };
+  const margin = { top: 10, right: 62, bottom: 40, left: 40 };
   const width = 600 - margin.left - margin.right;
   const height = 300 - margin.top - margin.bottom;
 
@@ -68,7 +48,7 @@ export function GroupedBarChart({ data }) {
     .domain(labels)
     .range([0, width])
     .paddingOuter(0)
-    .paddingInner(0.2);
+    .paddingInner(0.3);
   const scaleYOccupancy = d3.scaleLinear().domain([0, 100]).range([height, 0]);
   const scaleYSales = d3
     .scaleLinear()
@@ -78,34 +58,7 @@ export function GroupedBarChart({ data }) {
     .scaleBand()
     .domain(sublabels)
     .range([0, scaleX.bandwidth()])
-    .padding(0.4);
-
-  useEffect(() => {
-    if (axisBottomRef.current) {
-      d3.select(axisBottomRef.current).call(
-        d3.axisBottom(scaleX).tickSize(0).tickPadding(25)
-      );
-    }
-
-    if (axisLeftRef.current) {
-      d3.select(axisLeftRef.current).call(
-        d3.axisLeft(scaleYOccupancy).ticks(5).tickSize(0).tickPadding(5)
-      );
-    }
-
-    if (axisRightRef.current) {
-      const rightAxis = d3
-        .select(axisRightRef.current)
-        .call(d3.axisRight(scaleYSales).tickSize(0).tickPadding(5));
-      rightAxis
-        .selectAll('path,line')
-        // .style('opacity', 1)
-        // .transition()
-        // .duration(2000)
-        // .style('opacity', 0)
-        .remove();
-    }
-  }, [scaleX, scaleYOccupancy, scaleYSales]);
+    .padding(0.3);
 
   return (
     <>
@@ -114,9 +67,13 @@ export function GroupedBarChart({ data }) {
         height={height + margin.top + margin.bottom}
       >
         <g transform={`translate(${margin.left}, ${margin.top})`}>
-          <g ref={axisBottomRef} transform={`translate(0, ${height})`} />
-          <g ref={axisLeftRef} />
-          <g ref={axisRightRef} transform={`translate(${width}, 0)`} />
+          <BottomAxis scale={scaleX} transform={`translate(0, ${height})`} />
+          <LeftAxis scale={scaleYOccupancy} width={width} />
+          <RightAxis
+            scale={scaleYSales}
+            width={width}
+            transform={`translate(${width}, 0)`}
+          />
           {data.map(({ label, values }, groupIndex) => (
             <g
               key={`rect-group-${groupIndex}`}
@@ -158,12 +115,12 @@ export function GroupedBarChart({ data }) {
           ))}
         </g>
       </svg>
-      {tooltip !== null ? (
+      {tooltip && (
         <TooltipContainer style={{ top: tooltip.y, left: tooltip.x }}>
           <span className='tooltip__title'>{tooltip.info.label}</span>
           <span className='tooltip__msg'>{tooltip.info.msg}</span>
         </TooltipContainer>
-      ) : null}
+      )}
     </>
   );
-}
+};
