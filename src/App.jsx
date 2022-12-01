@@ -16,6 +16,7 @@ import UserDetails from './pages/UserDetails';
 import UserEdit from './pages/UserEdit';
 import Contact from './pages/Contact';
 import ContactDetails from './pages/ContactDetails';
+import { D3Component } from './components/d3';
 import { NotFound, ProtectRoute, Layout } from './components';
 import { ThemeProvider } from 'styled-components';
 import { LIGHT_THEME, DARK_THEME } from './themes';
@@ -63,6 +64,7 @@ const App = () => {
             <Route path='contacts/new' element={<NewContact />} />
             <Route path='contacts/:id' element={<ContactDetails />} />
             <Route path='contacts/:id/edit' element={<ContactEdit />} />
+            <Route path='d3' element={<D3Component />} />
             <Route path='*' element={<NotFound />} />
           </Route>
         </Routes>
