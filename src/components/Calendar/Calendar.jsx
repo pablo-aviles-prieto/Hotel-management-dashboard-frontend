@@ -7,7 +7,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 const CalendarContainer = styled.div`
   position: relative;
   width: auto;
-  #fc-dom-1 {
+  .fc-toolbar-title {
     display: inline;
     font-size: 16px;
     font-weight: 400;
