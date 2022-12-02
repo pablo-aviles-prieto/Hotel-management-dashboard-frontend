@@ -63,7 +63,8 @@ const CalendarContainer = styled.div`
   .fc .fc-daygrid-day-number {
     padding-top: 18px;
   }
-  .fc .fc-scroller-liquid-absolute {
+  .fc .fc-scroller-liquid-absolute,
+  .fc-scroller {
     overflow: hidden !important;
   }
   .fc .fc-bg-event {
