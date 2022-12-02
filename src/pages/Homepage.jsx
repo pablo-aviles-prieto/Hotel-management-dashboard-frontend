@@ -12,8 +12,7 @@ import {
   Check,
   XCircle,
 } from '../assets/icons';
-import { BarChart } from '../components';
-import { Calendar } from '../components/Calendar';
+import { BarChart, Calendar } from '../components';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper';
 import { useRef, useState } from 'react';
