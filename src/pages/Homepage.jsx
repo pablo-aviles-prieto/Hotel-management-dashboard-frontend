@@ -13,6 +13,7 @@ import {
   XCircle,
 } from '../assets/icons';
 import { BarChart } from '../components';
+import { Calendar } from '../components/Calendar';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper';
 import { useRef, useState } from 'react';
@@ -239,7 +240,7 @@ const Homepage = () => {
       <MidSection id='mid-container'>
         <div id='mid-left-container' className='side-container'>
           <MainCard className='side-container-top-card' borderRadius='16px'>
-            <h1>Calendar</h1>
+            <Calendar />
           </MainCard>
         </div>
         <div id='mid-right-container' className='side-container'>
@@ -251,7 +252,9 @@ const Homepage = () => {
                 justifyContent: 'space-between',
               }}
             >
-              <h3>Reservation stats</h3>
+              <h3 style={{ fontWeight: '400', fontSize: '19px' }}>
+                Reservation stats
+              </h3>
               <MenuContainer>
                 <div id='pages-container'>
                   <p

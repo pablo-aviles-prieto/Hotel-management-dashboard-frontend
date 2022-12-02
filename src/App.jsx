@@ -22,6 +22,7 @@ import { LIGHT_THEME, DARK_THEME } from './themes';
 import { AuthContext } from './store/auth-context';
 import NewContact from './pages/NewContact';
 import ContactEdit from './pages/ContactEdit';
+import { Calendar } from './components/Calendar';
 
 const App = () => {
   const [lightTheme, setLightTheme] = useState(true);
@@ -63,6 +64,7 @@ const App = () => {
             <Route path='contacts/new' element={<NewContact />} />
             <Route path='contacts/:id' element={<ContactDetails />} />
             <Route path='contacts/:id/edit' element={<ContactEdit />} />
+            <Route path='calendar' element={<Calendar />} />
             <Route path='*' element={<NotFound />} />
           </Route>
         </Routes>
