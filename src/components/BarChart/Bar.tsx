@@ -1,4 +1,16 @@
-export const Bar = ({
+import React from 'react';
+
+interface IBar {
+  x: number | undefined;
+  y: number;
+  width: number;
+  height: number;
+  color: string;
+  onMouseEnter: (event: React.MouseEvent<SVGPathElement, MouseEvent>) => void;
+  onMouseLeave: () => void;
+}
+
+export const Bar: React.FC<IBar> = ({
   x,
   y,
   width,

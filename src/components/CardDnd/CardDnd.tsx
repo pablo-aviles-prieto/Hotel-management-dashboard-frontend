@@ -1,7 +1,6 @@
-import { SlowBuffer } from 'buffer';
-import { useRef, MutableRefObject } from 'react';
+import { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
-import { ItemTypes } from './ItemTypes.js';
+import { ItemTypes } from './ItemTypes';
 
 interface RoomTypes {
   id: number;
@@ -16,7 +15,7 @@ interface RoomTypes {
   offerPrice: null;
 }
 
-interface CardDndProps {
+interface ICardDnd {
   id: number;
   index: number;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
@@ -24,12 +23,12 @@ interface CardDndProps {
   renderData: (
     data: RoomTypes,
     ref: React.RefObject<HTMLTableRowElement>,
-    dragOpacity: number,
+    dragOpacity: 0 | 1,
     handlerId: any
   ) => void;
 }
 
-export const CardDnd: (props: CardDndProps) => void = ({
+export const CardDnd: (props: ICardDnd) => void = ({
   id,
   index,
   moveCard,

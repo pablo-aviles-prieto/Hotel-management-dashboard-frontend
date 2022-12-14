@@ -1,8 +1,13 @@
 import * as d3 from 'd3';
 import { useRef, useEffect } from 'react';
 
-export const LeftAxis = ({ scale, width }) => {
-  const ref = useRef(null);
+interface ILeftAxis {
+  scale: d3.ScaleLinear<number, number, never>;
+  width: number;
+}
+
+export const LeftAxis: React.FC<ILeftAxis> = ({ scale, width }) => {
+  const ref = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     if (ref.current) {

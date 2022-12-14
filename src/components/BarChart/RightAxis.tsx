@@ -1,13 +1,23 @@
 import * as d3 from 'd3';
 import { useRef, useEffect } from 'react';
 
-export const RightAxis = ({ scale, transform, width }) => {
-  const ref = useRef(null);
+interface IRightAxis {
+  scale: d3.ScaleLinear<number, number, never>;
+  transform: string;
+  width: number;
+}
+
+export const RightAxis: React.FC<IRightAxis> = ({
+  scale,
+  transform,
+  width,
+}) => {
+  const ref = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
     if (ref.current) {
       const rightAxis = d3
-        .select(ref.current)
+        .select(ref!.current)
         .call(d3.axisRight(scale).tickSize(0).tickPadding(15));
       rightAxis.selectAll('path').remove();
       rightAxis

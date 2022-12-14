@@ -32,8 +32,22 @@ const TooltipContainer = styled.div`
   }
 `;
 
-export const BarChart = ({ data, containerWidth }) => {
-  const [tooltip, setTooltip] = useState(null);
+interface IDataChart {
+  label: string;
+  values: { occupancy: number; sales: number };
+}
+
+interface IToolTipState {
+  x: number;
+  y: number;
+  info: { label: string; msg: string };
+}
+
+export const BarChart: React.FC<{
+  data: IDataChart[];
+  containerWidth: number;
+}> = ({ data, containerWidth }) => {
+  const [tooltip, setTooltip] = useState<IToolTipState | null>(null);
 
   const margin = { top: 10, right: 62, bottom: 40, left: 40 };
   const width = containerWidth - margin.left - margin.right;
