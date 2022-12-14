@@ -2,6 +2,12 @@ import { MainCard } from '../Styles';
 import { XClose } from '../../assets/icons';
 import styled from 'styled-components';
 
+interface IModal {
+  closeModalHandler: () => void;
+  title: string;
+  message: string;
+}
+
 const BackDrop = styled.div`
   background-color: rgba(0, 0, 0, 0.75);
   height: 100vh;
@@ -12,7 +18,8 @@ const BackDrop = styled.div`
   z-index: 2;
 `;
 
-const ModalCard = styled(MainCard)`
+// const ModalCard = styled(({borderRadius, ...rest}) => <MainCard {...rest}/>) <{borderRadius: string}>`
+const ModalCard = styled(MainCard)<{ borderRadius: string }>`
   position: fixed;
   width: 500px;
   text-align: center;
@@ -45,7 +52,11 @@ const XCloseContainer = styled.div`
   top: 8px;
 `;
 
-export const Modal = ({ closeModalHandler, title, message }) => {
+export const Modal: React.FC<IModal> = ({
+  closeModalHandler,
+  title,
+  message,
+}) => {
   return (
     <div>
       <BackDrop onClick={closeModalHandler} />

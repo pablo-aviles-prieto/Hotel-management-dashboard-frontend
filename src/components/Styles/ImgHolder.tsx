@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const ImgHolder = styled.div`
+export const ImgHolder = styled.div<{ width: string; height: string }>`
   width: ${({ width }) => width};
   height: ${({ height }) => height};
   background-color: #c5c5c5;

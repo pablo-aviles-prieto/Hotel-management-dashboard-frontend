@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import FullCalendar, { formatDate } from '@fullcalendar/react';
+import FullCalendar, { DateSelectArg } from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
@@ -94,15 +94,20 @@ const DUMMY_BOOKINGS = [
   },
 ];
 
-export const Calendar = () => {
-  const handleEventClick = (clickInfo) => {
+interface IDUMMY_BOOKINGS {
+  checkIn: string;
+  checkOut: string;
+}
+
+export const Calendar: React.FC = () => {
+  const handleEventClick: (arg: DateSelectArg) => void = (clickInfo) => {
     console.log('clickInfo', clickInfo);
   };
 
-  const datesCalendarGroupHandler = (data) => {
-    const sameDayCheckInCheckOut = [];
-    const onlyCheckIn = [];
-    const onlyCheckOut = [];
+  const datesCalendarGroupHandler = (data: IDUMMY_BOOKINGS[]) => {
+    const sameDayCheckInCheckOut: string[] = [];
+    const onlyCheckIn: string[] = [];
+    const onlyCheckOut: string[] = [];
 
     const checkInDates = data.map((obj) => obj.checkIn);
     const checkOutDates = data.map((obj) => obj.checkOut);
@@ -120,37 +125,31 @@ export const Calendar = () => {
     return { sameDayCheckInCheckOut, onlyCheckIn, onlyCheckOut };
   };
 
-  const renderEventesHandler = (data) => {
+  const renderEventesHandler = (data: IDUMMY_BOOKINGS[]) => {
     const { sameDayCheckInCheckOut, onlyCheckIn, onlyCheckOut } =
       datesCalendarGroupHandler(data);
 
-    const eventsWhenCheckInCheckOut = sameDayCheckInCheckOut.map((date) => {
-      return {
-        start: date,
-        end: date,
-        overlap: true,
-        display: 'background',
-        backgroundColor: '#FF9C3A',
-      };
-    });
-    const eventsOnlyCheckIn = onlyCheckIn.map((date) => {
-      return {
-        start: date,
-        end: date,
-        overlap: true,
-        display: 'background',
-        backgroundColor: '#135846',
-      };
-    });
-    const eventsOnlyCheckOut = onlyCheckOut.map((date) => {
-      return {
-        start: date,
-        end: date,
-        overlap: true,
-        display: 'background',
-        backgroundColor: '#E23428',
-      };
-    });
+    const eventsWhenCheckInCheckOut = sameDayCheckInCheckOut.map((date) => ({
+      start: date,
+      end: date,
+      overlap: true,
+      display: 'background',
+      backgroundColor: '#FF9C3A',
+    }));
+    const eventsOnlyCheckIn = onlyCheckIn.map((date) => ({
+      start: date,
+      end: date,
+      overlap: true,
+      display: 'background',
+      backgroundColor: '#135846',
+    }));
+    const eventsOnlyCheckOut = onlyCheckOut.map((date) => ({
+      start: date,
+      end: date,
+      overlap: true,
+      display: 'background',
+      backgroundColor: '#E23428',
+    }));
     return [
       ...eventsWhenCheckInCheckOut,
       ...eventsOnlyCheckIn,

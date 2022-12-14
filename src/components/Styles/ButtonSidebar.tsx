@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const ButtonSidebar = styled.button`
+export const ButtonSidebar = styled.button<{ padding: string }>`
   cursor: pointer;
   padding: ${({ padding }) => padding};
   border: 0;

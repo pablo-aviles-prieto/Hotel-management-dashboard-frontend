@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 
-export const InputText = styled.input`
+export const InputText = styled.input<{
+  padding: string;
+  borderRadius: string;
+}>`
   padding: ${({ padding }) => padding};
   border: 1px solid ${({ theme }) => theme.buttonGreenBground};
   border-radius: ${({ borderRadius }) => borderRadius};

@@ -192,7 +192,7 @@ const Bookings = () => {
         <div id='buttons-container'>
           <InputSelectInverted
             padding='13px 25px'
-            positionArrowY='5px'
+            positionArrowY='7px'
             onChange={inputDateSelectHandler}
           >
             {optionsSelect2.map((option) => (
@@ -203,7 +203,7 @@ const Bookings = () => {
           </InputSelectInverted>
           <InputSelect
             padding='13px 25px'
-            positionArrowY='5px'
+            positionArrowY='7px'
             onChange={inputSelectHandler}
           >
             {optionsSelect1.map((option) => (

@@ -21,7 +21,17 @@ import {
   UpperArrow,
 } from '../../assets/icons';
 
-const HeaderDiv = styled.div`
+interface ILayout {
+  children: JSX.Element;
+  themeProp: [boolean, () => void];
+}
+
+type ISideBarState = boolean;
+type IHeight = string;
+type IRoomDropDown = boolean;
+type IGap = string;
+
+const HeaderDiv = styled.div<{ sideBarState: ISideBarState; height: IHeight }>`
   z-index: 2;
   position: fixed;
   display: flex;
@@ -42,7 +52,10 @@ const HeaderDiv = styled.div`
   }
 `;
 
-const SideBarDiv = styled.div`
+const SideBarDiv = styled.div<{
+  sideBarState: ISideBarState;
+  roomDropdown: IRoomDropDown;
+}>`
   position: fixed;
   top: 0;
   left: ${({ sideBarState }) => (!sideBarState ? '-300px' : '0')};
@@ -115,7 +128,7 @@ const SidebarFooter = styled.div`
   }
 `;
 
-const BodyDiv = styled.div`
+const BodyDiv = styled.div<{ sideBarState: ISideBarState }>`
   background-color: ${({ theme }) => theme.secondBground};
   min-width: 1000px;
   color: ${({ theme }) => theme.mainColor};
@@ -132,7 +145,7 @@ const BodyDiv = styled.div`
   }
 `;
 
-const FlexDiv = styled.div`
+const FlexDiv = styled.div<{ gap: IGap }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -180,7 +193,7 @@ const activeNavSubPage = {
 const DUMMY_DATA1 = 0;
 const DUMMY_DATA2 = 87;
 
-export const Layout = ({ children, themeProp }) => {
+export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
   const [roomDropdown, setRoomDropdown] = useState(false);
   const [sideBarState, setSideBarState] = useState(false);
   const { authStatus, logoutHandler: logoutCtx } = useContext(AuthContext);
@@ -313,10 +326,10 @@ export const Layout = ({ children, themeProp }) => {
         </nav>
         {authStatus.authed && (
           <MainCard
+          borderRadius='18px'
             style={{
               backgroundColor: lightTheme ? '#FFFFFF' : '#292828',
               boxShadow: '0px 20px 30px #00000014',
-              borderRadius: '18px',
               marginTop: '60px',
               textAlign: 'center',
             }}
@@ -411,6 +424,7 @@ export const Layout = ({ children, themeProp }) => {
             )}
           </div>
           <FlexDiv
+            gap='0'
             style={{
               cursor: 'pointer',
               marginLeft: '35px',

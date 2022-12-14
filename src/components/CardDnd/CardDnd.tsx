@@ -22,20 +22,20 @@ interface ICardDnd {
   data: RoomTypes;
   renderData: (
     data: RoomTypes,
-    ref: React.RefObject<HTMLTableRowElement>,
+    ref: React.RefObject<HTMLElement>,
     dragOpacity: 0 | 1,
     handlerId: any
-  ) => void;
+  ) => JSX.Element;
 }
 
-export const CardDnd: (props: ICardDnd) => void = ({
+export const CardDnd: React.FC<ICardDnd> = ({
   id,
   index,
   moveCard,
   data,
   renderData,
 }) => {
-  const ref = useRef<HTMLTableRowElement>(null);
+  const ref = useRef<HTMLElement>(null);
 
   const [{ handlerId }, drop] = useDrop({
     accept: ItemTypes.CARD,

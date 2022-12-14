@@ -1,6 +1,10 @@
 import styled from 'styled-components';
 
-export const MainCard = styled.div`
+export const MainCard = styled.div<{
+  width?: string;
+  height?: string;
+  borderRadius: string;
+}>`
   width: ${({ width }) => width};
   height: ${({ height }) => height};
   padding: 20px;

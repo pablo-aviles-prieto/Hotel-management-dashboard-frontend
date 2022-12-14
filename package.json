@@ -33,7 +33,6 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "@types/d3-scale": "^4.0.2",
     "@types/styled-components": "^5.1.26",
     "cypress": "^11.1.0",
     "eslint-plugin-cypress": "^2.12.1",

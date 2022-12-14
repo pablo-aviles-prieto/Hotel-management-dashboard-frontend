@@ -1,6 +1,9 @@
 import styled from 'styled-components';
 
-export const InputSelect = styled.select`
+export const InputSelect = styled.select<{
+  padding: string;
+  positionArrowY: string;
+}>`
   cursor: pointer;
   padding: ${({ padding }) => padding};
   border: 1px solid ${({ theme }) => theme.buttonGreenBground};
