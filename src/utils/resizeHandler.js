@@ -1,14 +1,14 @@
 import { useState, useLayoutEffect } from 'react';
 
 export const useContainerDimensions = (myRef) => {
-  const getDimensions = () => ({
-    width: myRef.current.offsetWidth,
-    height: myRef.current.offsetHeight,
-  });
-
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   useLayoutEffect(() => {
+    const getDimensions = () => ({
+      width: myRef.current.offsetWidth,
+      height: myRef.current.offsetHeight,
+    });
+
     const handleResize = () => {
       setDimensions(getDimensions());
     };

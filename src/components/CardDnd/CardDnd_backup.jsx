@@ -12,6 +12,7 @@ export const CardDnd = ({ id, index, moveCard, data, renderData }) => {
       };
     },
     hover(item, monitor) {
+      console.log('item', item);
       if (!ref.current) {
         return;
       }
