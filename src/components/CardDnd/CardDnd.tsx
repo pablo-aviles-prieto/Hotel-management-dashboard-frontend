@@ -1,28 +1,16 @@
 import { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { ItemTypes } from './ItemTypes';
-
-interface RoomTypes {
-  id: number;
-  photo: string;
-  roomNumber: string;
-  roomName: string;
-  bedType: string;
-  roomFloor: string;
-  facilities: string[];
-  ratePerNight: number;
-  status: string;
-  offerPrice: null;
-}
+import { IRoomObj } from '../../store/roomSlice';
 
 interface ICardDnd {
   id: number;
   index: number;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
-  data: RoomTypes;
+  data: IRoomObj;
   renderData: (
-    data: RoomTypes,
-    ref: React.RefObject<HTMLElement>,
+    data: IRoomObj,
+    ref: React.RefObject<HTMLTableRowElement>,
     dragOpacity: 0 | 1,
     handlerId: any
   ) => JSX.Element;
@@ -35,7 +23,7 @@ export const CardDnd: React.FC<ICardDnd> = ({
   data,
   renderData,
 }) => {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLTableRowElement>(null);
 
   const [{ handlerId }, drop] = useDrop({
     accept: ItemTypes.CARD,

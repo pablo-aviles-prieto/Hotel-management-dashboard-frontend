@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { mockAPICall } from './mockAPICall';
 import { mockRealAPI } from './mockRealAPI';
 
-interface IUserObj {
+export interface IUserObj {
   id: number;
   photo: string;
   name: string;
@@ -10,7 +10,7 @@ interface IUserObj {
   startDate: string;
   job: { position: string; description: string; schedule: string };
   contact: string;
-  status: 'Active' | 'Inactive';
+  status: string;
 }
 
 interface IUserState {

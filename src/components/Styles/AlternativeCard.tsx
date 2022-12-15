@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
 export const AlternativeCard = styled.div<{
-  width: string;
-  height: string;
+  width?: string;
+  height?: string;
   borderRadius: string;
 }>`
   width: ${({ width }) => width};

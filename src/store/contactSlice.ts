@@ -3,7 +3,7 @@ import { mockAPICall } from './mockAPICall';
 import { mockRealAPI } from './mockRealAPI';
 import contactsData from '../assets/data/comments.json';
 
-interface IContactObj {
+export interface IContactObj {
   id: number;
   date: string;
   user: { name: string; email: string; phone: string };

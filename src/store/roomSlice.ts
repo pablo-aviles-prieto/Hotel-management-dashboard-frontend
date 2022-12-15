@@ -2,15 +2,17 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { mockAPICall } from './mockAPICall';
 import { mockRealAPI } from './mockRealAPI';
 
-interface IRoomObj {
+export interface IRoomObj {
   id: number;
   photo: string;
   roomNumber: string;
+  roomName: string;
   bedType: string;
   roomFloor: string;
   facilities: Array<string>;
   ratePerNight: number;
-  status: 'Booked' | 'Available';
+  roomDescription?: string;
+  status: string;
   offerPrice: null;
 }
 
