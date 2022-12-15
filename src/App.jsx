@@ -1,33 +1,31 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useContext } from 'react';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
 import Bookings from './pages/Bookings';
 import BookingDetails from './pages/BookingDetails';
-import NewRoom from './pages/NewRoom';
+import BookingEdit from './pages/BookingEdit';
+import NewBooking from './pages/NewBooking';
 import RoomsList from './pages/RoomsList';
+import NewRoom from './pages/NewRoom';
 import RoomDetails from './pages/RoomDetails';
 import RoomEdit from './pages/RoomEdit';
 import Users from './pages/Users';
-import CreateUser from './pages/CreateUser';
+import NewUser from './pages/NewUser';
+import UserDetails from './pages/UserDetails';
+import UserEdit from './pages/UserEdit';
 import Contact from './pages/Contact';
+import ContactDetails from './pages/ContactDetails';
 import { NotFound, ProtectRoute, Layout } from './components';
 import { ThemeProvider } from 'styled-components';
 import { LIGHT_THEME, DARK_THEME } from './themes';
+import { AuthContext } from './store/auth-context';
+import NewContact from './pages/NewContact';
+import ContactEdit from './pages/ContactEdit';
 
 const App = () => {
-  const [auth, setAuth] = useState(!!localStorage.getItem('AUTH'));
   const [lightTheme, setLightTheme] = useState(true);
-
-  useEffect(() => {
-    auth
-      ? localStorage.setItem('AUTH', 'yes')
-      : localStorage.removeItem('AUTH');
-  }, [auth]);
-
-  const authHandler = (boolean) => {
-    setAuth(boolean);
-  };
+  const { authStatus } = useContext(AuthContext);
 
   const switchThemeHandler = () => {
     setLightTheme((prevState) => !prevState);
@@ -35,35 +33,36 @@ const App = () => {
 
   return (
     <ThemeProvider theme={lightTheme ? LIGHT_THEME : DARK_THEME}>
-      <Layout
-        authProp={[auth, authHandler]}
-        themeProp={[lightTheme, switchThemeHandler]}
-      >
+      <Layout themeProp={[lightTheme, switchThemeHandler]}>
         <Routes>
           <Route
             path='/'
             element={
-              auth ? (
+              authStatus.authed ? (
                 <Homepage onThemeChange={switchThemeHandler} />
               ) : (
                 <Navigate to='/login' replace />
               )
             }
           />
-          <Route
-            path='/login'
-            element={<Login onSubmit={authHandler} auth={auth} />}
-          />
-          <Route path='*' element={<ProtectRoute auth={auth} />}>
+          <Route path='/login' element={<Login />} />
+          <Route path='*' element={<ProtectRoute />}>
             <Route path='bookings' element={<Bookings />} />
+            <Route path='bookings/new' element={<NewBooking />} />
             <Route path='bookings/:id' element={<BookingDetails />} />
+            <Route path='bookings/:id/edit' element={<BookingEdit />} />
             <Route path='rooms' element={<RoomsList />} />
             <Route path='rooms/new' element={<NewRoom />} />
             <Route path='rooms/:id' element={<RoomDetails />} />
             <Route path='rooms/:id/edit' element={<RoomEdit />} />
             <Route path='users' element={<Users />} />
-            <Route path='users/new' element={<CreateUser />} />
-            <Route path='contact' element={<Contact />} />
+            <Route path='users/new' element={<NewUser />} />
+            <Route path='users/:id' element={<UserDetails />} />
+            <Route path='users/:id/edit' element={<UserEdit />} />
+            <Route path='contacts' element={<Contact />} />
+            <Route path='contacts/new' element={<NewContact />} />
+            <Route path='contacts/:id' element={<ContactDetails />} />
+            <Route path='contacts/:id/edit' element={<ContactEdit />} />
             <Route path='*' element={<NotFound />} />
           </Route>
         </Routes>

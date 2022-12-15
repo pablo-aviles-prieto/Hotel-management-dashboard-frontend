@@ -1,61 +1,94 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { InputText, ButtonGreen } from '../components/Styles';
+import { AuthContext } from '../store/auth-context';
+import styled from 'styled-components';
 
-const Login = ({ onSubmit, auth }) => {
+const StyledForm = styled.form`
+  div {
+    margin-bottom: 10px;
+  }
+  label {
+    display: block;
+  }
+`;
+
+const StyledLabel = styled.label`
+  color: ${({ theme }) => theme.darkGreyToLightGrey};
+`;
+
+const Login = () => {
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
+  const { authStatus, loginHandler, logoutHandler } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const submitHandler = (e) => {
     e.preventDefault();
-    if (usernameInput.trim() !== 'test' && passwordInput.trim() !== 'test123')
+    if (
+      usernameInput.trim() !== 'test@test.com' ||
+      passwordInput.trim() !== 'test123'
+    )
       return alert('Invalid username and password');
 
-    onSubmit(true);
+    loginHandler({ email: usernameInput, name: 'test name' });
     setUsernameInput('');
     setPasswordInput('');
-    navigate('/');
+    navigate('/', { replace: true });
   };
 
   return (
-    <>
-      <h1>Login page</h1>
-      {!auth ? (
-        <form onSubmit={submitHandler}>
-          <div>
-            <label htmlFor='username'>Username</label>
-            <input
-              name='username'
-              placeholder='test'
-              value={usernameInput}
-              id='username'
-              type='text'
-              onChange={(e) => setUsernameInput(e.target.value)}
-              autoComplete='username'
-            />
-          </div>
-          <div>
-            <label htmlFor='password'>Password</label>
-            <input
-              name='password'
-              placeholder='test123'
-              value={passwordInput}
-              id='password'
-              type='password'
-              onChange={(e) => setPasswordInput(e.target.value)}
-              autoComplete='current-password'
-            />
-          </div>
-          <div>
-            <button type='submit'>Log in</button>
-          </div>
-        </form>
+    <div>
+      {!authStatus.authed ? (
+        <>
+          <h1 id='login-title'>Login page</h1>
+          <StyledForm onSubmit={submitHandler}>
+            <div>
+              <StyledLabel htmlFor='username'>Username</StyledLabel>
+              <InputText
+                borderRadius='4px'
+                padding='5px'
+                name='username'
+                placeholder='test@test.com'
+                value={usernameInput}
+                id='username'
+                type='text'
+                onChange={(e) => setUsernameInput(e.target.value)}
+                autoComplete='username'
+              />
+            </div>
+            <div style={{ marginBottom: '25px' }}>
+              <StyledLabel htmlFor='password'>Password</StyledLabel>
+              <InputText
+                borderRadius='4px'
+                padding='5px'
+                name='password'
+                placeholder='test123'
+                value={passwordInput}
+                id='password'
+                type='password'
+                onChange={(e) => setPasswordInput(e.target.value)}
+                autoComplete='current-password'
+              />
+            </div>
+            <div>
+              <ButtonGreen padding='10px 68px' type='submit'>
+                Log in
+              </ButtonGreen>
+            </div>
+          </StyledForm>
+        </>
       ) : (
-        <div>
-          <button onClick={() => onSubmit(false)}>Log out</button>
-        </div>
+        <>
+          <h1>Welcome again!</h1>
+          <div style={{ marginTop: '20px' }}>
+            <ButtonGreen padding='10px 40px' onClick={() => logoutHandler()}>
+              Log out
+            </ButtonGreen>
+          </div>
+        </>
       )}
-    </>
+    </div>
   );
 };
 

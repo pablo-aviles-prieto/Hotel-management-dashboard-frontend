@@ -4,5 +4,8 @@ export { AlternativeCard } from './AlternativeCard';
 export { ImgHolder } from './ImgHolder';
 export { ButtonGreen } from './ButtonGreen';
 export { InputSelect } from './InputSelect';
+export { InputText } from './InputText';
 export { Table } from './Table';
 export { PaginationButtons } from './PaginationButtons';
+export { MenuContainer } from './MenuContainer';
+export { FlexContainer } from './FlexContainer';

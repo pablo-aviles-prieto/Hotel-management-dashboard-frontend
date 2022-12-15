@@ -18,3 +18,6 @@ export { UpperArrow } from './UpperArrow';
 export { DotMenu } from './DotMenu';
 export { Bed } from './Bed';
 export { XCircle } from './XCircle';
+export { XClose } from './XClose';
+export { Star } from './Star';
+export { Phone } from './Phone';
