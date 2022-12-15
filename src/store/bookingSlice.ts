@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { mockAPICall } from './mockAPICall';
 import { mockRealAPI } from './mockRealAPI';
 
-interface IBookingObj {
+export interface IBookingObj {
   id: number;
   bookingNumber: number;
   user: { name: string; picture: string };
@@ -11,7 +11,7 @@ interface IBookingObj {
   checkOut: { date: string; hour: string };
   specialRequest: null | string;
   roomType: string;
-  status: 'check out' | 'check in' | 'in progress';
+  status: string;
 }
 
 interface IBookingsState {

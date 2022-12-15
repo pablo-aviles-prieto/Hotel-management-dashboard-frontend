@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { updateBooking } from '../store/bookingSlice';
 import {
@@ -60,16 +60,16 @@ const bookingStatusOptions = [
 ];
 
 const BookingEdit = () => {
-  const [bookingNumberInput, setBookingNumberInput] = useState('');
+  const [bookingNumberInput, setBookingNumberInput] = useState(0);
   const [bookingCheckInInput, setBookingCheckInInput] = useState('');
   const [bookingCheckOutInput, setBookingCheckOutInput] = useState('');
   const [bookingRoomTypeInput, setBookingRoomTypeInput] = useState('');
   const [bookingSpecialRequestInput, setBookingSpecialRequestInput] =
     useState('');
   const [bookingStatusSelect, setBookingStatusSelect] = useState('');
-  const bookingRedux = useSelector((state) => state.bookings.bookingsList);
-  const statusAPI = useSelector((state) => state.bookings.status);
-  const dispatch = useDispatch();
+  const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
+  const statusAPI = useAppSelector((state) => state.bookings.status);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const params = useParams();
   const { id } = params;
@@ -85,12 +85,12 @@ const BookingEdit = () => {
     setBookingStatusSelect(bookingRedux[0].status);
   }, [bookingRedux]);
 
-  const submitHandler = (e) => {
+  const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToUpdate = {
-      id: +id,
-      bookingNumber: +bookingNumberInput,
+      id: +id!,
+      bookingNumber: bookingNumberInput,
       checkIn: bookingCheckInInput,
       checkOut: bookingCheckOutInput,
       roomType: bookingRoomTypeInput,
@@ -110,7 +110,7 @@ const BookingEdit = () => {
     console.log('objToUpdate', objToUpdate);
 
     dispatch(updateBooking({ bookingsList: bookingsData, objToUpdate }));
-    // navigate(`/bookings/${id}`, { replace: true });
+    navigate(`/bookings/${id}`, { replace: true });
   };
 
   if (statusAPI === 'loading')
@@ -137,7 +137,7 @@ const BookingEdit = () => {
             id='booking-number'
             min={1}
             type='number'
-            onChange={(e) => setBookingNumberInput(e.target.value)}
+            onChange={(e) => setBookingNumberInput(+e.target.value)}
           />
         </div>
         <div>
@@ -188,7 +188,7 @@ const BookingEdit = () => {
           <DescriptionTextArea
             placeholder='Special request...'
             id='special-request'
-            rows='5'
+            rows={5}
             value={bookingSpecialRequestInput}
             onChange={(e) => setBookingSpecialRequestInput(e.target.value)}
           ></DescriptionTextArea>

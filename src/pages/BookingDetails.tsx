@@ -1,9 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { fetchSingleBooking } from '../store/bookingSlice';
+import { useAppDispatch, useAppSelector } from '../store/typedHooks';
+import {
+  fetchSingleBooking,
+  deleteBooking,
+  IBookingObj,
+} from '../store/bookingSlice';
 import { MainCard, ButtonGreen } from '../components/Styles';
-import { deleteBooking } from '../store/bookingSlice';
 import styled from 'styled-components';
 import bookingsData from '../assets/data/bookings.json';
 
@@ -13,17 +16,18 @@ const RedButton = styled(ButtonGreen)`
 `;
 
 const BookingDetails = () => {
-  const bookingRedux = useSelector((state) => state.bookings.bookingsList);
-  const statusAPI = useSelector((state) => state.bookings.status);
-  const dispatch = useDispatch();
+  const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
+  const statusAPI = useAppSelector((state) => state.bookings.status);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    const filteredBooking = bookingsData.filter(
-      (booking) => booking.id === +id
+    const filteredBooking: IBookingObj[] = bookingsData.filter(
+      (booking) => booking.id === +id!
     );
+    if (filteredBooking.length === 0) return;
     dispatch(fetchSingleBooking(filteredBooking));
   }, [dispatch, id]);
 
@@ -33,7 +37,7 @@ const BookingDetails = () => {
     )
       return;
 
-    dispatch(deleteBooking({ bookingsList: bookingsData, id: +id }));
+    dispatch(deleteBooking({ bookingsList: bookingsData, id: +id! }));
     navigate('/bookings/', { replace: true });
   };
 

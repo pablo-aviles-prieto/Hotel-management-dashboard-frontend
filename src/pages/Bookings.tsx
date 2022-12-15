@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect, useMemo } from 'react';
+import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import {
   MenuContainer,
@@ -16,11 +16,16 @@ import {
   numberOfPages,
   paginationButtonsHandler,
 } from '../utils';
-import { fetchBookings } from '../store/bookingSlice';
+import { fetchBookings, IBookingObj } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { Modal } from '../components';
 import { reorderHandler } from '../utils';
 import bookingsData from '../assets/data/bookings.json';
+
+interface IModalState {
+  title: string;
+  message: string;
+}
 
 const PAGINATION_OFFSET = 10;
 
@@ -109,18 +114,24 @@ const optionsSelect2 = [
 ];
 
 const Bookings = () => {
-  const [modalState, setModalState] = useState('');
+  const [modalState, setModalState] = useState<IModalState | null>(null);
   const [page, setPage] = useState(1);
-  const [filteredBookingsList, setFilteredBookingsList] = useState([]);
+  const [filteredBookingsList, setFilteredBookingsList] = useState<
+    IBookingObj[]
+  >([]);
   const [orderBy, setOderBy] = useState(
     JSON.stringify({ value: 'bookingNumber', sort: 1 })
   );
   // const [orderBy, setOderBy] = useState('bookingNumber1');
-  const [bookingsList, setBookingsList] = useState(bookingsData);
-  const [bookingsListSliced, setBookingsListSliced] = useState([]);
-  const bookingsListRedux = useSelector((state) => state.bookings.bookingsList);
-  const statusAPI = useSelector((state) => state.bookings.status);
-  const dispatch = useDispatch();
+  const [bookingsList, setBookingsList] = useState<IBookingObj[]>(bookingsData);
+  const [bookingsListSliced, setBookingsListSliced] = useState<IBookingObj[]>(
+    []
+  );
+  const bookingsListRedux = useAppSelector(
+    (state) => state.bookings.bookingsList
+  );
+  const statusAPI = useAppSelector((state) => state.bookings.status);
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -155,18 +166,18 @@ const Bookings = () => {
   }, [filteredBookingsList.length]);
 
   const closeModalHandler = () => {
-    setModalState('');
+    setModalState(null);
   };
 
-  const inputSelectHandler = (e) => {
+  const inputSelectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setOderBy(e.target.value);
     setPage(1);
   };
-  const inputDateSelectHandler = (e) => {
+  const inputDateSelectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     console.log('option selected =>', e.target.value);
   };
 
-  const singleBookingHandler = (id) => {
+  const singleBookingHandler = (id: number) => {
     navigate(`/bookings/${id}`);
   };
 
@@ -273,7 +284,7 @@ const Bookings = () => {
                           onClick={() =>
                             setModalState({
                               title: `Request from ${bookings.user.name}`,
-                              message: bookings.specialRequest,
+                              message: bookings.specialRequest!,
                             })
                           }
                           padding='10px 25px'

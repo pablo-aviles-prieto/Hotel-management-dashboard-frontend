@@ -5,7 +5,7 @@ import {
   MainCard,
 } from '../components/Styles';
 import { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createBooking } from '../store/bookingSlice';
 import styled from 'styled-components';
@@ -68,14 +68,14 @@ const NewBooking = () => {
     useState('');
   const [bookingStatusSelect, setBookingStatusSelect] = useState('check in');
   const [bookingUserInput, setBookingUserInput] = useState('');
-  const bookingRedux = useSelector((state) => state.bookings.bookingsList);
-  const statusAPI = useSelector((state) => state.bookings.status);
+  const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
+  const statusAPI = useAppSelector((state) => state.bookings.status);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   console.log('bookingRedux', bookingRedux);
 
-  const submitHandler = (e) => {
+  const submitHandler = (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToSave = {
@@ -192,7 +192,7 @@ const NewBooking = () => {
           <DescriptionTextArea
             placeholder='Special request...'
             id='special-request'
-            rows='5'
+            rows={5}
             value={bookingSpecialRequestInput}
             onChange={(e) => setBookingSpecialRequestInput(e.target.value)}
           ></DescriptionTextArea>
