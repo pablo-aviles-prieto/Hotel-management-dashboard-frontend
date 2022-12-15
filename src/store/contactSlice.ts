@@ -3,7 +3,22 @@ import { mockAPICall } from './mockAPICall';
 import { mockRealAPI } from './mockRealAPI';
 import contactsData from '../assets/data/comments.json';
 
-const initialState = {
+interface IContactObj {
+  id: number;
+  date: string;
+  user: { name: string; email: string; phone: string };
+  message: { subject: string; body: string };
+  rate: number;
+  archived?: boolean;
+}
+
+interface IContactState {
+  contactList: IContactObj[];
+  status: 'idle' | 'loading' | 'failed';
+  statusPost: 'idle' | 'loading' | 'failed';
+}
+
+const initialState: IContactState = {
   contactList: [],
   status: 'loading',
   statusPost: 'idle',
@@ -11,7 +26,7 @@ const initialState = {
 
 export const fetchContacts = createAsyncThunk(
   'contact/fetchContacts',
-  async () => {
+  async (): Promise<IContactObj[]> => {
     const response = await mockAPICall(contactsData);
     return response;
   }
@@ -19,7 +34,7 @@ export const fetchContacts = createAsyncThunk(
 
 export const fetchSingleContact = createAsyncThunk(
   'contact/fetchSingleContact',
-  async (data) => {
+  async (data: IContactObj[]): Promise<IContactObj[]> => {
     const response = await mockAPICall(data);
     return response;
   }
@@ -28,7 +43,11 @@ export const fetchSingleContact = createAsyncThunk(
 export const createContact = createAsyncThunk(
   'contact/createContact',
   // async ({ url, fetchProps }) => {
-  async ({ objToInsert }) => {
+  async ({
+    objToInsert,
+  }: {
+    objToInsert: any;
+  }): Promise<{ contacts: IContactObj[]; objToInsert: any }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const contacts = await mockAPICall(contactsData);
     return { contacts, objToInsert };
@@ -38,7 +57,11 @@ export const createContact = createAsyncThunk(
 export const updateContact = createAsyncThunk(
   'contact/updateContact',
   // async ({ url, fetchProps }) => {
-  async ({ objToUpdate }) => {
+  async ({
+    objToUpdate,
+  }: {
+    objToUpdate: any;
+  }): Promise<{ contacts: IContactObj[]; objToUpdate: any }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const contacts = await mockAPICall(contactsData);
     return { contacts, objToUpdate };
@@ -48,7 +71,11 @@ export const updateContact = createAsyncThunk(
 export const deleteContact = createAsyncThunk(
   'contact/deleteContact',
   // async ({ url, fetchProps }) => {
-  async ({ id }) => {
+  async ({
+    id,
+  }: {
+    id: number;
+  }): Promise<{ contacts: IContactObj[]; id: number }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const contacts = await mockAPICall(contactsData);
     return { contacts, id };

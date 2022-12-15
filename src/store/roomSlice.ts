@@ -2,19 +2,54 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { mockAPICall } from './mockAPICall';
 import { mockRealAPI } from './mockRealAPI';
 
-const initialState = {
+interface IRoomObj {
+  id: number;
+  photo: string;
+  roomNumber: string;
+  bedType: string;
+  roomFloor: string;
+  facilities: Array<string>;
+  ratePerNight: number;
+  status: 'Booked' | 'Available';
+  offerPrice: null;
+}
+
+interface IRoomState {
+  roomList: IRoomObj[];
+  status: 'idle' | 'loading' | 'failed';
+}
+
+interface ICreateRoom {
+  roomsList: IRoomObj[];
+  objToInsert: any;
+}
+
+interface IUpdateRoom {
+  roomsList: IRoomObj[];
+  objToUpdate: any;
+}
+
+interface IDeleteBooking {
+  roomsList: IRoomObj[];
+  id: number;
+}
+
+const initialState: IRoomState = {
   roomList: [],
   status: 'idle',
 };
 
-export const fetchRooms = createAsyncThunk('room/fetchRooms', async (data) => {
-  const response = await mockAPICall(data);
-  return response;
-});
+export const fetchRooms = createAsyncThunk(
+  'room/fetchRooms',
+  async (data: IRoomObj[]): Promise<IRoomObj[]> => {
+    const response = await mockAPICall(data);
+    return response;
+  }
+);
 
 export const fetchSingleRoom = createAsyncThunk(
   'room/fetchRoom',
-  async (data) => {
+  async (data: IRoomObj[]): Promise<IRoomObj[]> => {
     const response = await mockAPICall(data);
     return response;
   }
@@ -23,7 +58,10 @@ export const fetchSingleRoom = createAsyncThunk(
 export const createRoom = createAsyncThunk(
   'room/createRoom',
   // async ({ url, fetchProps }) => {
-  async ({ roomsList, objToInsert }) => {
+  async ({
+    roomsList,
+    objToInsert,
+  }: ICreateRoom): Promise<{ rooms: IRoomObj[]; objToInsert: any }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const rooms = await mockAPICall(roomsList);
     return { rooms, objToInsert };
@@ -33,7 +71,10 @@ export const createRoom = createAsyncThunk(
 export const updateRoom = createAsyncThunk(
   'room/updateRoom',
   // async ({ url, fetchProps }) => {
-  async ({ roomsList, objToUpdate }) => {
+  async ({
+    roomsList,
+    objToUpdate,
+  }: IUpdateRoom): Promise<{ rooms: IRoomObj[]; objToUpdate: any }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const rooms = await mockAPICall(roomsList);
     return { rooms, objToUpdate };
@@ -43,7 +84,10 @@ export const updateRoom = createAsyncThunk(
 export const deleteRoom = createAsyncThunk(
   'room/deleteRoom',
   // async ({ url, fetchProps }) => {
-  async ({ roomsList, id }) => {
+  async ({
+    roomsList,
+    id,
+  }: IDeleteBooking): Promise<{ rooms: IRoomObj[]; id: number }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const rooms = await mockAPICall(roomsList);
     return { rooms, id };

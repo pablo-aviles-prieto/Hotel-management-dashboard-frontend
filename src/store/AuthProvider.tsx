@@ -1,7 +1,17 @@
 import { useReducer, useCallback } from 'react';
-import { AuthContext, INIT_STATE } from './auth-context';
+import { AuthContext, INIT_STATE, IAuthed } from './auth-context';
 
-const authReducer = (state, action) => {
+interface IReducerState {
+  name: string;
+  email: string;
+  authed: boolean;
+}
+interface IReducerAction {
+  type: string;
+  payload?: any;
+}
+
+const authReducer = (state: IReducerState, action: IReducerAction) => {
   switch (action.type) {
     case 'LOGIN': {
       const { name, email } = action.payload;
@@ -21,11 +31,13 @@ const authReducer = (state, action) => {
   }
 };
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider: React.FC<{ children: JSX.Element }> = ({
+  children,
+}) => {
   const [auth, dispatchAuth] = useReducer(authReducer, INIT_STATE());
 
   const loginHandler = useCallback(
-    ({ name, email }) => {
+    ({ name, email }: IAuthed) => {
       dispatchAuth({ type: 'LOGIN', payload: { name, email } });
     },
     [dispatchAuth]
@@ -35,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     dispatchAuth({ type: 'LOGOUT' });
   }, [dispatchAuth]);
 
-  const updateUserHandler = useCallback((data) => {
+  const updateUserHandler = useCallback((data: any) => {
     console.log('data obj to update user in auth context', data);
   }, []);
 

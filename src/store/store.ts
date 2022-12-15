@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
 import roomsReducer from './roomSlice';
 import bookingsReducer from './bookingSlice';
 import usersReducer from './userSlice';
@@ -12,3 +12,12 @@ export const reduxStore = configureStore({
     contacts: contactsReducer,
   },
 });
+
+export type AppDispatch = typeof reduxStore.dispatch;
+export type RootState = ReturnType<typeof reduxStore.getState>;
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  RootState,
+  unknown,
+  Action<string>
+>;

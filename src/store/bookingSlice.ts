@@ -2,22 +2,55 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { mockAPICall } from './mockAPICall';
 import { mockRealAPI } from './mockRealAPI';
 
-const initialState = {
+interface IBookingObj {
+  id: number;
+  bookingNumber: number;
+  user: { name: string; picture: string };
+  orderDate: string;
+  checkIn: { date: string; hour: string };
+  checkOut: { date: string; hour: string };
+  specialRequest: null | string;
+  roomType: string;
+  status: 'check out' | 'check in' | 'in progress';
+}
+
+interface IBookingsState {
+  bookingsList: IBookingObj[];
+  status: 'idle' | 'loading' | 'failed';
+}
+
+interface ICreateBooking {
+  bookingsList: IBookingObj[];
+  objToInsert: any;
+}
+
+interface IUpdateBooking {
+  bookingsList: IBookingObj[];
+  objToUpdate: any;
+}
+
+interface IDeleteBooking {
+  bookingsList: IBookingObj[];
+  id: number;
+}
+
+const initialState: IBookingsState = {
   bookingsList: [],
   status: 'idle',
 };
 
 export const fetchBookings = createAsyncThunk(
   'booking/fetchBookings',
-  async (data) => {
-    const response = await mockAPICall(data);
+  async (data: IBookingObj[]): Promise<IBookingObj[]> => {
+    const response: IBookingObj[] = await mockAPICall(data);
     return response;
   }
 );
 
+// Atm w
 export const fetchSingleBooking = createAsyncThunk(
   'booking/fetchSingleBooking',
-  async (data) => {
+  async (data: IBookingObj[]): Promise<IBookingObj[]> => {
     const response = await mockAPICall(data);
     return response;
   }
@@ -26,7 +59,13 @@ export const fetchSingleBooking = createAsyncThunk(
 export const createBooking = createAsyncThunk(
   'booking/createBooking',
   // async ({ url, fetchProps }) => {
-  async ({ bookingsList, objToInsert }) => {
+  async ({
+    bookingsList,
+    objToInsert,
+  }: ICreateBooking): Promise<{
+    bookings: IBookingObj[];
+    objToInsert: any;
+  }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const bookings = await mockAPICall(bookingsList);
     return { bookings, objToInsert };
@@ -36,7 +75,13 @@ export const createBooking = createAsyncThunk(
 export const updateBooking = createAsyncThunk(
   'booking/updateBooking',
   // async ({ url, fetchProps }) => {
-  async ({ bookingsList, objToUpdate }) => {
+  async ({
+    bookingsList,
+    objToUpdate,
+  }: IUpdateBooking): Promise<{
+    bookings: IBookingObj[];
+    objToUpdate: any;
+  }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const bookings = await mockAPICall(bookingsList);
     return { bookings, objToUpdate };
@@ -46,7 +91,13 @@ export const updateBooking = createAsyncThunk(
 export const deleteBooking = createAsyncThunk(
   'booking/deleteBooking',
   // async ({ url, fetchProps }) => {
-  async ({ bookingsList, id }) => {
+  async ({
+    bookingsList,
+    id,
+  }: IDeleteBooking): Promise<{
+    bookings: IBookingObj[];
+    id: number;
+  }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const bookings = await mockAPICall(bookingsList);
     return { bookings, id };
@@ -79,7 +130,7 @@ export const bookingSlice = createSlice({
           ...objToInsert,
           id: bookings.length + 1,
         };
-        console.log('[...bookings, newObjToInsert] bookingSlice', [
+        console.log('createBooking in bookingSlice', [
           ...bookings,
           newObjToInsert,
         ]);

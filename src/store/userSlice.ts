@@ -2,19 +2,53 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { mockAPICall } from './mockAPICall';
 import { mockRealAPI } from './mockRealAPI';
 
-const initialState = {
+interface IUserObj {
+  id: number;
+  photo: string;
+  name: string;
+  email: string;
+  startDate: string;
+  job: { position: string; description: string; schedule: string };
+  contact: string;
+  status: 'Active' | 'Inactive';
+}
+
+interface IUserState {
+  usersList: IUserObj[];
+  status: 'idle' | 'loading' | 'failed';
+}
+
+interface ICreateUser {
+  usersList: IUserObj[];
+  objToInsert: any;
+}
+
+interface IUpdateUser {
+  usersList: IUserObj[];
+  objToUpdate: any;
+}
+
+interface IDeleteUser {
+  usersList: IUserObj[];
+  id: number;
+}
+
+const initialState: IUserState = {
   usersList: [],
   status: 'idle',
 };
 
-export const fetchUsers = createAsyncThunk('user/fetchUsers', async (data) => {
-  const response = await mockAPICall(data);
-  return response;
-});
+export const fetchUsers = createAsyncThunk(
+  'user/fetchUsers',
+  async (data: IUserObj[]): Promise<IUserObj[]> => {
+    const response = await mockAPICall(data);
+    return response;
+  }
+);
 
 export const fetchSingleUser = createAsyncThunk(
   'user/fetchSingleUser',
-  async (data) => {
+  async (data: IUserObj[]): Promise<IUserObj[]> => {
     const response = await mockAPICall(data);
     return response;
   }
@@ -23,7 +57,10 @@ export const fetchSingleUser = createAsyncThunk(
 export const createUser = createAsyncThunk(
   'user/createUser',
   // async ({ url, fetchProps }) => {
-  async ({ usersList, objToInsert }) => {
+  async ({
+    usersList,
+    objToInsert,
+  }: ICreateUser): Promise<{ users: IUserObj[]; objToInsert: any }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const users = await mockAPICall(usersList);
     return { users, objToInsert };
@@ -33,7 +70,10 @@ export const createUser = createAsyncThunk(
 export const updateUser = createAsyncThunk(
   'user/updateUser',
   // async ({ url, fetchProps }) => {
-  async ({ usersList, objToUpdate }) => {
+  async ({
+    usersList,
+    objToUpdate,
+  }: IUpdateUser): Promise<{ users: IUserObj[]; objToUpdate: any }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const users = await mockAPICall(usersList);
     return { users, objToUpdate };
@@ -43,7 +83,10 @@ export const updateUser = createAsyncThunk(
 export const deleteUser = createAsyncThunk(
   'user/deleteUser',
   // async ({ url, fetchProps }) => {
-  async ({ usersList, id }) => {
+  async ({
+    usersList,
+    id,
+  }: IDeleteUser): Promise<{ users: IUserObj[]; id: number }> => {
     // const response = await mockRealAPI({ url, fetchProps });
     const users = await mockAPICall(usersList);
     return { users, id };
