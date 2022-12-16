@@ -23,11 +23,6 @@ import {
 } from '../utils';
 import styled from 'styled-components';
 import { reorderHandler } from '../utils';
-// import RightArrowIcon from '../assets/icons/RightArrowLong.svg';
-// import LeftArrowIcon from '../assets/icons/LeftArrowLong.svg';
-
-const RightArrowIcon = require("../assets/icons/RightArrowLong.svg") as string;
-const LeftArrowIcon = require("../assets/icons/LeftArrowLong.svg") as string;
 
 const PAGINATION_OFFSET = 5;
 
@@ -62,11 +57,11 @@ const SliderSection = styled.section`
       border-radius: 6px;
     }
     .swiper-button-next {
-      background-image: url(${RightArrowIcon});
+      background-image: url("data:image/svg+xml;utf8,<svg class='w-6 h-6' fill='none' stroke='white' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M14 5l7 7m0 0l-7 7m7-7H3'></path></svg>");
       right: -10px;
     }
     .swiper-button-prev {
-      background-image: url(${LeftArrowIcon});
+      background-image: url("data:image/svg+xml;utf8,<svg class='w-6 h-6' fill='none' stroke='white' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M10 19l-7-7m0 0l7-7m-7 7h18'></path></svg>");
       left: -10px;
     }
     .swiper-button-disabled {
