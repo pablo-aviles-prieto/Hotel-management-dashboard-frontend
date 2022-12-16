@@ -1,14 +1,21 @@
-const onBtnClick = (setPage, i) => {
+const onBtnClick = (
+  setPage: React.Dispatch<React.SetStateAction<number>>,
+  i: number
+) => {
   setPage(i + 1);
   document.getElementById('pages-container')?.scrollIntoView();
 };
 
-export const numberOfPages = (totalLength, offset) => {
+export const numberOfPages = (totalLength: number, offset: number) => {
   if (totalLength <= offset) return 1;
   return Math.ceil(totalLength / offset);
 };
 
-export const paginationDataHandler = (data, offset, selectedPage) => {
+export const paginationDataHandler = (
+  data: any[],
+  offset: number,
+  selectedPage: number
+) => {
   if (numberOfPages(data.length, offset) < selectedPage)
     return data.slice(0, offset);
   const initialSlice = (selectedPage - 1) * offset;
@@ -16,7 +23,11 @@ export const paginationDataHandler = (data, offset, selectedPage) => {
   return data.slice(initialSlice, finalSlice);
 };
 
-export const paginationButtonsHandler = (page, totalPages, setPage) => {
+export const paginationButtonsHandler = (
+  page: number,
+  totalPages: number,
+  setPage: React.Dispatch<React.SetStateAction<number>>
+) => {
   const newArr = [...Array(totalPages)].map((_, i) => {
     if (i + 1 === page)
       return (

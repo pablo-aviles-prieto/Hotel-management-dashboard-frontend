@@ -39,7 +39,7 @@ const App = () => {
             path='/'
             element={
               authStatus.authed ? (
-                <Homepage onThemeChange={switchThemeHandler} />
+                <Homepage/>
               ) : (
                 <Navigate to='/login' replace />
               )

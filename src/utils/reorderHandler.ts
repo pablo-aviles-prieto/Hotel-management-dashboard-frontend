@@ -1,4 +1,10 @@
-const getObjValue = ({ obj, value }) => {
+interface IReorderHandler {
+  array: any[];
+  orderValue: string;
+  orderDirection: string;
+}
+
+const getObjValue = ({ obj, value }: { obj: { [key: string]: any }, value: string | string[] }) => {
   const search = Array.isArray(value) ? value : [value];
   return search.reduce(
     (acc, key) => (acc[key] !== 'undefined' ? acc[key] : undefined),
@@ -6,7 +12,12 @@ const getObjValue = ({ obj, value }) => {
   );
 };
 
-export const reorderHandler = ({ array, orderValue, orderDirection }) => {
+
+export const reorderHandler = ({
+  array,
+  orderValue,
+  orderDirection,
+}: IReorderHandler) => {
   return array.sort((a, b) => {
     const aObj = getObjValue({ obj: a, value: orderValue });
     const bObj = getObjValue({ obj: b, value: orderValue });
