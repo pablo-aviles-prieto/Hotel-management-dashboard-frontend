@@ -1,8 +1,9 @@
 import { createContext } from 'react';
 
 export interface IAuthed {
-  name: string;
+  name?: string;
   email: string;
+  token: string;
 }
 
 export const INIT_STATE = () => {
@@ -12,7 +13,7 @@ export const INIT_STATE = () => {
     : null;
   return authed
     ? { ...authed, authed: true }
-    : { name: '', email: '', authed: false };
+    : { name: '', email: '', token: '', authed: false };
 };
 
 export const AuthContext = createContext({

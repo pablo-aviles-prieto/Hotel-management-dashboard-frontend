@@ -2,8 +2,9 @@ import { useReducer, useCallback } from 'react';
 import { AuthContext, INIT_STATE, IAuthed } from './auth-context';
 
 interface IReducerState {
-  name: string;
+  name?: string;
   email: string;
+  token: string;
   authed: boolean;
 }
 interface IReducerAction {
@@ -14,13 +15,13 @@ interface IReducerAction {
 const authReducer = (state: IReducerState, action: IReducerAction) => {
   switch (action.type) {
     case 'LOGIN': {
-      const { name, email } = action.payload;
-      localStorage.setItem('AUTH', JSON.stringify({ name, email }));
-      return { name, email, authed: true };
+      const { name, email, token } = action.payload;
+      localStorage.setItem('AUTH', JSON.stringify({ name, email, token }));
+      return { name, email, token, authed: true };
     }
     case 'LOGOUT': {
       localStorage.removeItem('AUTH');
-      return { name: '', email: '', authed: false };
+      return { name: '', email: '', token: '', authed: false };
     }
     case 'UPDATE': {
       console.log('action UPDATE', action);
@@ -37,8 +38,8 @@ export const AuthProvider: React.FC<{ children: JSX.Element }> = ({
   const [auth, dispatchAuth] = useReducer(authReducer, INIT_STATE());
 
   const loginHandler = useCallback(
-    ({ name, email }: IAuthed) => {
-      dispatchAuth({ type: 'LOGIN', payload: { name, email } });
+    ({ name, email, token }: IAuthed) => {
+      dispatchAuth({ type: 'LOGIN', payload: { name, email, token } });
     },
     [dispatchAuth]
   );
