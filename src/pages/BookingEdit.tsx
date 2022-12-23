@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
-import { updateBooking } from '../store/bookingSlice';
+import { updateBooking, fetchSingleBooking } from '../store/bookingSlice';
 import {
   MainCard,
   InputSelect,
   InputText,
   ButtonGreen,
 } from '../components/Styles';
+import { AuthContext } from '../store/auth-context';
 import styled from 'styled-components';
 import bookingsData from '../assets/data/bookings.json';
 
@@ -68,24 +69,46 @@ const BookingEdit = () => {
     useState('');
   const [bookingStatusSelect, setBookingStatusSelect] = useState('');
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
-  const statusAPI = useAppSelector((state) => state.bookings.status);
+  const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
-  useEffect(() => {
-    setBookingNumberInput(bookingRedux[0].bookingNumber);
-    // setBookingCheckInInput('2022-11-25');
-    // setBookingCheckOutInput(bookingRedux[0].checkOut);
-    setBookingRoomTypeInput(bookingRedux[0].roomType);
-    setBookingSpecialRequestInput(
-      bookingRedux[0]?.specialRequest ? bookingRedux[0]?.specialRequest : ''
-    );
-    setBookingStatusSelect(bookingRedux[0].status);
-  }, [bookingRedux]);
+  console.log('fetchStatusAPI bookingEdit', fetchStatusAPI);
 
-  const submitHandler = (e: React.FormEvent) => {
+  useEffect(() => {
+    dispatch(
+      fetchSingleBooking({
+        url: new URL(`http://localhost:3200/bookings/${id}`),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (fetchStatusAPI !== 'idle') return;
+
+    const dataChecked = Array.isArray(bookingRedux)
+      ? bookingRedux[0]
+      : bookingRedux;
+    setBookingNumberInput(dataChecked.bookingNumber);
+    setBookingCheckInInput(dataChecked.checkIn);
+    setBookingCheckOutInput(dataChecked.checkOut);
+    setBookingRoomTypeInput(dataChecked.roomType);
+    setBookingSpecialRequestInput(
+      dataChecked?.specialRequest ? dataChecked.specialRequest : ''
+    );
+    setBookingStatusSelect(dataChecked.status);
+  }, [bookingRedux, fetchStatusAPI]);
+
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToUpdate = {
@@ -109,11 +132,31 @@ const BookingEdit = () => {
     }
     console.log('objToUpdate', objToUpdate);
 
-    dispatch(updateBooking({ bookingsList: bookingsData, objToUpdate }));
+    const result = await dispatch(
+      updateBooking({
+        url: new URL(`http://localhost:3200/bookings/${id}`),
+        fetchObjProps: {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(objToUpdate),
+        },
+      })
+    );
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('There was an error editing the booking!');
+      return;
+    }
+
+    // console.log('result', result);
     navigate(`/bookings/${id}`, { replace: true });
   };
 
-  if (statusAPI === 'loading')
+  if (fetchStatusAPI === 'loading')
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Loading booking...

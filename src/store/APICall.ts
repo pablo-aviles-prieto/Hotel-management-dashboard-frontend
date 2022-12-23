@@ -1,13 +1,14 @@
-export const mockRealAPI = async ({
+export const APICall = async ({
   url,
   fetchObjProps,
 }: {
-  url: string;
-  fetchObjProps: any;
-}): Promise<any> => {
+  url: URL;
+  fetchObjProps: RequestInit;
+}): Promise<Response> => {
   const response = await fetch(url, fetchObjProps);
   if (!response.ok) {
     throw new Error(`Error fetching data to the endpoint ${url}`);
   }
-  return response.json();
+  return response;
+  // return response.json();
 };

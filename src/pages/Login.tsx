@@ -39,15 +39,12 @@ const Login = () => {
     if (!res.ok) return alert('Check username and/or password');
 
     const parsedRes = await res.json();
-    console.log('parsedRes', parsedRes);
 
     loginHandler({
       email: usernameInput,
       name: 'test name',
       token: parsedRes.token,
     });
-    // setUsernameInput('');
-    // setPasswordInput('');
     navigate('/', { replace: true });
   };
 

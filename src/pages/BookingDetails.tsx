@@ -1,14 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useContext, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
-import {
-  fetchSingleBooking,
-  deleteBooking,
-  IBookingObj,
-} from '../store/bookingSlice';
+import { fetchSingleBooking, deleteBooking } from '../store/bookingSlice';
 import { MainCard, ButtonGreen } from '../components/Styles';
+import { AuthContext } from '../store/auth-context';
 import styled from 'styled-components';
-import bookingsData from '../assets/data/bookings.json';
 
 const RedButton = styled(ButtonGreen)`
   background-color: rgb(226, 52, 40);
@@ -17,40 +13,60 @@ const RedButton = styled(ButtonGreen)`
 
 const BookingDetails = () => {
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
-  const statusAPI = useAppSelector((state) => state.bookings.status);
+  const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    const filteredBooking: IBookingObj[] = bookingsData.filter(
-      (booking) => booking.id === +id!
+    dispatch(
+      fetchSingleBooking({
+        url: new URL(`http://localhost:3200/bookings/${id}`),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
     );
-    if (filteredBooking.length === 0) return;
-    dispatch(fetchSingleBooking(filteredBooking));
   }, [dispatch, id]);
 
-  const deleteBookingHandler = () => {
+  const deleteBookingHandler = async () => {
     if (
       window.confirm('Are you sure you want to delete this booking?') === false
-    )
+    ) {
       return;
+    }
 
-    dispatch(deleteBooking({ bookingsList: bookingsData, id: +id! }));
+    const result = await dispatch(
+      deleteBooking({
+        url: new URL(`http://localhost:3200/bookings/${id}`),
+        fetchObjProps: {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('ID provided is not valid!');
+      return;
+    }
     navigate('/bookings/', { replace: true });
   };
 
-  console.log('bookingRedux', bookingRedux);
+  const dataChecked = useMemo(
+    () => (Array.isArray(bookingRedux) ? bookingRedux[0] : bookingRedux),
+    [bookingRedux]
+  );
 
-  if (statusAPI === 'loading')
-    return (
-      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Loading booking...
-      </h1>
-    );
-
-  if (bookingRedux.length === 0)
+  if (fetchStatusAPI === 'failed')
     return (
       <h1>
         We couldn't find the booking selected. Please check the ID and if it's
@@ -60,36 +76,43 @@ const BookingDetails = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      <h1>Booking details for {id}</h1>
-      <ul>
-        <li>Booked by: {bookingRedux[0].user.name}</li>
-        <li>Booking number: #{bookingRedux[0].bookingNumber}</li>
-        <li>Room type: {bookingRedux[0].roomType}</li>
-        <li>Order date: {bookingRedux[0].orderDate}</li>
-        <li>
-          Check-in: {bookingRedux[0].checkIn.date},{' '}
-          {bookingRedux[0].checkIn.hour}
-        </li>
-        <li>Check-out: {bookingRedux[0].checkOut.date}</li>
-        <li>
-          Special request:{' '}
-          {bookingRedux[0].specialRequest
-            ? bookingRedux[0].specialRequest
-            : 'There is not a special request for this booking.'}
-        </li>
-        <li>Status: {bookingRedux[0].status}</li>
-      </ul>
-      <div style={{ marginTop: '50px' }}>
-        <ButtonGreen
-          padding='10px 52px'
-          onClick={() => navigate(`/bookings/${id}/edit`)}
+      {fetchStatusAPI === 'loading' ? (
+        <h1
+          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
-          Edit booking
-        </ButtonGreen>
-        <RedButton padding='10px 52px' onClick={deleteBookingHandler}>
-          Delete booking
-        </RedButton>
-      </div>
+          Loading booking {id}...
+        </h1>
+      ) : (
+        <>
+          <h1>Booking details for {id}</h1>
+          <ul>
+            <li>Booked by: {dataChecked.user.name}</li>
+            <li>Booking number: #{dataChecked.bookingNumber}</li>
+            <li>Room type: {dataChecked.roomType}</li>
+            <li>Order date: {dataChecked.orderDate}</li>
+            <li>Check-in: {dataChecked.checkIn}</li>
+            <li>Check-out: {dataChecked.checkOut}</li>
+            <li>
+              Special request:{' '}
+              {dataChecked.specialRequest
+                ? dataChecked.specialRequest
+                : 'There is not a special request for this booking.'}
+            </li>
+            <li>Status: {dataChecked.status}</li>
+          </ul>
+          <div style={{ marginTop: '50px' }}>
+            <ButtonGreen
+              padding='10px 52px'
+              onClick={() => navigate(`/bookings/${id}/edit`)}
+            >
+              Edit booking
+            </ButtonGreen>
+            <RedButton padding='10px 52px' onClick={deleteBookingHandler}>
+              Delete booking
+            </RedButton>
+          </div>
+        </>
+      )}
     </MainCard>
   );
 };
