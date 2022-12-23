@@ -1,10 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useContext, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
-import styled from 'styled-components';
 import { fetchSingleContact, deleteContact } from '../store/contactSlice';
 import { MainCard, ButtonGreen } from '../components/Styles';
-import contactsData from '../assets/data/comments.json';
+import { AuthContext } from '../store/auth-context';
+import styled from 'styled-components';
 
 const RedButton = styled(ButtonGreen)`
   background-color: rgb(226, 52, 40);
@@ -13,38 +13,57 @@ const RedButton = styled(ButtonGreen)`
 
 const ContactDetails = () => {
   const contactRedux = useAppSelector((state) => state.contacts.contactList);
-  const statusAPI = useAppSelector((state) => state.contacts.status);
+  const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
-  // console.log('statusAPI', statusAPI);
-  console.log('contactRedux', contactRedux);
-
   useEffect(() => {
-    const filteredContacts = contactsData.filter(
-      (contact) => contact.id === +id!
+    dispatch(
+      fetchSingleContact({
+        url: new URL(`http://localhost:3200/contacts/${id}`),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
     );
-    dispatch(fetchSingleContact(filteredContacts));
   }, [dispatch, id]);
 
-  const deleteContactHandler = () => {
-    if (window.confirm('Are you sure you want to delete this room?') === false)
+  const deleteContactHandler = async () => {
+    if (
+      window.confirm('Are you sure you want to delete this contact?') === false
+    )
       return;
 
-    dispatch(deleteContact({ id: +id! }));
+    const result = await dispatch(deleteContact({
+      url: new URL(`http://localhost:3200/contacts/${id}`),
+      fetchObjProps: {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${authStatus.token}`,
+        },
+      },
+    }));
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('ID provided is not valid!');
+      return;
+    }
     navigate('/contacts/', { replace: true });
   };
 
-  if (statusAPI === 'loading')
-    return (
-      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Loading contact...
-      </h1>
-    );
+  const dataChecked = useMemo(
+    () => (Array.isArray(contactRedux) ? contactRedux[0] : contactRedux),
+    [contactRedux]
+  );
 
-  if (contactRedux.length === 0)
+  if (fetchStatusAPI === 'failed')
     return (
       <h1>
         We couldn't find the contact selected. Please check the ID and if it's
@@ -54,26 +73,36 @@ const ContactDetails = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      <h1>Room details for {id}</h1>
-      <ul>
-        <li>ID: {contactRedux[0].id}</li>
-        <li>Subject: {contactRedux[0].message.subject}</li>
-        <li>Message: {contactRedux[0].message.body}</li>
-        <li>Rate: {contactRedux[0].rate}/100</li>
-        <li>Posted date: {contactRedux[0].date}</li>
-        <li>Posted by: {contactRedux[0].user.name}</li>
-      </ul>
-      <div style={{ marginTop: '50px' }}>
-        <ButtonGreen
-          padding='10px 52px'
-          onClick={() => navigate(`/contacts/${id}/edit`)}
+      {fetchStatusAPI === 'loading' ? (
+        <h1
+          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
-          Edit contact
-        </ButtonGreen>
-        <RedButton padding='10px 52px' onClick={deleteContactHandler}>
-          Delete contact
-        </RedButton>
-      </div>
+          Loading contact...
+        </h1>
+      ) : (
+        <>
+          <h1>Contacts details for {id}</h1>
+          <ul>
+            <li>ID: {dataChecked.id}</li>
+            <li>Subject: {dataChecked.message.subject}</li>
+            <li>Message: {dataChecked.message.body}</li>
+            <li>Rate: {dataChecked.rate}/100</li>
+            <li>Posted date: {dataChecked.date}</li>
+            <li>Posted by: {dataChecked.user.name}</li>
+          </ul>
+          <div style={{ marginTop: '50px' }}>
+            <ButtonGreen
+              padding='10px 52px'
+              onClick={() => navigate(`/contacts/${id}/edit`)}
+            >
+              Edit contact
+            </ButtonGreen>
+            <RedButton padding='10px 52px' onClick={deleteContactHandler}>
+              Delete contact
+            </RedButton>
+          </div>
+        </>
+      )}
     </MainCard>
   );
 };

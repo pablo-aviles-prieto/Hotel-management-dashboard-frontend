@@ -116,7 +116,7 @@ const NewBooking = () => {
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {
-      alert('Problem to create a booking');
+      alert('Problem creating the booking');
       return;
     }
     navigate('/bookings', { replace: true });

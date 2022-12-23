@@ -19,21 +19,6 @@ interface IBookingsState {
   fetchStatus: 'idle' | 'loading' | 'failed';
 }
 
-interface ICreateBooking {
-  bookingsList: IBookingObj[];
-  objToInsert: any;
-}
-
-interface IUpdateBooking {
-  bookingsList: IBookingObj[];
-  objToUpdate: any;
-}
-
-interface IDeleteBooking {
-  bookingsList: IBookingObj[];
-  id: number;
-}
-
 interface IFetchPayload {
   url: URL;
   fetchObjProps: RequestInit;
@@ -63,7 +48,7 @@ export const fetchSingleBooking = createAsyncThunk(
 
 export const createBooking = createAsyncThunk(
   'booking/createBooking',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IBookingObj[]> => {
+  async ({ url, fetchObjProps }: IFetchPayload): Promise<IBookingObj> => {
     const response = await APICall({ url, fetchObjProps });
     return response.json();
   }
