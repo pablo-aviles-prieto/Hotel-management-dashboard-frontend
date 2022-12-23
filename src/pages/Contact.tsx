@@ -20,6 +20,7 @@ import {
   paginationDataHandler,
   numberOfPages,
   paginationButtonsHandler,
+  dateHandler
 } from '../utils';
 import styled from 'styled-components';
 import { reorderHandler } from '../utils';
@@ -195,10 +196,6 @@ const Contact = () => {
   };
 
   const starsRateToRender = (rate: number) => Math.ceil(rate / 20);
-
-  const dateHandler = (date: string) => {
-    return new Date(date).toUTCString().replace(/(?<=2022).*$/, '');
-  };
 
   return (
     <>

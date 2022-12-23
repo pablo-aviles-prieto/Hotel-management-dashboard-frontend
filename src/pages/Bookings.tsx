@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -15,12 +15,13 @@ import {
   paginationDataHandler,
   numberOfPages,
   paginationButtonsHandler,
+  dateHandler,
 } from '../utils';
+import { AuthContext } from '../store/auth-context';
 import { fetchBookings, IBookingObj } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { Modal } from '../components';
 import { reorderHandler } from '../utils';
-import bookingsData from '../assets/data/bookings.json';
 
 interface IModalState {
   title: string;
@@ -76,12 +77,10 @@ const optionsSelect1 = [
   {
     label: 'Newest',
     value: { value: 'bookingNumber', sort: 1 },
-    // value: 'bookingNumber1',
   },
   {
     label: 'Oldest',
     value: { value: 'bookingNumber', sort: 0 },
-    // value: 'bookingNumber0',
   },
   {
     label: 'Guest A-Z',
@@ -90,16 +89,15 @@ const optionsSelect1 = [
   {
     label: 'Guest Z-A',
     value: { value: ['user', 'name'], sort: 1 },
-    // value: 'user[name]1',
   },
-  // {
-  //   label: 'Check in',
-  //   value: { value: ['checkIn', 'date'], sort: 0 },
-  // },
-  // {
-  //   label: 'Check out',
-  //   value: { value: ['checkIn', 'date'], sort: 1 },
-  // },
+  {
+    label: 'Check in',
+    value: { value: 'checkIn', sort: 0 },
+  },
+  {
+    label: 'Check out',
+    value: { value: 'checkOut', sort: 0 },
+  },
 ];
 
 const optionsSelect2 = [
@@ -122,29 +120,42 @@ const Bookings = () => {
   const [orderBy, setOderBy] = useState(
     JSON.stringify({ value: 'bookingNumber', sort: 1 })
   );
-  // const [orderBy, setOderBy] = useState('bookingNumber1');
-  const [bookingsList, setBookingsList] = useState<IBookingObj[]>(bookingsData);
   const [bookingsListSliced, setBookingsListSliced] = useState<IBookingObj[]>(
     []
   );
   const bookingsListRedux = useAppSelector(
     (state) => state.bookings.bookingsList
   );
-  const statusAPI = useAppSelector((state) => state.bookings.status);
+  const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { authStatus } = useContext(AuthContext);
+
+  console.log('fetchStatusAPI bookings', fetchStatusAPI);
 
   useEffect(() => {
-    dispatch(fetchBookings(bookingsData));
+    dispatch(
+      fetchBookings({
+        url: new URL('http://localhost:3200/bookings'),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
   }, [dispatch]);
 
   useEffect(() => {
-    const filteredBookings = [...bookingsListRedux];
+    if (fetchStatusAPI !== 'idle') return;
+
+    const filteredBookings = Array.isArray(bookingsListRedux)
+      ? [...bookingsListRedux]
+      : [bookingsListRedux];
     const parsedObj = JSON.parse(orderBy);
     const orderValue = parsedObj.value;
     const orderDirection = parsedObj.sort;
-    // const orderValue = JSON.parse(orderBy).replace(/\d+/g, '');
-    // const orderDirection = JSON.parse(orderBy).replace(/\D+/g, '');
 
     const filteredReorderedBookings = reorderHandler({
       array: filteredBookings,
@@ -225,7 +236,7 @@ const Bookings = () => {
           </InputSelect>
         </div>
       </MenuContainer>
-      {statusAPI === 'loading' ? (
+      {fetchStatusAPI === 'loading' ? (
         <h1
           style={{
             textAlign: 'center',
@@ -269,14 +280,12 @@ const Bookings = () => {
                         </div>
                       </FlexContainer>
                     </td>
-                    <td>{bookings.orderDate}</td>
+                    <td>{dateHandler(bookings.orderDate)}</td>
                     <td>
-                      <p>{bookings.checkIn.date}</p>
-                      <p>{bookings.checkIn.hour}</p>
+                      <p>{dateHandler(bookings.checkIn)}</p>
                     </td>
                     <td>
-                      <p>{bookings.checkOut.date}</p>
-                      <p>{bookings.checkOut.hour}</p>
+                      <p>{dateHandler(bookings.checkOut)}</p>
                     </td>
                     <td>
                       {bookings.specialRequest ? (
@@ -329,7 +338,9 @@ const Bookings = () => {
           </TableCard>
           <PaginationButtons>
             <p>
-              Showing {bookingsListSliced.length} of {bookingsList.length} Data
+              Showing {bookingsListSliced.length} of{' '}
+              {Array.isArray(bookingsListRedux) && bookingsListRedux.length}{' '}
+              Data
             </p>
             <div id='pagination-container'>
               {paginationButtonsHandler(page, totalPages, setPage)}

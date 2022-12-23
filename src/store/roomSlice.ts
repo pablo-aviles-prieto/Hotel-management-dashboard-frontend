@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { mockAPICall } from './mockAPICall';
-import { mockRealAPI } from './mockRealAPI';
+import { APICall } from './APICall';
 
 export interface IRoomObj {
   id: number;

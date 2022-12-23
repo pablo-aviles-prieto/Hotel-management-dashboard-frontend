@@ -201,8 +201,6 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
 
   const [lightTheme, switchThemeHandler] = themeProp;
 
-  console.log('authStatus', authStatus);
-
   const logoutHandler = () => {
     logoutCtx();
     navigate('/login', { replace: true });

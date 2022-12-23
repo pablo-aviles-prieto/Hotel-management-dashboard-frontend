@@ -21,6 +21,7 @@ import {
 	paginationButtonsHandler,
 	paginationDataHandler,
 	reorderHandler,
+	dateHandler
 } from "../utils";
 
 const PAGINATION_OFFSET = 10;
@@ -101,10 +102,6 @@ const Users = () => {
 	const inputSelectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		setOderBy(e.target.value);
 		setPage(1);
-	};
-
-	const dateHandler = (date: string) => {
-		return new Date(date).toUTCString().replace(/(?<=2022).*$/, "");
 	};
 
 	return (

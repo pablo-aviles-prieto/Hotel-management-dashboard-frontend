@@ -4,12 +4,12 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createBooking } from '../store/bookingSlice';
 import styled from 'styled-components';
-import bookingsData from '../assets/data/bookings.json';
+import { AuthContext } from '../store/auth-context';
 
 const StyledForm = styled.form`
   div {
@@ -70,12 +70,13 @@ const NewBooking = () => {
   const [bookingUserInput, setBookingUserInput] = useState('');
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
   const statusAPI = useAppSelector((state) => state.bookings.status);
+  const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   console.log('bookingRedux', bookingRedux);
 
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToSave = {
@@ -99,12 +100,26 @@ const NewBooking = () => {
       return alert('Please, fill all the required inputs');
     }
 
-    console.log('new booking objToSave', objToSave);
-
-    dispatch(
-      createBooking({ bookingsList: bookingsData, objToInsert: objToSave })
+    const result = await dispatch(
+      createBooking({
+        url: new URL(`http://localhost:3200/bookings`),
+        fetchObjProps: {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(objToSave),
+        },
+      })
     );
-    // navigate('/bookings', { replace: true });
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('Problem to create a booking');
+      return;
+    }
+    navigate('/bookings', { replace: true });
   };
 
   if (statusAPI === 'loading') return <h1>Saving booking data...</h1>;
