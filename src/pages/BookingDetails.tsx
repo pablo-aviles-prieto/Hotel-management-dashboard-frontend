@@ -68,7 +68,7 @@ const BookingDetails = () => {
 
   if (fetchStatusAPI === 'failed')
     return (
-      <h1>
+      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         We couldn't find the booking selected. Please check the ID and if it's
         correct try again later!
       </h1>

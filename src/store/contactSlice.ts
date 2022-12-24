@@ -1,7 +1,5 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
-import { mockAPICall } from './mockAPICall';
 import { APICall } from './APICall';
-import contactsData from '../assets/data/comments.json';
 
 export interface IContactObj {
   id: number;

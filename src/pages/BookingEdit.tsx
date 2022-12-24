@@ -78,7 +78,6 @@ const BookingEdit = () => {
   console.log('fetchStatusAPI bookingEdit', fetchStatusAPI);
 
   useEffect(() => {
-    console.log('check 1st useEFfect')
     dispatch(
       fetchSingleBooking({
         url: new URL(`http://localhost:3200/bookings/${id}`),

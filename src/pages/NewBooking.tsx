@@ -68,13 +68,10 @@ const NewBooking = () => {
     useState('');
   const [bookingStatusSelect, setBookingStatusSelect] = useState('check in');
   const [bookingUserInput, setBookingUserInput] = useState('');
-  const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
   const statusAPI = useAppSelector((state) => state.bookings.status);
   const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
-  console.log('bookingRedux', bookingRedux);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
