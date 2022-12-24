@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -8,9 +8,9 @@ import {
   ButtonGreen,
   ImgHolder,
 } from '../components/Styles';
-import { updateUser } from '../store/userSlice';
+import { updateUser, fetchSingleUser } from '../store/userSlice';
 import styled from 'styled-components';
-import usersData from '../assets/data/users.json';
+import { AuthContext } from '../store/auth-context';
 
 const StyledForm = styled.form`
   div {
@@ -57,24 +57,44 @@ const UserEdit = () => {
   const [userPhoneInput, setUserPhoneInput] = useState('');
   const [userStatusSelect, setUserStatusSelect] = useState('Active');
   const usersListRedux = useAppSelector((state) => state.users.usersList);
-  const statusAPI = useAppSelector((state) => state.users.status);
+  const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   console.log('usersListRedux', usersListRedux);
 
   useEffect(() => {
-    setUserNameInput(usersListRedux[0].name);
-    setUserJobSelect(usersListRedux[0].job.position);
-    setUserEmailInput(usersListRedux[0].email);
-    // setUserPasswordInput(usersListRedux[0].ratePerNight);
-    setUserPhoneInput(usersListRedux[0].contact);
-    setUserStatusSelect(usersListRedux[0].status);
+    dispatch(
+      fetchSingleUser({
+        url: new URL(`http://localhost:3200/users/${id}`),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (fetchStatusAPI !== 'idle') return;
+
+    const parsedUsers = Array.isArray(usersListRedux)
+      ? usersListRedux[0]
+      : usersListRedux;
+    setUserNameInput(parsedUsers.name);
+    setUserJobSelect(parsedUsers.job.position);
+    setUserEmailInput(parsedUsers.email);
+    // setUserPasswordInput(parsedUsers.ratePerNight);
+    setUserPhoneInput(parsedUsers.contact);
+    setUserStatusSelect(parsedUsers.status);
   }, [usersListRedux]);
 
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (
@@ -96,11 +116,29 @@ const UserEdit = () => {
       status: userStatusSelect,
     };
 
-    dispatch(updateUser({ usersList: usersData, objToUpdate }));
+    const result = await dispatch(
+      updateUser({
+        url: new URL(`http://localhost:3200/users/${id}`),
+        fetchObjProps: {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(objToUpdate),
+        },
+      })
+    );
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('There was an error editing the booking!');
+      return;
+    }
     navigate(`/users/${id}`, { replace: true });
   };
 
-  if (statusAPI === 'loading')
+  if (fetchStatusAPI === 'loading')
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Editing user...
@@ -113,8 +151,16 @@ const UserEdit = () => {
       <StyledForm onSubmit={submitHandler}>
         <ImgHolder width='200px' height='200px' style={{ margin: '50px 0' }}>
           <img
-            src={usersListRedux[0].photo}
-            alt={`Pic of ${usersListRedux[0].name}`}
+            src={
+              !Array.isArray(usersListRedux)
+                ? usersListRedux.photo
+                : usersListRedux[0].photo
+            }
+            alt={`Pic of ${
+              !Array.isArray(usersListRedux)
+                ? usersListRedux.name
+                : usersListRedux[0].name
+            }`}
           />
         </ImgHolder>
         <div>

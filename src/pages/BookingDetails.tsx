@@ -43,7 +43,7 @@ const BookingDetails = () => {
 
     const result = await dispatch(
       deleteBooking({
-        url: new URL(`http://localhost:3200/bookings/${id}`),
+        url: new URL(`http://localhost:3200/bookings/${id}111`),
         fetchObjProps: {
           method: 'DELETE',
           headers: {
@@ -61,18 +61,19 @@ const BookingDetails = () => {
     navigate('/bookings/', { replace: true });
   };
 
-  const dataChecked = useMemo(
+  const parsedBookings = useMemo(
     () => (Array.isArray(bookingRedux) ? bookingRedux[0] : bookingRedux),
     [bookingRedux]
   );
 
-  if (fetchStatusAPI === 'failed')
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         We couldn't find the booking selected. Please check the ID and if it's
         correct try again later!
       </h1>
     );
+  }
 
   return (
     <MainCard borderRadius='16px'>
@@ -86,19 +87,19 @@ const BookingDetails = () => {
         <>
           <h1>Booking details for {id}</h1>
           <ul>
-            <li>Booked by: {dataChecked.user.name}</li>
-            <li>Booking number: #{dataChecked.bookingNumber}</li>
-            <li>Room type: {dataChecked.roomType}</li>
-            <li>Order date: {dataChecked.orderDate}</li>
-            <li>Check-in: {dataChecked.checkIn}</li>
-            <li>Check-out: {dataChecked.checkOut}</li>
+            <li>Booked by: {parsedBookings.user.name}</li>
+            <li>Booking number: #{parsedBookings.bookingNumber}</li>
+            <li>Room type: {parsedBookings.roomType}</li>
+            <li>Order date: {parsedBookings.orderDate}</li>
+            <li>Check-in: {parsedBookings.checkIn}</li>
+            <li>Check-out: {parsedBookings.checkOut}</li>
             <li>
               Special request:{' '}
-              {dataChecked.specialRequest
-                ? dataChecked.specialRequest
+              {parsedBookings.specialRequest
+                ? parsedBookings.specialRequest
                 : 'There is not a special request for this booking.'}
             </li>
-            <li>Status: {dataChecked.status}</li>
+            <li>Status: {parsedBookings.status}</li>
           </ul>
           <div style={{ marginTop: '50px' }}>
             <ButtonGreen

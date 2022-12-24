@@ -94,17 +94,17 @@ const BookingEdit = () => {
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
 
-    const dataChecked = Array.isArray(bookingRedux)
+    const parsedBookings = Array.isArray(bookingRedux)
       ? bookingRedux[0]
       : bookingRedux;
-    setBookingNumberInput(dataChecked.bookingNumber);
-    setBookingCheckInInput(dataChecked.checkIn);
-    setBookingCheckOutInput(dataChecked.checkOut);
-    setBookingRoomTypeInput(dataChecked.roomType);
+    setBookingNumberInput(parsedBookings.bookingNumber);
+    setBookingCheckInInput(parsedBookings.checkIn);
+    setBookingCheckOutInput(parsedBookings.checkOut);
+    setBookingRoomTypeInput(parsedBookings.roomType);
     setBookingSpecialRequestInput(
-      dataChecked?.specialRequest ? dataChecked.specialRequest : ''
+      parsedBookings?.specialRequest ? parsedBookings.specialRequest : ''
     );
-    setBookingStatusSelect(dataChecked.status);
+    setBookingStatusSelect(parsedBookings.status);
   }, [bookingRedux, fetchStatusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {

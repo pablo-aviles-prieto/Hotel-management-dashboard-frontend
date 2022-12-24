@@ -16,7 +16,7 @@ import {
   numberOfPages,
   paginationButtonsHandler,
   dateHandler,
-  reorderHandler
+  reorderHandler,
 } from '../utils';
 import { AuthContext } from '../store/auth-context';
 import { fetchBookings, IBookingObj } from '../store/bookingSlice';
