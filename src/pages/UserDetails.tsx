@@ -1,10 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useContext, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleUser, deleteUser } from '../store/userSlice';
 import styled from 'styled-components';
 import { MainCard, ButtonGreen, ImgHolder } from '../components/Styles';
-import usersData from '../assets/data/users.json';
+import { AuthContext } from '../store/auth-context';
 
 const RedButton = styled(ButtonGreen)`
   background-color: rgb(226, 52, 40);
@@ -13,69 +13,101 @@ const RedButton = styled(ButtonGreen)`
 
 const UserDetails = () => {
   const userRedux = useAppSelector((state) => state.users.usersList);
-  const statusAPI = useAppSelector((state) => state.users.status);
+  const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
-  // console.log('statusAPI', statusAPI);
-  console.log('userRedux', userRedux);
-
   useEffect(() => {
-    const filteredUser = usersData.filter((user) => user.id === +id!);
-    dispatch(fetchSingleUser(filteredUser));
+    dispatch(
+      fetchSingleUser({
+        url: new URL(`http://localhost:3200/users/${id}`),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
   }, [dispatch, id]);
 
-  const deleteRoomHandler = () => {
-    if (window.confirm('Are you sure you want to delete this room?') === false)
+  const deleteRoomHandler = async () => {
+    if (window.confirm('Are you sure you want to delete this user?') === false)
       return;
 
-    dispatch(deleteUser({ usersList: usersData, id: +id! }));
+    const result = await dispatch(
+      deleteUser({
+        url: new URL(`http://localhost:3200/users/${id}`),
+        fetchObjProps: {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
+    console.log('result DELETE', result.meta.requestStatus);
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('ID provided is not valid!');
+      return;
+    }
     navigate('/users/', { replace: true });
   };
 
-  if (statusAPI === 'loading')
+  const parsedUsers = useMemo(
+    () => (Array.isArray(userRedux) ? userRedux[0] : userRedux),
+    [userRedux]
+  );
+
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Loading user...
-      </h1>
-    );
-
-  if (userRedux.length === 0)
-    return (
-      <h1>
-        We couldn't find the room selected. Please check the ID and if it's
+        We couldn't find the user selected. Please check the ID and if it's
         correct try again later!
       </h1>
     );
+  }
 
   return (
     <MainCard borderRadius='16px'>
-      <h1>Room details for {id}</h1>
-      <ImgHolder width='200px' height='200px' style={{ margin: '50px 0' }}>
-        <img src={userRedux[0].photo} alt={`Pic of ${userRedux[0].name}`} />
-      </ImgHolder>
-      <ul>
-        <li>Full name: {userRedux[0].name}</li>
-        <li>Job position: {userRedux[0].job.position}</li>
-        <li>Job description: {userRedux[0].job.description}</li>
-        <li>Email: {userRedux[0].email}</li>
-        <li>Phone: {userRedux[0].contact}</li>
-        <li>Start date: {userRedux[0].startDate}</li>
-        <li>Status: {userRedux[0].status}</li>
-      </ul>
-      <div style={{ marginTop: '50px' }}>
-        <ButtonGreen
-          padding='10px 52px'
-          onClick={() => navigate(`/users/${id}/edit`)}
+      {fetchStatusAPI === 'loading' ? (
+        <h1
+          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
-          Edit user
-        </ButtonGreen>
-        <RedButton padding='10px 52px' onClick={deleteRoomHandler}>
-          Delete user
-        </RedButton>
-      </div>
+          Loading user {id}...
+        </h1>
+      ) : (
+        <>
+          <h1>User details for {id}</h1>
+          <ImgHolder width='200px' height='200px' style={{ margin: '50px 0' }}>
+            <img src={parsedUsers.photo} alt={`Pic of ${parsedUsers.name}`} />
+          </ImgHolder>
+          <ul>
+            <li>Full name: {parsedUsers.name}</li>
+            <li>Job position: {parsedUsers.job.position}</li>
+            <li>Job description: {parsedUsers.job.description}</li>
+            <li>Email: {parsedUsers.email}</li>
+            <li>Phone: {parsedUsers.contact}</li>
+            <li>Start date: {parsedUsers.startDate}</li>
+            <li>Status: {parsedUsers.status}</li>
+          </ul>
+          <div style={{ marginTop: '50px' }}>
+            <ButtonGreen
+              padding='10px 52px'
+              onClick={() => navigate(`/users/${id}/edit`)}
+            >
+              Edit user
+            </ButtonGreen>
+            <RedButton padding='10px 52px' onClick={deleteRoomHandler}>
+              Delete user
+            </RedButton>
+          </div>
+        </>
+      )}
     </MainCard>
   );
 };

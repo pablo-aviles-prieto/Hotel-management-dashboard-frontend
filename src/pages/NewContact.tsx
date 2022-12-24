@@ -4,12 +4,12 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createContact } from '../store/contactSlice';
 import styled from 'styled-components';
-import contactsData from '../assets/data/comments.json';
+import { AuthContext } from '../store/auth-context';
 
 const StyledForm = styled.form`
   div {
@@ -48,22 +48,24 @@ const NewContact = () => {
   const [contactUserName, setContactUserName] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
   const [contactUserPhone, setContactUserPhone] = useState('');
-  const [contactRate, setContactRate] = useState<number | null>(null);
+  const [contactRate, setContactRate] = useState<number | string>('');
   const [contactSubject, setContactSubject] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [contactArchived, setContactArchived] = useState('false');
-  const contactListRedux = useAppSelector((state) => state.contacts.contactList);
-  const statusPost = useAppSelector((state) => state.contacts.statusPost);
+  const contactListRedux = useAppSelector(
+    (state) => state.contacts.contactList
+  );
+  const statusAPI = useAppSelector((state) => state.contacts.status);
+  const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   console.log('contactListRedux', contactListRedux);
 
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToSave = {
-      id: contactsData.length + 1,
       date: new Date().toLocaleDateString(),
       user: {
         name: contactUserName,
@@ -85,12 +87,30 @@ const NewContact = () => {
     ) {
       return alert('Please, fill all the required inputs');
     }
-    console.log('objToSave', objToSave);
-    dispatch(createContact({ objToInsert: objToSave }));
-    // navigate('/contacts', { replace: true });
+
+    const result = await dispatch(
+      createContact({
+        url: new URL(`http://localhost:3200/contacts`),
+        fetchObjProps: {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(objToSave),
+        },
+      })
+    );
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('Problem creating the contact');
+      return;
+    }
+    navigate('/contacts', { replace: true });
   };
 
-  if (statusPost === 'loading') return <h1>Saving contact message...</h1>;
+  if (statusAPI === 'loading') return <h1>Saving contact message...</h1>;
 
   return (
     <MainCard borderRadius='16px'>

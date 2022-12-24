@@ -4,12 +4,12 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createUser } from '../store/userSlice';
 import styled from 'styled-components';
-import usersData from '../assets/data/users.json';
+import { AuthContext } from '../store/auth-context';
 
 const StyledForm = styled.form`
   div {
@@ -46,7 +46,9 @@ const userStatusOptions = [
 ];
 
 const NewUser = () => {
-  const [userPhotoInput, setUserPhotoInput] = useState<FileList | FileList[] | null>([]);
+  const [userPhotoInput, setUserPhotoInput] = useState<
+    FileList | FileList[] | null
+  >([]);
   const [userNameInput, setUserNameInput] = useState('');
   const [userJobSelect, setUserJobSelect] = useState('Manager');
   const [userEmailInput, setUserEmailInput] = useState('');
@@ -55,17 +57,14 @@ const NewUser = () => {
   const [userStatusSelect, setUserStatusSelect] = useState('Active');
   const usersListRedux = useAppSelector((state) => state.users.usersList);
   const statusAPI = useAppSelector((state) => state.users.status);
+  const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  console.log('usersListRedux', usersListRedux);
-
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToSave = {
-      // id will be inserted on back. Photo will be handled aswell with multer on back.
-      id: usersData.length + 1,
       photo:
         'https://www.pngkey.com/png/detail/308-3081138_contact-avatar-generic.png',
       //   photo: userPhotoInput,
@@ -87,8 +86,26 @@ const NewUser = () => {
       return alert('Please, fill all the required inputs');
     }
 
-    dispatch(createUser({ usersList: usersData, objToInsert: objToSave }));
-    // navigate('/users', { replace: true });
+    const result = await dispatch(
+      createUser({
+        url: new URL(`http://localhost:3200/users`),
+        fetchObjProps: {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(objToSave),
+        },
+      })
+    );
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('Error creating the user');
+      return;
+    }
+    navigate('/users', { replace: true });
   };
 
   if (statusAPI === 'loading') return <h1>Saving user data...</h1>;

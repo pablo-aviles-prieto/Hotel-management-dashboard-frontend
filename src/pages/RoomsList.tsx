@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import update from 'immutability-helper';
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useState, useCallback, useMemo, useEffect, useContext } from 'react';
 import {
   ButtonGreen,
   InputSelect,
@@ -23,7 +23,7 @@ import {
   numberOfPages,
   paginationButtonsHandler,
 } from '../utils';
-import roomData from '../assets/data/rooms.json';
+import { AuthContext } from '../store/auth-context';
 
 const PAGINATION_OFFSET = 10;
 
@@ -79,18 +79,33 @@ const RoomsList = () => {
   const [filteredRoomsList, setFilteredRoomsList] = useState<IRoomObj[]>([]);
   const [roomsListSliced, setRoomsListSliced] = useState<IRoomObj[]>([]);
   const roomsListRedux = useAppSelector((state) => state.rooms.roomList);
-  const statusAPI = useAppSelector((state) => state.rooms.status);
+  const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { authStatus } = useContext(AuthContext);
 
-  console.log('roomsListRedux', roomsListRedux);
+  console.log('fetchStatusAPI', fetchStatusAPI);
 
   useEffect(() => {
-    dispatch(fetchRooms(roomData as IRoomObj[]));
+    dispatch(
+      fetchRooms({
+        url: new URL('http://localhost:3200/rooms'),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
   }, [dispatch]);
 
   useEffect(() => {
-    const filteredRooms = [...roomsListRedux];
+    if (fetchStatusAPI !== 'idle') return;
+
+    const filteredRooms = Array.isArray(roomsListRedux)
+      ? [...roomsListRedux]
+      : [roomsListRedux];
     const orderValue = orderBy.replace(/\d+/g, '');
     const orderDirection = orderBy.replace(/\D+/g, '');
 
@@ -129,7 +144,12 @@ const RoomsList = () => {
     );
   }, []);
 
-  const renderRoomRow = (room: IRoomObj, ref: React.RefObject<HTMLTableRowElement>, dragOpacity: 0 | 1, handlerId: any) => (
+  const renderRoomRow = (
+    room: IRoomObj,
+    ref: React.RefObject<HTMLTableRowElement>,
+    dragOpacity: 0 | 1,
+    handlerId: any
+  ) => (
     <tr ref={ref} style={{ opacity: dragOpacity }} data-handler-id={handlerId}>
       <td>
         <FlexContainer>
@@ -222,7 +242,7 @@ const RoomsList = () => {
           </InputSelect>
         </div>
       </MenuContainer>
-      {statusAPI === 'loading' ? (
+      {fetchStatusAPI === 'loading' ? (
         <h1
           style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >

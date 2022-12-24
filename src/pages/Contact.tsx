@@ -9,18 +9,19 @@ import {
   PaginationButtons,
   ButtonGreen,
 } from '../components/Styles';
+import { AuthContext } from '../store/auth-context';
 import { Check, XCircle, Star } from '../assets/icons';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchContacts, IContactObj } from '../store/contactSlice';
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useContext } from 'react';
 import {
   paginationDataHandler,
   numberOfPages,
   paginationButtonsHandler,
-  dateHandler
+  dateHandler,
 } from '../utils';
 import styled from 'styled-components';
 import { reorderHandler } from '../utils';
@@ -143,21 +144,42 @@ const Contact = () => {
   const [page, setPage] = useState(1);
   const [orderBy, setOderBy] = useState('date1');
   const [internalPage, setInternalPage] = useState('id');
-  const [commentsListSliced, setCommentsListSliced] = useState<IContactObj[]>([]);
-  const [filteredContactsList, setFilteredContactsList] = useState<IContactObj[]>([]);
-  const contactListRedux = useAppSelector((state) => state.contacts.contactList);
-  const statusAPI = useAppSelector((state) => state.contacts.status);
+  const [commentsListSliced, setCommentsListSliced] = useState<IContactObj[]>(
+    []
+  );
+  const [filteredContactsList, setFilteredContactsList] = useState<
+    IContactObj[]
+  >([]);
+  const contactListRedux = useAppSelector(
+    (state) => state.contacts.contactList
+  );
+  const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { authStatus } = useContext(AuthContext);
 
-  console.log('contactListRedux', contactListRedux);
+  console.log('fetchStatusAPI', fetchStatusAPI);
 
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(
+      fetchContacts({
+        url: new URL('http://localhost:3200/contacts'),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
   }, [dispatch]);
 
   useEffect(() => {
-    const contactList = [...contactListRedux];
+    if (fetchStatusAPI !== 'idle') return;
+
+    const contactList = Array.isArray(contactListRedux)
+      ? [...contactListRedux]
+      : [contactListRedux];
     const orderValue = orderBy.replace(/\d+/g, '');
     const orderDirection = orderBy.replace(/\D+/g, '');
 
@@ -352,7 +374,7 @@ const Contact = () => {
           </InputSelect>
         </div>
       </MenuContainer>
-      {statusAPI === 'loading' ? (
+      {fetchStatusAPI === 'loading' ? (
         <h1
           style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
@@ -418,8 +440,8 @@ const Contact = () => {
           </MainCard>
           <PaginationButtons style={{ margin: '50px 30px' }}>
             <p>
-              Showing {commentsListSliced.length} of {contactListRedux.length}{' '}
-              Data
+              Showing {commentsListSliced.length} of{' '}
+              {Array.isArray(contactListRedux) && contactListRedux.length} Data
             </p>
             <div id='pagination-container'>
               {paginationButtonsHandler(page, totalPages, setPage)}

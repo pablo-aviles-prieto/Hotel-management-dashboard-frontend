@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -7,9 +7,9 @@ import {
   InputText,
   ButtonGreen,
 } from '../components/Styles';
-import { updateRoom } from '../store/roomSlice';
+import { updateRoom, fetchSingleRoom } from '../store/roomSlice';
 import styled from 'styled-components';
-import roomData from '../assets/data/rooms.json';
+import { AuthContext } from '../store/auth-context';
 
 const StyledForm = styled.form`
   div {
@@ -102,50 +102,69 @@ const RoomEdit = () => {
   const [roomTypeSelect, setRoomTypeSelect] = useState('Single Bed');
   const [roomNumberInput, setRoomNumberInput] = useState('');
   const [roomFloorInput, setRoomFloorInput] = useState('');
-  const [roomDescription, setRoomDescription] = useState<string | undefined>('');
+  const [roomDescription, setRoomDescription] = useState<string | undefined>(
+    ''
+  );
   const [checkOffer, setCheckOffer] = useState(false);
   const [roomPriceInput, setRoomPriceInput] = useState(0);
   const [roomDiscountInput, setRoomDiscountInput] = useState(0);
   const [amenitiesSelect, setAmenitiesSelect] = useState<string[]>([]);
-  const [imagesInput, setImagesInput] = useState<FileList | FileList[] | null>([]);
+  const [imagesInput, setImagesInput] = useState<FileList | FileList[] | null>(
+    []
+  );
   const roomsListRedux = useAppSelector((state) => state.rooms.roomList);
-  const statusAPI = useAppSelector((state) => state.rooms.status);
+  const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
-  console.log('roomsListRedux', roomsListRedux);
+  console.log('fetchStatusAPI', fetchStatusAPI);
 
   useEffect(() => {
+    dispatch(
+      fetchSingleRoom({
+        url: new URL(`http://localhost:3200/rooms/${id}`),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (fetchStatusAPI !== 'idle') return;
+
+    const parsedRoom = Array.isArray(roomsListRedux)
+      ? roomsListRedux[0]
+      : roomsListRedux;
+
     // When connected to the back, need to use the fetchSingleRoom thunk to make it work with routes
-    setRoomNameInput(roomsListRedux[0].roomName);
-    setRoomTypeSelect(roomsListRedux[0].bedType);
-    setRoomNumberInput(roomsListRedux[0].roomNumber);
-    setRoomFloorInput(roomsListRedux[0].roomFloor);
-    setRoomPriceInput(roomsListRedux[0].ratePerNight);
+    setRoomNameInput(parsedRoom.roomName);
+    setRoomTypeSelect(parsedRoom.bedType);
+    setRoomNumberInput(parsedRoom.roomNumber);
+    setRoomFloorInput(parsedRoom.roomFloor);
+    setRoomPriceInput(parsedRoom.ratePerNight);
     setRoomDiscountInput(
-      roomsListRedux[0]?.offerPrice
-        ? Number(
-            (roomsListRedux[0]?.offerPrice * 100) /
-              roomsListRedux[0].ratePerNight
-          )
+      parsedRoom?.offerPrice
+        ? Number((parsedRoom?.offerPrice * 100) / parsedRoom.ratePerNight)
         : 0
     );
-    setCheckOffer(roomsListRedux[0]?.offerPrice ? true : false);
-    setRoomDescription(roomsListRedux[0]?.roomDescription);
+    setCheckOffer(parsedRoom?.offerPrice ? true : false);
+    setRoomDescription(parsedRoom?.roomDescription);
     setAmenitiesSelect(
-      roomsListRedux[0].facilities?.length > 0
-        ? roomsListRedux[0].facilities
-        : []
+      parsedRoom.facilities?.length > 0 ? parsedRoom.facilities : []
     );
   }, [roomsListRedux]);
 
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToUpdate = {
-      id: +id!,
       roomName: roomNameInput,
       bedType: roomTypeSelect,
       roomNumber: roomNumberInput,
@@ -168,7 +187,26 @@ const RoomEdit = () => {
     ) {
       return alert('Please, fill all the required inputs');
     }
-    dispatch(updateRoom({ roomsList: roomData, objToUpdate }));
+    const result = await dispatch(
+      updateRoom({
+        url: new URL(`http://localhost:3200/rooms/${id}`),
+        fetchObjProps: {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(objToUpdate),
+        },
+      })
+    );
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('There was an error editing the room!');
+      return;
+    }
+
     navigate(`/rooms/${id}`, { replace: true });
   };
 
@@ -180,7 +218,7 @@ const RoomEdit = () => {
     setAmenitiesSelect(value);
   };
 
-  if (statusAPI === 'loading')
+  if (fetchStatusAPI === 'loading')
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Editing room...
@@ -369,7 +407,9 @@ const RoomEdit = () => {
           <p>
             <b>Selecteds</b>:{' '}
             {amenitiesSelect.length === 0
-              ? roomsListRedux[0].facilities.join(', ')
+              ? !Array.isArray(roomsListRedux)
+                ? roomsListRedux.facilities.join(', ')
+                : roomsListRedux[0].facilities.join(', ')
               : amenitiesSelect.join(', ')}
           </p>
         </div>

@@ -4,12 +4,12 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createRoom } from '../store/roomSlice';
+import { AuthContext } from '../store/auth-context';
 import styled from 'styled-components';
-import roomData from '../assets/data/rooms.json';
 
 const StyledForm = styled.form`
   div {
@@ -110,14 +110,12 @@ const NewRoom = () => {
   const [imagesInput, setImagesInput] = useState<FileList | FileList[] | null>(
     null
   );
-  const roomsListRedux = useAppSelector((state) => state.rooms.roomList);
   const statusAPI = useAppSelector((state) => state.rooms.status);
+  const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  console.log('roomsListRedux', roomsListRedux);
-
-  const submitHandler = (e: React.FormEvent) => {
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const imagesUploadArray = [];
@@ -154,8 +152,26 @@ const NewRoom = () => {
 
     // console.log('new room objToSave', objToSave);
 
-    dispatch(createRoom({ roomsList: roomData, objToInsert: objToSave }));
-    // navigate('/rooms', { replace: true });
+    const result = await dispatch(
+      createRoom({
+        url: new URL(`http://localhost:3200/bookings`),
+        fetchObjProps: {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(objToSave),
+        },
+      })
+    );
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('Problem creating the room');
+      return;
+    }
+    navigate('/rooms', { replace: true });
   };
 
   const amenitiesHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {

@@ -10,7 +10,6 @@ import {
 } from '../components/Styles';
 import { AuthContext } from '../store/auth-context';
 import styled from 'styled-components';
-import bookingsData from '../assets/data/bookings.json';
 
 const StyledForm = styled.form`
   div {
@@ -95,31 +94,21 @@ const BookingEdit = () => {
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
 
-    const dataChecked = Array.isArray(bookingRedux)
+    const parsedBookings = Array.isArray(bookingRedux)
       ? bookingRedux[0]
       : bookingRedux;
-    setBookingNumberInput(dataChecked.bookingNumber);
-    setBookingCheckInInput(dataChecked.checkIn);
-    setBookingCheckOutInput(dataChecked.checkOut);
-    setBookingRoomTypeInput(dataChecked.roomType);
+    setBookingNumberInput(parsedBookings.bookingNumber);
+    setBookingCheckInInput(parsedBookings.checkIn);
+    setBookingCheckOutInput(parsedBookings.checkOut);
+    setBookingRoomTypeInput(parsedBookings.roomType);
     setBookingSpecialRequestInput(
-      dataChecked?.specialRequest ? dataChecked.specialRequest : ''
+      parsedBookings?.specialRequest ? parsedBookings.specialRequest : ''
     );
-    setBookingStatusSelect(dataChecked.status);
+    setBookingStatusSelect(parsedBookings.status);
   }, [bookingRedux, fetchStatusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const objToUpdate = {
-      id: +id!,
-      bookingNumber: bookingNumberInput,
-      checkIn: bookingCheckInInput,
-      checkOut: bookingCheckOutInput,
-      roomType: bookingRoomTypeInput,
-      specialRequest: bookingSpecialRequestInput,
-      status: bookingStatusSelect,
-    };
 
     if (
       !bookingNumberInput ||
@@ -130,7 +119,16 @@ const BookingEdit = () => {
     ) {
       return alert('Please, fill all the required inputs');
     }
-    console.log('objToUpdate', objToUpdate);
+
+    const objToUpdate = {
+      id: +id!,
+      bookingNumber: bookingNumberInput,
+      checkIn: bookingCheckInInput,
+      checkOut: bookingCheckOutInput,
+      roomType: bookingRoomTypeInput,
+      specialRequest: bookingSpecialRequestInput,
+      status: bookingStatusSelect,
+    };
 
     const result = await dispatch(
       updateBooking({
@@ -152,14 +150,13 @@ const BookingEdit = () => {
       return;
     }
 
-    // console.log('result', result);
     navigate(`/bookings/${id}`, { replace: true });
   };
 
   if (fetchStatusAPI === 'loading')
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Loading booking...
+        Editing booking...
       </h1>
     );
 

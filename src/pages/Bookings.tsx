@@ -16,12 +16,12 @@ import {
   numberOfPages,
   paginationButtonsHandler,
   dateHandler,
+  reorderHandler,
 } from '../utils';
 import { AuthContext } from '../store/auth-context';
 import { fetchBookings, IBookingObj } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { Modal } from '../components';
-import { reorderHandler } from '../utils';
 
 interface IModalState {
   title: string;

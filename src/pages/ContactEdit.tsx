@@ -4,10 +4,11 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState, useEffect } from 'react';
+import { AuthContext } from '../store/auth-context';
+import React, { useState, useEffect, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
-import { updateContact } from '../store/contactSlice';
+import { fetchSingleContact, updateContact } from '../store/contactSlice';
 import styled from 'styled-components';
 
 const StyledForm = styled.form`
@@ -47,33 +48,54 @@ const ContactEdit = () => {
   const [contactUserName, setContactUserName] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
   const [contactUserPhone, setContactUserPhone] = useState('');
-  const [contactRate, setContactRate] = useState<number | null>(null);
+  const [contactRate, setContactRate] = useState<number | string>('');
   const [contactSubject, setContactSubject] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [contactArchived, setContactArchived] = useState('false');
-  const contactListRedux = useAppSelector((state) => state.contacts.contactList);
-  const statusPost = useAppSelector((state) => state.contacts.statusPost);
+  const contactListRedux = useAppSelector(
+    (state) => state.contacts.contactList
+  );
+  const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
-  console.log('contactListRedux', contactListRedux);
-  console.log('statusPost', statusPost);
+  console.log('fetchStatusAPI', fetchStatusAPI);
 
   useEffect(() => {
-    setContactUserName(contactListRedux[0].user.name);
-    setContactUserEmail(contactListRedux[0].user.email);
-    setContactUserPhone(contactListRedux[0].user?.phone);
-    setContactRate(contactListRedux[0].rate);
-    setContactSubject(contactListRedux[0].message.subject);
-    setContactMessage(contactListRedux[0].message.body);
-    setContactArchived(
-      contactListRedux[0]?.archived ? 'true' : 'false'
+    console.log('check 1st useEFfect')
+    dispatch(
+      fetchSingleContact({
+        url: new URL(`http://localhost:3200/contacts/${id}`),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
     );
-  }, [contactListRedux]);
+  }, [dispatch, id]);
 
-  const submitHandler = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (fetchStatusAPI !== 'idle') return;
+
+    const dataChecked = Array.isArray(contactListRedux)
+      ? contactListRedux[0]
+      : contactListRedux;
+
+    setContactUserName(dataChecked.user.name);
+    setContactUserEmail(dataChecked.user.email);
+    setContactUserPhone(dataChecked.user?.phone);
+    setContactRate(dataChecked.rate);
+    setContactSubject(dataChecked.message.subject);
+    setContactMessage(dataChecked.message.body);
+    setContactArchived(dataChecked?.archived ? 'true' : 'false');
+  }, [contactListRedux, fetchStatusAPI]);
+
+  const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (
@@ -99,16 +121,32 @@ const ContactEdit = () => {
       archived: contactArchived === 'true' ? true : false,
     };
 
-    console.log('objToUpdate', objToUpdate);
-    dispatch(updateContact({ objToUpdate }));
+    const result = await dispatch(updateContact({
+      url: new URL(`http://localhost:3200/contacts/${id}`),
+      fetchObjProps: {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${authStatus.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(objToUpdate),
+      },
+    }));
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('There was an error editing the contact!');
+      return;
+    }
+
     navigate(`/contacts/${id}`, { replace: true });
   };
 
-  if (statusPost === 'loading') return <h1>Editing contact message...</h1>;
+  if (fetchStatusAPI === 'loading') return <h1>Editing contact message...</h1>;
 
   return (
     <MainCard borderRadius='16px'>
-      <h1>Create new contact message</h1>
+      <h1>Edit contact message</h1>
       <StyledForm onSubmit={submitHandler}>
         <div>
           <StyledLabel htmlFor='contact-name'>

@@ -17,8 +17,9 @@ export interface IRoomObj {
 }
 
 interface IRoomState {
-  roomList: IRoomObj[];
+  roomList: IRoomObj[] | IRoomObj;
   status: 'idle' | 'loading' | 'failed';
+  fetchStatus: 'idle' | 'loading' | 'failed';
 }
 
 interface ICreateRoom {
@@ -36,63 +37,53 @@ interface IDeleteBooking {
   id: number;
 }
 
+interface IFetchPayload {
+  url: URL;
+  fetchObjProps: RequestInit;
+}
+
 const initialState: IRoomState = {
   roomList: [],
   status: 'idle',
+  fetchStatus: 'loading',
 };
 
 export const fetchRooms = createAsyncThunk(
   'room/fetchRooms',
-  async (data: IRoomObj[]): Promise<IRoomObj[]> => {
-    const response = await mockAPICall(data);
-    return response;
+  async ({ url, fetchObjProps }: IFetchPayload): Promise<IRoomObj[]> => {
+    const response = await APICall({ url, fetchObjProps });
+    return response.json();
   }
 );
 
 export const fetchSingleRoom = createAsyncThunk(
   'room/fetchRoom',
-  async (data: IRoomObj[]): Promise<IRoomObj[]> => {
-    const response = await mockAPICall(data);
-    return response;
+  async ({ url, fetchObjProps }: IFetchPayload): Promise<IRoomObj> => {
+    const response = await APICall({ url, fetchObjProps });
+    return response.json();
   }
 );
 
 export const createRoom = createAsyncThunk(
   'room/createRoom',
-  // async ({ url, fetchProps }) => {
-  async ({
-    roomsList,
-    objToInsert,
-  }: ICreateRoom): Promise<{ rooms: IRoomObj[]; objToInsert: any }> => {
-    // const response = await mockRealAPI({ url, fetchProps });
-    const rooms = await mockAPICall(roomsList);
-    return { rooms, objToInsert };
+  async ({ url, fetchObjProps }: IFetchPayload): Promise<IRoomObj> => {
+    const response = await APICall({ url, fetchObjProps });
+    return response.json();
   }
 );
 
 export const updateRoom = createAsyncThunk(
   'room/updateRoom',
-  // async ({ url, fetchProps }) => {
-  async ({
-    roomsList,
-    objToUpdate,
-  }: IUpdateRoom): Promise<{ rooms: IRoomObj[]; objToUpdate: any }> => {
-    // const response = await mockRealAPI({ url, fetchProps });
-    const rooms = await mockAPICall(roomsList);
-    return { rooms, objToUpdate };
+  async ({ url, fetchObjProps }: IFetchPayload): Promise<IRoomObj[]> => {
+    const response = await APICall({ url, fetchObjProps });
+    return response.json();
   }
 );
 
 export const deleteRoom = createAsyncThunk(
   'room/deleteRoom',
-  // async ({ url, fetchProps }) => {
-  async ({
-    roomsList,
-    id,
-  }: IDeleteBooking): Promise<{ rooms: IRoomObj[]; id: number }> => {
-    // const response = await mockRealAPI({ url, fetchProps });
-    const rooms = await mockAPICall(roomsList);
-    return { rooms, id };
+  async ({ url, fetchObjProps }: IFetchPayload): Promise<void> => {
+    await APICall({ url, fetchObjProps });
   }
 );
 
@@ -102,70 +93,43 @@ export const roomSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createRoom.fulfilled, (state, action) => {
-        const { rooms, objToInsert } = action.payload;
-        const offerPrice = objToInsert.checkOffer
-          ? Number(
-              ((objToInsert.ratePerNight * objToInsert.discount) / 100).toFixed(
-                2
-              )
-            )
-          : null;
-        const newObjToInsert = {
-          ...objToInsert,
-          id: rooms.length + 1,
-          photo:
-            'https://pablo-aviles-prieto.github.io/hotel-management-app/assets/hotel-rooms/room1.jpg',
-          status: 'Available',
-          offerPrice,
-        };
-        state.status = 'idle';
-        state.roomList = [...rooms, newObjToInsert];
-      })
-      .addCase(updateRoom.fulfilled, (state, action) => {
-        const { rooms, objToUpdate } = action.payload;
-        const newRoomsArr = [...rooms];
-        const indexOfObj = newRoomsArr.findIndex(
-          (obj) => obj.id === objToUpdate.id
-        );
-        newRoomsArr[indexOfObj] = objToUpdate;
-        state.roomList = newRoomsArr;
-        state.status = 'idle';
-      })
-      .addCase(deleteRoom.fulfilled, (state, action) => {
-        const { rooms, id } = action.payload;
-        const filteredArr = rooms.filter((obj) => obj.id !== id);
-        console.log('filteredArr roomSlice', filteredArr);
-        state.roomList = filteredArr;
+      .addCase(deleteRoom.fulfilled, (state) => {
         state.status = 'idle';
       })
       .addMatcher(
-        isAnyOf(
-          fetchRooms.pending,
-          fetchSingleRoom.pending,
-          createRoom.pending,
-          updateRoom.pending,
-          deleteRoom.pending
-        ),
+        isAnyOf(fetchRooms.pending, fetchSingleRoom.pending),
+        (state) => {
+          state.fetchStatus = 'loading';
+        }
+      )
+      .addMatcher(
+        isAnyOf(createRoom.pending, updateRoom.pending, deleteRoom.pending),
         (state) => {
           state.status = 'loading';
         }
       )
       .addMatcher(
-        isAnyOf(fetchRooms.fulfilled, fetchSingleRoom.fulfilled),
+        isAnyOf(updateRoom.fulfilled, createRoom.fulfilled),
         (state, action) => {
           state.status = 'idle';
           state.roomList = action.payload;
         }
       )
       .addMatcher(
-        isAnyOf(
-          fetchRooms.rejected,
-          fetchSingleRoom.rejected,
-          createRoom.rejected,
-          updateRoom.rejected,
-          deleteRoom.rejected
-        ),
+        isAnyOf(fetchRooms.fulfilled, fetchSingleRoom.fulfilled),
+        (state, action) => {
+          state.fetchStatus = 'idle';
+          state.roomList = action.payload;
+        }
+      )
+      .addMatcher(
+        isAnyOf(fetchRooms.rejected, fetchSingleRoom.rejected),
+        (state) => {
+          state.fetchStatus = 'failed';
+        }
+      )
+      .addMatcher(
+        isAnyOf(createRoom.rejected, updateRoom.rejected, deleteRoom.rejected),
         (state) => {
           state.status = 'failed';
         }

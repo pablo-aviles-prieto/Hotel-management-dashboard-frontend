@@ -1,8 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useContext, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleRoom, deleteRoom } from '../store/roomSlice';
-import roomData from '../assets/data/rooms.json';
+import { AuthContext } from '../store/auth-context';
 import styled from 'styled-components';
 import { MainCard, ButtonGreen } from '../components/Styles';
 
@@ -13,38 +13,61 @@ const RedButton = styled(ButtonGreen)`
 
 const RoomDetails = () => {
   const roomRedux = useAppSelector((state) => state.rooms.roomList);
-  const statusAPI = useAppSelector((state) => state.rooms.status);
+  const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   // console.log('statusAPI', statusAPI);
-  // console.log('roomRedux', roomRedux);
 
   useEffect(() => {
-    const filteredRoom = roomData.filter((room) => room.id === +id!);
-    dispatch(fetchSingleRoom(filteredRoom));
+    dispatch(
+      fetchSingleRoom({
+        url: new URL(`http://localhost:3200/rooms/${id}`),
+        fetchObjProps: {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
   }, [dispatch, id]);
 
-  const deleteRoomHandler = () => {
+  const deleteRoomHandler = async () => {
     if (window.confirm('Are you sure you want to delete this room?') === false)
       return;
 
-    dispatch(deleteRoom({ roomsList: roomData, id: +id! }));
+    const result = await dispatch(
+      deleteRoom({
+        url: new URL(`http://localhost:3200/bookings/${id}`),
+        fetchObjProps: {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+          },
+        },
+      })
+    );
+
+    const hasError = result.meta.requestStatus === 'rejected';
+    if (hasError) {
+      alert('ID provided is not valid!');
+      return;
+    }
     navigate('/rooms/', { replace: true });
   };
 
-  if (statusAPI === 'loading')
+  const dataChecked = useMemo(
+    () => (Array.isArray(roomRedux) ? roomRedux[0] : roomRedux),
+    [roomRedux]
+  );
+
+  if (fetchStatusAPI === 'failed')
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Loading room...
-      </h1>
-    );
-
-  if (roomRedux.length === 0)
-    return (
-      <h1>
         We couldn't find the room selected. Please check the ID and if it's
         correct try again later!
       </h1>
@@ -52,33 +75,43 @@ const RoomDetails = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      <h1>Room details for {id}</h1>
-      <ul>
-        <li>Bed type: {roomRedux[0].bedType}</li>
-        <li>Room number: {roomRedux[0].roomNumber}</li>
-        <li>Room name: {roomRedux[0].roomName}</li>
-        <li>Room floor: {roomRedux[0].roomFloor}</li>
-        <li>Rate: {roomRedux[0].ratePerNight}$/Night</li>
-        <li>
-          Offer price:{' '}
-          {roomRedux[0].offerPrice
-            ? roomRedux[0].offerPrice
-            : 'There is no offer for this room'}
-        </li>
-        <li>Facilities: {roomRedux[0].facilities}</li>
-        <li>Status: {roomRedux[0].status}</li>
-      </ul>
-      <div style={{ marginTop: '50px' }}>
-        <ButtonGreen
-          padding='10px 52px'
-          onClick={() => navigate(`/rooms/${id}/edit`)}
+      {fetchStatusAPI === 'loading' ? (
+        <h1
+          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
-          Edit room
-        </ButtonGreen>
-        <RedButton padding='10px 52px' onClick={deleteRoomHandler}>
-          Delete room
-        </RedButton>
-      </div>
+          Loading booking {id}...
+        </h1>
+      ) : (
+        <>
+          <h1>Room details for {id}</h1>
+          <ul>
+            <li>Bed type: {dataChecked.bedType}</li>
+            <li>Room number: {dataChecked.roomNumber}</li>
+            <li>Room name: {dataChecked.roomName}</li>
+            <li>Room floor: {dataChecked.roomFloor}</li>
+            <li>Rate: {dataChecked.ratePerNight}$/Night</li>
+            <li>
+              Offer price:{' '}
+              {dataChecked.offerPrice
+                ? dataChecked.offerPrice
+                : 'There is no offer for this room'}
+            </li>
+            <li>Facilities: {dataChecked.facilities}</li>
+            <li>Status: {dataChecked.status}</li>
+          </ul>
+          <div style={{ marginTop: '50px' }}>
+            <ButtonGreen
+              padding='10px 52px'
+              onClick={() => navigate(`/rooms/${id}/edit`)}
+            >
+              Edit room
+            </ButtonGreen>
+            <RedButton padding='10px 52px' onClick={deleteRoomHandler}>
+              Delete room
+            </RedButton>
+          </div>
+        </>
+      )}
     </MainCard>
   );
 };
