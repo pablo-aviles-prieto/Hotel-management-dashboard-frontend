@@ -4,7 +4,7 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import { AuthContext } from '../store/auth-context';
+import { AuthContext } from '../store/authContext';
 import React, { useState, useEffect, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';

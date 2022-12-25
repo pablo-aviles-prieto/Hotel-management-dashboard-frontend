@@ -23,7 +23,7 @@ import {
   numberOfPages,
   paginationButtonsHandler,
 } from '../utils';
-import { AuthContext } from '../store/auth-context';
+import { AuthContext } from '../store/authContext';
 
 const PAGINATION_OFFSET = 10;
 

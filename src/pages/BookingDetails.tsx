@@ -3,7 +3,7 @@ import { useEffect, useContext, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleBooking, deleteBooking } from '../store/bookingSlice';
 import { MainCard, ButtonGreen } from '../components/Styles';
-import { AuthContext } from '../store/auth-context';
+import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
 
 const RedButton = styled(ButtonGreen)`

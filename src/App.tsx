@@ -19,7 +19,7 @@ import ContactDetails from './pages/ContactDetails';
 import { NotFound, ProtectRoute, Layout } from './components';
 import { ThemeProvider } from 'styled-components';
 import { LIGHT_THEME, DARK_THEME } from './themes';
-import { AuthContext } from './store/auth-context';
+import { AuthContext } from './store/authContext';
 import NewContact from './pages/NewContact';
 import ContactEdit from './pages/ContactEdit';
 

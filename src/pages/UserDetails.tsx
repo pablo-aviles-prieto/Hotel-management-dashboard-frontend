@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleUser, deleteUser } from '../store/userSlice';
 import styled from 'styled-components';
 import { MainCard, ButtonGreen, ImgHolder } from '../components/Styles';
-import { AuthContext } from '../store/auth-context';
+import { AuthContext } from '../store/authContext';
 
 const RedButton = styled(ButtonGreen)`
   background-color: rgb(226, 52, 40);

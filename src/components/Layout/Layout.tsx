@@ -1,8 +1,8 @@
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useState, useContext } from 'react';
 import { MainCard, ImgHolder, ButtonSidebar } from '../Styles';
-import { AuthContext } from '../../store/auth-context';
-import styled from 'styled-components';
+import { AuthContext } from '../../store/authContext';
+import { LayoutContext } from '../../store/layoutContext';
 import {
   LeftArrow,
   RightArrow,
@@ -20,6 +20,7 @@ import {
   BottomArrow,
   UpperArrow,
 } from '../../assets/icons';
+import styled from 'styled-components';
 
 interface ILayout {
   children: JSX.Element;
@@ -195,8 +196,8 @@ const DUMMY_DATA2 = 87;
 
 export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
   const [roomDropdown, setRoomDropdown] = useState(false);
-  const [sideBarState, setSideBarState] = useState(false);
   const { authStatus, logoutHandler: logoutCtx } = useContext(AuthContext);
+  const { sideBarState, switchSideBarState } = useContext(LayoutContext);
   const navigate = useNavigate();
 
   const [lightTheme, switchThemeHandler] = themeProp;
@@ -207,7 +208,7 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
   };
 
   const sideBarHandler = () => {
-    setSideBarState((prevState) => !prevState);
+    switchSideBarState();
   };
 
   const toggleRoomDropdown = () => {
@@ -324,7 +325,7 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
         </nav>
         {authStatus.authed && (
           <MainCard
-          borderRadius='18px'
+            borderRadius='18px'
             style={{
               backgroundColor: lightTheme ? '#FFFFFF' : '#292828',
               boxShadow: '0px 20px 30px #00000014',

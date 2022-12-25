@@ -9,7 +9,7 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createUser } from '../store/userSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/auth-context';
+import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {

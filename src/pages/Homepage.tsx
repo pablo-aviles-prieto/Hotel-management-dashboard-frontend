@@ -5,7 +5,6 @@ import { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Navigation } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
-
 import statsMonthly from '../assets/data/stats-monthly.json';
 import statsWeekly from '../assets/data/stats-weekly.json';
 import {

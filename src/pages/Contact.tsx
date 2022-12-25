@@ -9,7 +9,7 @@ import {
   PaginationButtons,
   ButtonGreen,
 } from '../components/Styles';
-import { AuthContext } from '../store/auth-context';
+import { AuthContext } from '../store/authContext';
 import { Check, XCircle, Star } from '../assets/icons';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper';

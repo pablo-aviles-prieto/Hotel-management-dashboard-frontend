@@ -10,7 +10,7 @@ import {
 } from '../components/Styles';
 import { updateUser, fetchSingleUser } from '../store/userSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/auth-context';
+import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {
