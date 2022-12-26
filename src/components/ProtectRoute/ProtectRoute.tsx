@@ -1,6 +1,6 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useContext } from 'react';
-import { AuthContext } from '../../store/auth-context';
+import { AuthContext } from '../../store/authContext';
 
 export const ProtectRoute: React.FC = () => {
   const { authStatus } = useContext(AuthContext);

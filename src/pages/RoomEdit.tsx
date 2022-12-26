@@ -9,7 +9,7 @@ import {
 } from '../components/Styles';
 import { updateRoom, fetchSingleRoom } from '../store/roomSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/auth-context';
+import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {

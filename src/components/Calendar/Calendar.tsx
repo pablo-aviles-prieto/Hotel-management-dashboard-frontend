@@ -1,8 +1,8 @@
-import styled from 'styled-components';
 import FullCalendar, { DateSelectArg } from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
+import styled from 'styled-components';
 
 const CalendarContainer = styled.div`
   position: relative;

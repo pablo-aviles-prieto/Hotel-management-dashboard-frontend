@@ -8,7 +8,7 @@ import React, { useState, useContext } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createRoom } from '../store/roomSlice';
-import { AuthContext } from '../store/auth-context';
+import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
 
 const StyledForm = styled.form`

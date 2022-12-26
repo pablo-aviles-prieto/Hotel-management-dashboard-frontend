@@ -8,7 +8,7 @@ import {
   InputText,
   ButtonGreen,
 } from '../components/Styles';
-import { AuthContext } from '../store/auth-context';
+import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
 
 const StyledForm = styled.form`

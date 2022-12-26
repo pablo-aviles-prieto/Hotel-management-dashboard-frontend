@@ -1,5 +1,5 @@
 import { useReducer, useCallback } from 'react';
-import { AuthContext, INIT_STATE, IAuthed } from './auth-context';
+import { AuthContext, INIT_STATE, IAuthed } from './authContext';
 
 interface IReducerState {
   name?: string;
