@@ -111,6 +111,8 @@ const optionsSelect2 = [
   },
 ];
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const Bookings = () => {
   const [modalState, setModalState] = useState<IModalState | null>(null);
   const [page, setPage] = useState(1);
@@ -136,7 +138,7 @@ const Bookings = () => {
   useEffect(() => {
     dispatch(
       fetchBookings({
-        url: new URL('http://localhost:3200/bookings'),
+        url: new URL(`${API_URI}/bookings`),
         fetchObjProps: {
           method: 'GET',
           headers: {

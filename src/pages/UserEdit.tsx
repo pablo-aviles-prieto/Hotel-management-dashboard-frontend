@@ -46,6 +46,8 @@ const userStatusOptions = [
   },
 ];
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const UserEdit = () => {
   const [userPhotoInput, setUserPhotoInput] = useState<
     FileList | FileList[] | null
@@ -69,7 +71,7 @@ const UserEdit = () => {
   useEffect(() => {
     dispatch(
       fetchSingleUser({
-        url: new URL(`http://localhost:3200/users/${id}`),
+        url: new URL(`${API_URI}/users/${id}`),
         fetchObjProps: {
           method: 'GET',
           headers: {
@@ -118,7 +120,7 @@ const UserEdit = () => {
 
     const result = await dispatch(
       updateUser({
-        url: new URL(`http://localhost:3200/users/${id}`),
+        url: new URL(`${API_URI}/users/${id}`),
         fetchObjProps: {
           method: 'PATCH',
           headers: {

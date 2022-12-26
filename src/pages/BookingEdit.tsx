@@ -59,6 +59,8 @@ const bookingStatusOptions = [
   },
 ];
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const BookingEdit = () => {
   const [bookingNumberInput, setBookingNumberInput] = useState(0);
   const [bookingCheckInInput, setBookingCheckInInput] = useState('');
@@ -80,7 +82,7 @@ const BookingEdit = () => {
   useEffect(() => {
     dispatch(
       fetchSingleBooking({
-        url: new URL(`http://localhost:3200/bookings/${id}`),
+        url: new URL(`${API_URI}/bookings/${id}`),
         fetchObjProps: {
           method: 'GET',
           headers: {
@@ -132,7 +134,7 @@ const BookingEdit = () => {
 
     const result = await dispatch(
       updateBooking({
-        url: new URL(`http://localhost:3200/bookings/${id}`),
+        url: new URL(`${API_URI}/bookings/${id}`),
         fetchObjProps: {
           method: 'PATCH',
           headers: {

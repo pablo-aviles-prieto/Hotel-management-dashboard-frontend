@@ -50,6 +50,8 @@ const optionsSelect = [
   },
 ];
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const Users = () => {
   const [searchInput, setSearchInput] = useState('');
   const [page, setPage] = useState(1);
@@ -68,7 +70,7 @@ const Users = () => {
   useEffect(() => {
     dispatch(
       fetchUsers({
-        url: new URL('http://localhost:3200/users'),
+        url: new URL(`${API_URI}/users`),
         fetchObjProps: {
           method: 'GET',
           headers: {

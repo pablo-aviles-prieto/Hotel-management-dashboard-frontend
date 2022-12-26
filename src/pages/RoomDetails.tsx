@@ -11,6 +11,8 @@ const RedButton = styled(ButtonGreen)`
   margin-left: 10px;
 `;
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const RoomDetails = () => {
   const roomRedux = useAppSelector((state) => state.rooms.roomList);
   const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
@@ -25,7 +27,7 @@ const RoomDetails = () => {
   useEffect(() => {
     dispatch(
       fetchSingleRoom({
-        url: new URL(`http://localhost:3200/rooms/${id}`),
+        url: new URL(`${API_URI}/rooms/${id}`),
         fetchObjProps: {
           method: 'GET',
           headers: {
@@ -42,7 +44,7 @@ const RoomDetails = () => {
 
     const result = await dispatch(
       deleteRoom({
-        url: new URL(`http://localhost:3200/bookings/${id}`),
+        url: new URL(`${API_URI}/bookings/${id}`),
         fetchObjProps: {
           method: 'DELETE',
           headers: {

@@ -22,6 +22,8 @@ const StyledLabel = styled.label`
   color: ${({ theme }) => theme.darkGreyToLightGrey};
 `;
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const Login = () => {
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
@@ -52,7 +54,7 @@ const Login = () => {
     email,
     password,
   }: IDataFetch): Promise<Response> => {
-    return fetch('http://localhost:3200/login', {
+    return fetch(`${API_URI}/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

@@ -44,6 +44,8 @@ const contactArchivedSelect = [
   },
 ];
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const ContactEdit = () => {
   const [contactUserName, setContactUserName] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
@@ -68,7 +70,7 @@ const ContactEdit = () => {
     console.log('check 1st useEFfect')
     dispatch(
       fetchSingleContact({
-        url: new URL(`http://localhost:3200/contacts/${id}`),
+        url: new URL(`${API_URI}/contacts/${id}`),
         fetchObjProps: {
           method: 'GET',
           headers: {
@@ -122,7 +124,7 @@ const ContactEdit = () => {
     };
 
     const result = await dispatch(updateContact({
-      url: new URL(`http://localhost:3200/contacts/${id}`),
+      url: new URL(`${API_URI}/contacts/${id}`),
       fetchObjProps: {
         method: 'PATCH',
         headers: {

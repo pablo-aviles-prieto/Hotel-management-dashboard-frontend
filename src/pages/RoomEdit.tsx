@@ -97,6 +97,8 @@ const roomAmenitiesOptionsSelect = [
   },
 ];
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const RoomEdit = () => {
   const [roomNameInput, setRoomNameInput] = useState('');
   const [roomTypeSelect, setRoomTypeSelect] = useState('Single Bed');
@@ -125,7 +127,7 @@ const RoomEdit = () => {
   useEffect(() => {
     dispatch(
       fetchSingleRoom({
-        url: new URL(`http://localhost:3200/rooms/${id}`),
+        url: new URL(`${API_URI}/rooms/${id}`),
         fetchObjProps: {
           method: 'GET',
           headers: {
@@ -189,7 +191,7 @@ const RoomEdit = () => {
     }
     const result = await dispatch(
       updateRoom({
-        url: new URL(`http://localhost:3200/rooms/${id}`),
+        url: new URL(`${API_URI}/rooms/${id}`),
         fetchObjProps: {
           method: 'PATCH',
           headers: {

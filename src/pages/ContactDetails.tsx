@@ -11,6 +11,8 @@ const RedButton = styled(ButtonGreen)`
   margin-left: 10px;
 `;
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const ContactDetails = () => {
   const contactRedux = useAppSelector((state) => state.contacts.contactList);
   const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
@@ -23,7 +25,7 @@ const ContactDetails = () => {
   useEffect(() => {
     dispatch(
       fetchSingleContact({
-        url: new URL(`http://localhost:3200/contacts/${id}`),
+        url: new URL(`${API_URI}/contacts/${id}`),
         fetchObjProps: {
           method: 'GET',
           headers: {
@@ -41,7 +43,7 @@ const ContactDetails = () => {
       return;
 
     const result = await dispatch(deleteContact({
-      url: new URL(`http://localhost:3200/contacts/${id}`),
+      url: new URL(`${API_URI}/contacts/${id}`),
       fetchObjProps: {
         method: 'DELETE',
         headers: {

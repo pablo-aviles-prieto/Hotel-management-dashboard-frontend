@@ -11,6 +11,8 @@ const RedButton = styled(ButtonGreen)`
   margin-left: 10px;
 `;
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const UserDetails = () => {
   const userRedux = useAppSelector((state) => state.users.usersList);
   const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
@@ -23,7 +25,7 @@ const UserDetails = () => {
   useEffect(() => {
     dispatch(
       fetchSingleUser({
-        url: new URL(`http://localhost:3200/users/${id}`),
+        url: new URL(`${API_URI}/users/${id}`),
         fetchObjProps: {
           method: 'GET',
           headers: {
@@ -40,7 +42,7 @@ const UserDetails = () => {
 
     const result = await dispatch(
       deleteUser({
-        url: new URL(`http://localhost:3200/users/${id}`),
+        url: new URL(`${API_URI}/users/${id}`),
         fetchObjProps: {
           method: 'DELETE',
           headers: {

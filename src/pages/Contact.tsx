@@ -140,6 +140,8 @@ const optionsSelect = [
   },
 ];
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const Contact = () => {
   const [page, setPage] = useState(1);
   const [orderBy, setOderBy] = useState('date1');
@@ -163,7 +165,7 @@ const Contact = () => {
   useEffect(() => {
     dispatch(
       fetchContacts({
-        url: new URL('http://localhost:3200/contacts'),
+        url: new URL(`${API_URI}/contacts`),
         fetchObjProps: {
           method: 'GET',
           headers: {

@@ -59,6 +59,8 @@ const bookingStatusOptions = [
   },
 ];
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const NewBooking = () => {
   const [bookingNumberInput, setBookingNumberInput] = useState('');
   const [bookingCheckInInput, setBookingCheckInInput] = useState('');
@@ -99,7 +101,7 @@ const NewBooking = () => {
 
     const result = await dispatch(
       createBooking({
-        url: new URL(`http://localhost:3200/bookings`),
+        url: new URL(`${API_URI}/bookings`),
         fetchObjProps: {
           method: 'POST',
           headers: {

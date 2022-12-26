@@ -44,6 +44,8 @@ const contactArchivedSelect = [
   },
 ];
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const NewContact = () => {
   const [contactUserName, setContactUserName] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
@@ -90,7 +92,7 @@ const NewContact = () => {
 
     const result = await dispatch(
       createContact({
-        url: new URL(`http://localhost:3200/contacts`),
+        url: new URL(`${API_URI}/contacts`),
         fetchObjProps: {
           method: 'POST',
           headers: {

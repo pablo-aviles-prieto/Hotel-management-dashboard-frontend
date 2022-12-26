@@ -97,6 +97,8 @@ const roomAmenitiesOptionsSelect = [
   },
 ];
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const NewRoom = () => {
   const [roomNameInput, setRoomNameInput] = useState('');
   const [roomTypeSelect, setRoomTypeSelect] = useState('Single Bed');
@@ -154,7 +156,7 @@ const NewRoom = () => {
 
     const result = await dispatch(
       createRoom({
-        url: new URL(`http://localhost:3200/bookings`),
+        url: new URL(`${API_URI}/bookings`),
         fetchObjProps: {
           method: 'POST',
           headers: {

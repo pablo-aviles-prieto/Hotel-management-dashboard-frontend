@@ -11,6 +11,8 @@ const RedButton = styled(ButtonGreen)`
   margin-left: 10px;
 `;
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 const BookingDetails = () => {
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
   const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
@@ -20,10 +22,12 @@ const BookingDetails = () => {
   const params = useParams();
   const { id } = params;
 
+  console.log('API_URI', API_URI);
+
   useEffect(() => {
     dispatch(
       fetchSingleBooking({
-        url: new URL(`http://localhost:3200/bookings/${id}`),
+        url: new URL(`${API_URI}/bookings/${id}`),
         fetchObjProps: {
           method: 'GET',
           headers: {
@@ -43,7 +47,7 @@ const BookingDetails = () => {
 
     const result = await dispatch(
       deleteBooking({
-        url: new URL(`http://localhost:3200/bookings/${id}111`),
+        url: new URL(`${API_URI}/bookings/${id}`),
         fetchObjProps: {
           method: 'DELETE',
           headers: {
