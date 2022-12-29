@@ -71,11 +71,11 @@ const NewUser = () => {
         'https://www.pngkey.com/png/detail/308-3081138_contact-avatar-generic.png',
       //   photo: userPhotoInput,
       name: userNameInput,
-      job: { position: userJobSelect },
+      job: { position: userJobSelect, description: '', schedule: '' },
       email: userEmailInput,
       password: userPasswordInput,
       contact: userPhoneInput,
-      startDate: new Date().toLocaleDateString(),
+      startDate: new Date().toISOString().substring(0, 10),
       status: userStatusSelect,
     };
 
@@ -87,6 +87,8 @@ const NewUser = () => {
     ) {
       return alert('Please, fill all the required inputs');
     }
+
+    console.log('objToSave', objToSave);
 
     const result = await dispatch(
       createUser({

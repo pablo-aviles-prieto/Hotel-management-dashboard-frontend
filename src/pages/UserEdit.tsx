@@ -66,8 +66,6 @@ const UserEdit = () => {
   const params = useParams();
   const { id } = params;
 
-  console.log('usersListRedux', usersListRedux);
-
   useEffect(() => {
     dispatch(
       fetchSingleUser({
@@ -89,7 +87,7 @@ const UserEdit = () => {
       ? usersListRedux[0]
       : usersListRedux;
     setUserNameInput(parsedUsers.name);
-    setUserJobSelect(parsedUsers.job.position);
+    setUserJobSelect(parsedUsers.job?.position);
     setUserEmailInput(parsedUsers.email);
     // setUserPasswordInput(parsedUsers.ratePerNight);
     setUserPhoneInput(parsedUsers.contact);
@@ -108,7 +106,6 @@ const UserEdit = () => {
     }
 
     const objToUpdate = {
-      id: +id!,
       //   photo: userPhotoInput,
       name: userNameInput,
       job: { position: userJobSelect },
@@ -131,7 +128,7 @@ const UserEdit = () => {
         },
       })
     );
-
+    console.log('result', result);
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {
       alert('There was an error editing the booking!');
@@ -139,6 +136,13 @@ const UserEdit = () => {
     }
     navigate(`/users/${id}`, { replace: true });
   };
+
+  if (fetchStatusAPI === 'failed')
+    return (
+      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
+        Problem fetching the user. Check the ID!
+      </h1>
+    );
 
   if (fetchStatusAPI === 'loading')
     return (

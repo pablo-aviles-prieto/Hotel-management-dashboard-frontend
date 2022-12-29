@@ -65,8 +65,6 @@ const Users = () => {
   const navigate = useNavigate();
   const { authStatus } = useContext(AuthContext);
 
-  // console.log('statusAPI', statusAPI);
-
   useEffect(() => {
     dispatch(
       fetchUsers({

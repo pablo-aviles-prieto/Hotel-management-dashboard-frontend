@@ -31,7 +31,10 @@ const initialState: IUserState = {
 
 export const fetchUsers = createAsyncThunk(
   'user/fetchUsers',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IUserObj[]> => {
+  async ({
+    url,
+    fetchObjProps,
+  }: IFetchPayload): Promise<{ result: IUserObj[] }> => {
     const response = await APICall({ url, fetchObjProps });
     return response.json();
   }
@@ -39,7 +42,10 @@ export const fetchUsers = createAsyncThunk(
 
 export const fetchSingleUser = createAsyncThunk(
   'user/fetchSingleUser',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IUserObj> => {
+  async ({
+    url,
+    fetchObjProps,
+  }: IFetchPayload): Promise<{ result: IUserObj }> => {
     const response = await APICall({ url, fetchObjProps });
     return response.json();
   }
@@ -74,21 +80,21 @@ export const userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(deleteUser.fulfilled, (state) => {
+      .addCase(createUser.fulfilled, (state, action) => {
         state.status = 'idle';
+        state.usersList = action.payload;
       })
       .addMatcher(
-        isAnyOf(createUser.fulfilled, updateUser.fulfilled),
-        (state, action) => {
+        isAnyOf(deleteUser.fulfilled, updateUser.fulfilled),
+        (state) => {
           state.status = 'idle';
-          state.usersList = action.payload;
         }
       )
       .addMatcher(
         isAnyOf(fetchUsers.fulfilled, fetchSingleUser.fulfilled),
         (state, action) => {
           state.fetchStatus = 'idle';
-          state.usersList = action.payload;
+          state.usersList = action.payload.result;
         }
       )
       .addMatcher(

@@ -51,7 +51,7 @@ const UserDetails = () => {
         },
       })
     );
-    console.log('result DELETE', result.meta.requestStatus);
+
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {
       alert('ID provided is not valid!');

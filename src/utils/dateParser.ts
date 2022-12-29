@@ -1,3 +1,3 @@
 export const dateHandler = (date: string) => {
-  return new Date(date).toUTCString().replace(/(?<=2022).*$/, '');
+  return new Date(date).toISOString().substring(0, 10);
 };
