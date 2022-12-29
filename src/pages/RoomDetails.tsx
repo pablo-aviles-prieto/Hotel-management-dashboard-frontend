@@ -44,7 +44,7 @@ const RoomDetails = () => {
 
     const result = await dispatch(
       deleteRoom({
-        url: new URL(`${API_URI}/bookings/${id}`),
+        url: new URL(`${API_URI}/rooms/${id}`),
         fetchObjProps: {
           method: 'DELETE',
           headers: {
@@ -98,7 +98,7 @@ const RoomDetails = () => {
                 ? dataChecked.offerPrice
                 : 'There is no offer for this room'}
             </li>
-            <li>Facilities: {dataChecked.facilities}</li>
+            <li>Facilities: {dataChecked.facilities.join(', ')}</li>
             <li>Status: {dataChecked.status}</li>
           </ul>
           <div style={{ marginTop: '50px' }}>

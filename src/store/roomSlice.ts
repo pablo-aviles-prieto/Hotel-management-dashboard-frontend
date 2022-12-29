@@ -21,21 +21,6 @@ interface IRoomState {
   fetchStatus: 'idle' | 'loading' | 'failed';
 }
 
-interface ICreateRoom {
-  roomsList: IRoomObj[];
-  objToInsert: any;
-}
-
-interface IUpdateRoom {
-  roomsList: IRoomObj[];
-  objToUpdate: any;
-}
-
-interface IDeleteBooking {
-  roomsList: IRoomObj[];
-  id: number;
-}
-
 interface IFetchPayload {
   url: URL;
   fetchObjProps: RequestInit;
@@ -49,7 +34,10 @@ const initialState: IRoomState = {
 
 export const fetchRooms = createAsyncThunk(
   'room/fetchRooms',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IRoomObj[]> => {
+  async ({
+    url,
+    fetchObjProps,
+  }: IFetchPayload): Promise<{ result: IRoomObj[] }> => {
     const response = await APICall({ url, fetchObjProps });
     return response.json();
   }
@@ -57,7 +45,10 @@ export const fetchRooms = createAsyncThunk(
 
 export const fetchSingleRoom = createAsyncThunk(
   'room/fetchRoom',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IRoomObj> => {
+  async ({
+    url,
+    fetchObjProps,
+  }: IFetchPayload): Promise<{ result: IRoomObj }> => {
     const response = await APICall({ url, fetchObjProps });
     return response.json();
   }
@@ -92,8 +83,9 @@ export const roomSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(deleteRoom.fulfilled, (state) => {
+      .addCase(createRoom.fulfilled, (state, action) => {
         state.status = 'idle';
+        state.roomList = action.payload;
       })
       .addMatcher(
         isAnyOf(fetchRooms.pending, fetchSingleRoom.pending),
@@ -108,17 +100,16 @@ export const roomSlice = createSlice({
         }
       )
       .addMatcher(
-        isAnyOf(updateRoom.fulfilled, createRoom.fulfilled),
-        (state, action) => {
+        isAnyOf(updateRoom.fulfilled, deleteRoom.fulfilled),
+        (state) => {
           state.status = 'idle';
-          state.roomList = action.payload;
         }
       )
       .addMatcher(
         isAnyOf(fetchRooms.fulfilled, fetchSingleRoom.fulfilled),
         (state, action) => {
           state.fetchStatus = 'idle';
-          state.roomList = action.payload;
+          state.roomList = action.payload.result;
         }
       )
       .addMatcher(

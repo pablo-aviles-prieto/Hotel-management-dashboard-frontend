@@ -153,7 +153,7 @@ const RoomEdit = () => {
     setRoomPriceInput(parsedRoom.ratePerNight);
     setRoomDiscountInput(
       parsedRoom?.offerPrice
-        ? Number((parsedRoom?.offerPrice * 100) / parsedRoom.ratePerNight)
+        ? Number(((parsedRoom?.offerPrice * 100) / parsedRoom.ratePerNight).toFixed(2))
         : 0
     );
     setCheckOffer(parsedRoom?.offerPrice ? true : false);
@@ -345,6 +345,7 @@ const RoomEdit = () => {
             type='number'
             min='0'
             max='100'
+            step='0.01'
             onChange={(e) => setRoomDiscountInput(+e.target.value)}
           />
         </div>

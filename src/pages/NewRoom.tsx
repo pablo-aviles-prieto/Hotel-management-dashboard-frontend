@@ -134,7 +134,7 @@ const NewRoom = () => {
       roomNumber: roomNumberInput,
       roomFloor: roomFloorInput,
       roomDescription,
-      checkOffer,
+      // checkOffer,
       ratePerNight: +roomPriceInput,
       discount: checkOffer ? +roomDiscountInput : 0,
       facilities: amenitiesSelect,
