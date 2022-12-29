@@ -88,7 +88,6 @@ const ContactDetails = () => {
             <li>ID: {dataChecked.id}</li>
             <li>Subject: {dataChecked.message.subject}</li>
             <li>Message: {dataChecked.message.body}</li>
-            <li>Rate: {dataChecked.rate}/100</li>
             <li>Posted date: {dataChecked.date}</li>
             <li>Posted by: {dataChecked.user.name}</li>
           </ul>

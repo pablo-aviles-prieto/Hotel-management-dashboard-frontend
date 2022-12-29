@@ -29,7 +29,10 @@ const initialState: IContactState = {
 
 export const fetchContacts = createAsyncThunk(
   'contact/fetchContacts',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IContactObj[]> => {
+  async ({
+    url,
+    fetchObjProps,
+  }: IFetchPayload): Promise<{ result: IContactObj[] }> => {
     const response = await APICall({ url, fetchObjProps });
     return response.json();
   }
@@ -37,7 +40,10 @@ export const fetchContacts = createAsyncThunk(
 
 export const fetchSingleContact = createAsyncThunk(
   'contact/fetchSingleContact',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IContactObj> => {
+  async ({
+    url,
+    fetchObjProps,
+  }: IFetchPayload): Promise<{ result: IContactObj }> => {
     const response = await APICall({ url, fetchObjProps });
     return response.json();
   }
@@ -72,21 +78,21 @@ export const contactSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(deleteContact.fulfilled, (state) => {
+      .addCase(createContact.fulfilled, (state, action) => {
         state.status = 'idle';
+        state.contactList = action.payload;
       })
       .addMatcher(
         isAnyOf(fetchContacts.fulfilled, fetchSingleContact.fulfilled),
         (state, action) => {
           state.statusPost = 'idle';
-          state.contactList = action.payload;
+          state.contactList = action.payload.result;
         }
       )
       .addMatcher(
-        isAnyOf(createContact.fulfilled, updateContact.fulfilled),
-        (state, action) => {
+        isAnyOf(deleteContact.fulfilled, updateContact.fulfilled),
+        (state) => {
           state.status = 'idle';
-          state.contactList = action.payload;
         }
       )
       .addMatcher(

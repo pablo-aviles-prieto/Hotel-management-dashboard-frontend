@@ -50,7 +50,6 @@ const ContactEdit = () => {
   const [contactUserName, setContactUserName] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
   const [contactUserPhone, setContactUserPhone] = useState('');
-  const [contactRate, setContactRate] = useState<number | string>('');
   const [contactSubject, setContactSubject] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [contactArchived, setContactArchived] = useState('false');
@@ -64,10 +63,7 @@ const ContactEdit = () => {
   const params = useParams();
   const { id } = params;
 
-  console.log('fetchStatusAPI', fetchStatusAPI);
-
   useEffect(() => {
-    console.log('check 1st useEFfect')
     dispatch(
       fetchSingleContact({
         url: new URL(`${API_URI}/contacts/${id}`),
@@ -91,7 +87,6 @@ const ContactEdit = () => {
     setContactUserName(dataChecked.user.name);
     setContactUserEmail(dataChecked.user.email);
     setContactUserPhone(dataChecked.user?.phone);
-    setContactRate(dataChecked.rate);
     setContactSubject(dataChecked.message.subject);
     setContactMessage(dataChecked.message.body);
     setContactArchived(dataChecked?.archived ? 'true' : 'false');
@@ -104,9 +99,7 @@ const ContactEdit = () => {
       !contactUserName.trim() ||
       !contactUserEmail.trim() ||
       !contactSubject.trim() ||
-      !contactMessage.trim() ||
-      contactRate === null ||
-      contactRate === undefined
+      !contactMessage.trim()
     ) {
       return alert('Please, fill all the required inputs');
     }
@@ -119,21 +112,22 @@ const ContactEdit = () => {
         phone: contactUserPhone,
       },
       message: { subject: contactSubject, body: contactMessage },
-      rate: contactRate,
       archived: contactArchived === 'true' ? true : false,
     };
 
-    const result = await dispatch(updateContact({
-      url: new URL(`${API_URI}/contacts/${id}`),
-      fetchObjProps: {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${authStatus.token}`,
-          'Content-Type': 'application/json',
+    const result = await dispatch(
+      updateContact({
+        url: new URL(`${API_URI}/contacts/${id}`),
+        fetchObjProps: {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${authStatus.token}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(objToUpdate),
         },
-        body: JSON.stringify(objToUpdate),
-      },
-    }));
+      })
+    );
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {
@@ -191,24 +185,6 @@ const ContactEdit = () => {
             id='contact-phone'
             type='text'
             onChange={(e) => setContactUserPhone(e.target.value)}
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='contact-rate'>
-            Rate<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputText
-            style={{ minWidth: '175px' }}
-            borderRadius='4px'
-            padding='5px'
-            name='contact-rate'
-            placeholder='rate...'
-            value={contactRate!}
-            id='contact-rate'
-            min={0}
-            max={100}
-            type='number'
-            onChange={(e) => setContactRate(+e.target.value)}
           />
         </div>
         <div>

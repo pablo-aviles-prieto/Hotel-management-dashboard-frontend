@@ -219,7 +219,7 @@ const Contact = () => {
     setPage(1);
   };
 
-  const starsRateToRender = (rate: number) => Math.ceil(rate / 20);
+  // const starsRateToRender = (rate: number) => Math.ceil(rate / 20);
 
   return (
     <>
@@ -412,7 +412,7 @@ const Contact = () => {
                       <p>{contact.user.name}</p>
                     </td>
                     <td>
-                      <FlexContainer>
+                      {/* <FlexContainer>
                         {[...Array(starsRateToRender(contact.rate))].map(
                           (_, i) => (
                             <div key={i}>
@@ -425,7 +425,7 @@ const Contact = () => {
                             </div>
                           )
                         )}
-                      </FlexContainer>
+                      </FlexContainer> */}
                       <p>{contact.message.body}</p>
                     </td>
                     <td>

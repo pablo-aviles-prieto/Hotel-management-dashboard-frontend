@@ -50,19 +50,13 @@ const NewContact = () => {
   const [contactUserName, setContactUserName] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
   const [contactUserPhone, setContactUserPhone] = useState('');
-  const [contactRate, setContactRate] = useState<number | string>('');
   const [contactSubject, setContactSubject] = useState('');
   const [contactMessage, setContactMessage] = useState('');
   const [contactArchived, setContactArchived] = useState('false');
-  const contactListRedux = useAppSelector(
-    (state) => state.contacts.contactList
-  );
   const statusAPI = useAppSelector((state) => state.contacts.status);
   const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-
-  console.log('contactListRedux', contactListRedux);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +69,6 @@ const NewContact = () => {
         phone: contactUserPhone,
       },
       message: { subject: contactSubject, body: contactMessage },
-      rate: contactRate,
       archived: contactArchived === 'true' ? true : false,
     };
 
@@ -83,9 +76,7 @@ const NewContact = () => {
       !contactUserName.trim() ||
       !contactUserEmail.trim() ||
       !contactSubject.trim() ||
-      !contactMessage.trim() ||
-      contactRate === null ||
-      contactRate === undefined
+      !contactMessage.trim()
     ) {
       return alert('Please, fill all the required inputs');
     }
@@ -159,24 +150,6 @@ const NewContact = () => {
             id='contact-phone'
             type='text'
             onChange={(e) => setContactUserPhone(e.target.value)}
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='contact-rate'>
-            Rate<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputText
-            style={{ minWidth: '175px' }}
-            borderRadius='4px'
-            padding='5px'
-            name='contact-rate'
-            placeholder='rate...'
-            value={contactRate!}
-            id='contact-rate'
-            min={0}
-            max={100}
-            type='number'
-            onChange={(e) => setContactRate(+e.target.value)}
           />
         </div>
         <div>
