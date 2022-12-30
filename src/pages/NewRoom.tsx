@@ -131,7 +131,7 @@ const NewRoom = () => {
     const objToSave = {
       roomName: roomNameInput,
       bedType: roomTypeSelect,
-      roomNumber: roomNumberInput,
+      roomNumber: +roomNumberInput,
       roomFloor: roomFloorInput,
       roomDescription,
       // checkOffer,
@@ -151,8 +151,6 @@ const NewRoom = () => {
     ) {
       return alert('Please, fill all the required inputs');
     }
-
-    // console.log('new room objToSave', objToSave);
 
     const result = await dispatch(
       createRoom({

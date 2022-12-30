@@ -4,12 +4,13 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createBooking } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { AuthContext } from '../store/authContext';
+import { IRoomObj } from '../store/roomSlice';
 
 const StyledForm = styled.form`
   div {
@@ -65,15 +66,32 @@ const NewBooking = () => {
   const [bookingNumberInput, setBookingNumberInput] = useState('');
   const [bookingCheckInInput, setBookingCheckInInput] = useState('');
   const [bookingCheckOutInput, setBookingCheckOutInput] = useState('');
-  const [bookingRoomTypeInput, setBookingRoomTypeInput] = useState('');
   const [bookingSpecialRequestInput, setBookingSpecialRequestInput] =
     useState('');
   const [bookingStatusSelect, setBookingStatusSelect] = useState('check in');
   const [bookingUserInput, setBookingUserInput] = useState('');
+  const [bookedRoom, setBookedRoom] = useState(1);
+  const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const statusAPI = useAppSelector((state) => state.bookings.status);
   const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const fetchAllRooms = async () => {
+      const response = await fetch(`${API_URI}/rooms`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${authStatus.token}`,
+        },
+      });
+      const parsedRooms = await response.json();
+      return parsedRooms;
+    };
+    fetchAllRooms()
+      .then((res) => setRoomsArray(res.result))
+      .catch((err) => console.error('error fetching rooms', err));
+  }, []);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,10 +100,10 @@ const NewBooking = () => {
       bookingNumber: +bookingNumberInput,
       checkIn: bookingCheckInInput,
       checkOut: bookingCheckOutInput,
-      roomType: bookingRoomTypeInput,
       specialRequest: bookingSpecialRequestInput,
       status: bookingStatusSelect,
-      user: { name: bookingUserInput },
+      userName: bookingUserInput,
+      roomId: bookedRoom,
     };
 
     if (
@@ -93,7 +111,6 @@ const NewBooking = () => {
       !bookingNumberInput ||
       !bookingCheckInInput ||
       !bookingCheckOutInput ||
-      !bookingRoomTypeInput.trim() ||
       !bookingStatusSelect
     ) {
       return alert('Please, fill all the required inputs');
@@ -187,21 +204,6 @@ const NewBooking = () => {
           />
         </div>
         <div>
-          <StyledLabel htmlFor='booking-room-type'>
-            Room type<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='booking-room-type'
-            placeholder='room type...'
-            value={bookingRoomTypeInput}
-            id='booking-room-type'
-            type='text'
-            onChange={(e) => setBookingRoomTypeInput(e.target.value)}
-          />
-        </div>
-        <div>
           <StyledLabel htmlFor='special-request'>Special request</StyledLabel>
           <DescriptionTextArea
             placeholder='Special request...'
@@ -229,6 +231,28 @@ const NewBooking = () => {
             {bookingStatusOptions.map((option) => (
               <option key={option.label} value={option.label}>
                 {option.label}
+              </option>
+            ))}
+          </InputSelect>
+        </div>
+        <div>
+          <StyledLabel htmlFor='booking-roomId'>Booked room</StyledLabel>
+          <InputSelect
+            style={{
+              borderRadius: '4px',
+              paddingRight: '62px',
+              fontWeight: '400',
+              minWidth: '175px',
+            }}
+            id='booking-roomId'
+            padding='8px 5px'
+            positionArrowY='0'
+            value={bookedRoom}
+            onChange={(e) => setBookedRoom(parseInt(e.target.value))}
+          >
+            {roomsArray.map((room) => (
+              <option key={room.id} value={room.id}>
+                ID {room.id}: {room.roomName}
               </option>
             ))}
           </InputSelect>

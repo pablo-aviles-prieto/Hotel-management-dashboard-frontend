@@ -22,8 +22,6 @@ const BookingDetails = () => {
   const params = useParams();
   const { id } = params;
 
-  console.log('API_URI', API_URI);
-
   useEffect(() => {
     dispatch(
       fetchSingleBooking({
@@ -91,9 +89,10 @@ const BookingDetails = () => {
         <>
           <h1>Booking details for {id}</h1>
           <ul>
-            <li>Booked by: {parsedBookings.user.name}</li>
+            <li>Booked by: {parsedBookings.userName}</li>
             <li>Booking number: #{parsedBookings.bookingNumber}</li>
             <li>Room type: {parsedBookings.roomType}</li>
+            <li>Room name: {parsedBookings.roomName}</li>
             <li>Order date: {parsedBookings.orderDate}</li>
             <li>Check-in: {parsedBookings.checkIn}</li>
             <li>Check-out: {parsedBookings.checkOut}</li>

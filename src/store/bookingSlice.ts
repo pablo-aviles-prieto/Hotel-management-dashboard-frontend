@@ -4,13 +4,16 @@ import { APICall } from './APICall';
 export interface IBookingObj {
   id: number;
   bookingNumber: number;
-  user: { name: string; picture: string };
+  userName: string;
   orderDate: string;
   checkIn: string;
   checkOut: string;
   specialRequest: null | string;
-  roomType: string;
   status: string;
+  roomId: number;
+  roomType?: string;
+  roomName?: string;
+  roomImg?: string;
 }
 
 interface IBookingsState {
@@ -32,7 +35,10 @@ const initialState: IBookingsState = {
 
 export const fetchBookings = createAsyncThunk(
   'booking/fetchBookings',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IBookingObj[]> => {
+  async ({
+    url,
+    fetchObjProps,
+  }: IFetchPayload): Promise<{ result: IBookingObj[] }> => {
     const response = await APICall({ url, fetchObjProps });
     return response.json();
   }
@@ -40,7 +46,10 @@ export const fetchBookings = createAsyncThunk(
 
 export const fetchSingleBooking = createAsyncThunk(
   'booking/fetchSingleBooking',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IBookingObj> => {
+  async ({
+    url,
+    fetchObjProps,
+  }: IFetchPayload): Promise<{ result: IBookingObj }> => {
     const response = await APICall({ url, fetchObjProps });
     return response.json();
   }
@@ -75,21 +84,21 @@ export const bookingSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(deleteBooking.fulfilled, (state) => {
+      .addCase(createBooking.fulfilled, (state, action) => {
         state.status = 'idle';
+        state.bookingsList = action.payload;
       })
       .addMatcher(
-        isAnyOf(createBooking.fulfilled, updateBooking.fulfilled),
-        (state, action) => {
+        isAnyOf(deleteBooking.fulfilled, updateBooking.fulfilled),
+        (state) => {
           state.status = 'idle';
-          state.bookingsList = action.payload;
         }
       )
       .addMatcher(
         isAnyOf(fetchSingleBooking.fulfilled, fetchBookings.fulfilled),
         (state, action) => {
           state.fetchStatus = 'idle';
-          state.bookingsList = action.payload;
+          state.bookingsList = action.payload.result;
         }
       )
       .addMatcher(

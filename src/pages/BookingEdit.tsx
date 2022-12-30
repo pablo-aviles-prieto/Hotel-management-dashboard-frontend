@@ -10,6 +10,7 @@ import {
 } from '../components/Styles';
 import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
+import { IRoomObj } from '../store/roomSlice';
 
 const StyledForm = styled.form`
   div {
@@ -65,10 +66,12 @@ const BookingEdit = () => {
   const [bookingNumberInput, setBookingNumberInput] = useState(0);
   const [bookingCheckInInput, setBookingCheckInInput] = useState('');
   const [bookingCheckOutInput, setBookingCheckOutInput] = useState('');
-  const [bookingRoomTypeInput, setBookingRoomTypeInput] = useState('');
   const [bookingSpecialRequestInput, setBookingSpecialRequestInput] =
     useState('');
   const [bookingStatusSelect, setBookingStatusSelect] = useState('');
+  const [bookingUserInput, setBookingUserInput] = useState('');
+  const [bookedRoom, setBookedRoom] = useState(1);
+  const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
   const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
   const dispatch = useAppDispatch();
@@ -77,9 +80,11 @@ const BookingEdit = () => {
   const params = useParams();
   const { id } = params;
 
-  console.log('fetchStatusAPI bookingEdit', fetchStatusAPI);
-
   useEffect(() => {
+    fetchAllRooms()
+      .then((res) => setRoomsArray(res.result))
+      .catch((err) => console.error('error fetching rooms', err));
+
     dispatch(
       fetchSingleBooking({
         url: new URL(`${API_URI}/bookings/${id}`),
@@ -102,12 +107,24 @@ const BookingEdit = () => {
     setBookingNumberInput(parsedBookings.bookingNumber);
     setBookingCheckInInput(parsedBookings.checkIn);
     setBookingCheckOutInput(parsedBookings.checkOut);
-    setBookingRoomTypeInput(parsedBookings.roomType);
     setBookingSpecialRequestInput(
       parsedBookings?.specialRequest ? parsedBookings.specialRequest : ''
     );
     setBookingStatusSelect(parsedBookings.status);
+    setBookingUserInput(parsedBookings.userName);
+    setBookedRoom(parsedBookings.roomId);
   }, [bookingRedux, fetchStatusAPI]);
+
+  const fetchAllRooms = async () => {
+    const response = await fetch(`${API_URI}/rooms`, {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${authStatus.token}`,
+      },
+    });
+    const parsedRooms = await response.json();
+    return parsedRooms;
+  };
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -116,20 +133,19 @@ const BookingEdit = () => {
       !bookingNumberInput ||
       !bookingCheckInInput ||
       !bookingCheckOutInput ||
-      !bookingRoomTypeInput.trim() ||
       !bookingStatusSelect
     ) {
       return alert('Please, fill all the required inputs');
     }
 
     const objToUpdate = {
-      id: +id!,
       bookingNumber: bookingNumberInput,
       checkIn: bookingCheckInInput,
       checkOut: bookingCheckOutInput,
-      roomType: bookingRoomTypeInput,
       specialRequest: bookingSpecialRequestInput,
       status: bookingStatusSelect,
+      userName: bookingUserInput,
+      roomId: bookedRoom,
     };
 
     const result = await dispatch(
@@ -211,18 +227,18 @@ const BookingEdit = () => {
           />
         </div>
         <div>
-          <StyledLabel htmlFor='booking-room-type'>
-            Room type<span style={{ color: 'red' }}>*</span>
+          <StyledLabel htmlFor='booking-userName'>
+            Booked by user<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
           <InputText
             borderRadius='4px'
             padding='5px'
-            name='booking-room-type'
+            name='booking-userName'
             placeholder='room type...'
-            value={bookingRoomTypeInput}
-            id='booking-room-type'
+            value={bookingUserInput}
+            id='booking-userName'
             type='text'
-            onChange={(e) => setBookingRoomTypeInput(e.target.value)}
+            onChange={(e) => setBookingUserInput(e.target.value)}
           />
         </div>
         <div>
@@ -253,6 +269,28 @@ const BookingEdit = () => {
             {bookingStatusOptions.map((option) => (
               <option key={option.label} value={option.label}>
                 {option.label}
+              </option>
+            ))}
+          </InputSelect>
+        </div>
+        <div>
+          <StyledLabel htmlFor='booking-roomId'>Booked room</StyledLabel>
+          <InputSelect
+            style={{
+              borderRadius: '4px',
+              paddingRight: '62px',
+              fontWeight: '400',
+              minWidth: '175px',
+            }}
+            id='booking-roomId'
+            padding='8px 5px'
+            positionArrowY='0'
+            value={bookedRoom}
+            onChange={(e) => setBookedRoom(parseInt(e.target.value))}
+          >
+            {roomsArray.map((room) => (
+              <option key={room.id} value={room.id}>
+                ID {room.id}: {room.roomName}
               </option>
             ))}
           </InputSelect>

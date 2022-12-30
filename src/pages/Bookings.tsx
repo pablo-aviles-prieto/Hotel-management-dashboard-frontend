@@ -268,14 +268,14 @@ const Bookings = () => {
                   <tr key={bookings.id}>
                     <td>
                       <FlexContainer>
-                        <ImgHolder width='40px' height='40px'>
+                        <ImgHolder width='80px' height='80px'>
                           <img
-                            src={bookings.user.picture}
-                            alt={`Avatar from ${bookings.user.name}`}
+                            src={bookings.roomImg}
+                            alt={`Avatar from ${bookings.userName}`}
                           />
                         </ImgHolder>
                         <div>
-                          <p>{bookings.user.name}</p>
+                          <p>{bookings.userName}</p>
                           <p style={{ color: '#799283' }}>
                             #{bookings.bookingNumber}
                           </p>
@@ -294,7 +294,7 @@ const Bookings = () => {
                         <ButtonForRequest
                           onClick={() =>
                             setModalState({
-                              title: `Request from ${bookings.user.name}`,
+                              title: `Request from ${bookings.userName}`,
                               message: bookings.specialRequest!,
                             })
                           }
