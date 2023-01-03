@@ -22,6 +22,7 @@ import { AuthContext } from '../store/authContext';
 import { fetchBookings, IBookingObj } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { Modal } from '../components';
+import { listAllEventListeners } from '../utils/getListeners';
 
 interface IModalState {
   title: string;
@@ -76,19 +77,27 @@ const ButtonStatusYellow = styled(ButtonForRequest)`
 const optionsSelect1 = [
   {
     label: 'Newest',
-    value: { value: 'bookingNumber', sort: 1 },
+    value: { value: 'orderDate', sort: 1 },
   },
   {
     label: 'Oldest',
-    value: { value: 'bookingNumber', sort: 0 },
+    value: { value: 'orderDate', sort: 0 },
   },
+  // {
+  //   label: 'Guest A-Z',
+  //   value: { value: ['user', 'name'], sort: 0 },
+  // },
+  // {
+  //   label: 'Guest Z-A',
+  //   value: { value: ['user', 'name'], sort: 1 },
+  // },
   {
     label: 'Guest A-Z',
-    value: { value: ['user', 'name'], sort: 0 },
+    value: { value: 'userName', sort: 0 },
   },
   {
     label: 'Guest Z-A',
-    value: { value: ['user', 'name'], sort: 1 },
+    value: { value: 'userName', sort: 1 },
   },
   {
     label: 'Check in',
@@ -120,7 +129,7 @@ const Bookings = () => {
     IBookingObj[]
   >([]);
   const [orderBy, setOderBy] = useState(
-    JSON.stringify({ value: 'bookingNumber', sort: 1 })
+    JSON.stringify({ value: 'orderDate', sort: 1 })
   );
   const [bookingsListSliced, setBookingsListSliced] = useState<IBookingObj[]>(
     []
@@ -132,8 +141,6 @@ const Bookings = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { authStatus } = useContext(AuthContext);
-
-  console.log('fetchStatusAPI bookings', fetchStatusAPI);
 
   useEffect(() => {
     dispatch(
@@ -147,7 +154,7 @@ const Bookings = () => {
         },
       })
     );
-  }, [dispatch]);
+  }, [dispatch, authStatus.token]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -172,7 +179,7 @@ const Bookings = () => {
     );
     setBookingsListSliced(arrayToRender);
     setFilteredBookingsList(filteredReorderedBookings);
-  }, [bookingsListRedux, orderBy, page]);
+  }, [bookingsListRedux, orderBy, page, fetchStatusAPI]);
 
   const totalPages = useMemo(() => {
     return numberOfPages(filteredBookingsList.length, PAGINATION_OFFSET);
@@ -190,7 +197,7 @@ const Bookings = () => {
     console.log('option selected =>', e.target.value);
   };
 
-  const singleBookingHandler = (id: number) => {
+  const singleBookingHandler = (id: string) => {
     navigate(`/bookings/${id}`);
   };
 
@@ -270,7 +277,11 @@ const Bookings = () => {
                       <FlexContainer>
                         <ImgHolder width='80px' height='80px'>
                           <img
-                            src={bookings.roomImg}
+                            src={
+                              typeof bookings.roomId === 'object'
+                                ? bookings.roomId.photo
+                                : ''
+                            }
                             alt={`Avatar from ${bookings.userName}`}
                           />
                         </ImgHolder>
@@ -308,7 +319,11 @@ const Bookings = () => {
                         </ButtonForNoRequest>
                       )}
                     </td>
-                    <td>{bookings.roomType}</td>
+                    <td>
+                      {typeof bookings.roomId === 'object'
+                        ? bookings.roomId.roomType
+                        : ''}
+                    </td>
                     <td>
                       {bookings.status === 'check in' ? (
                         <ButtonStatusGreen

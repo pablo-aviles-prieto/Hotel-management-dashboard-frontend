@@ -22,8 +22,6 @@ const RoomDetails = () => {
   const params = useParams();
   const { id } = params;
 
-  // console.log('statusAPI', statusAPI);
-
   useEffect(() => {
     dispatch(
       fetchSingleRoom({
@@ -36,7 +34,7 @@ const RoomDetails = () => {
         },
       })
     );
-  }, [dispatch, id]);
+  }, [dispatch, id, authStatus.token]);
 
   const deleteRoomHandler = async () => {
     if (window.confirm('Are you sure you want to delete this room?') === false)
@@ -93,10 +91,10 @@ const RoomDetails = () => {
             <li>Room floor: {dataChecked.roomFloor}</li>
             <li>Rate: {dataChecked.ratePerNight}$/Night</li>
             <li>
-              Offer price:{' '}
+              Discount to apply:{' '}
               {dataChecked.offerPrice
-                ? dataChecked.offerPrice
-                : 'There is no offer for this room'}
+                ? `${dataChecked.offerPrice}%`
+                : 'There is no discount for this room'}
             </li>
             <li>Facilities: {dataChecked.facilities.join(', ')}</li>
             <li>Status: {dataChecked.status}</li>

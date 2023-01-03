@@ -4,14 +4,19 @@ interface IReorderHandler {
   orderDirection: string;
 }
 
-const getObjValue = ({ obj, value }: { obj: { [key: string]: any }, value: string | string[] }) => {
+const getObjValue = ({
+  obj,
+  value,
+}: {
+  obj: { [key: string]: any };
+  value: string | string[];
+}) => {
   const search = Array.isArray(value) ? value : [value];
   return search.reduce(
     (acc, key) => (acc[key] !== 'undefined' ? acc[key] : undefined),
     obj
   );
 };
-
 
 export const reorderHandler = ({
   array,
@@ -22,8 +27,12 @@ export const reorderHandler = ({
     const aObj = getObjValue({ obj: a, value: orderValue });
     const bObj = getObjValue({ obj: b, value: orderValue });
 
-    if (aObj > bObj) return +orderDirection === 0 ? 1 : -1;
-    if (aObj < bObj) return +orderDirection === 0 ? -1 : 1;
+    if (aObj.toLowerCase() > bObj.toLowerCase())
+      return +orderDirection === 0 ? 1 : -1;
+
+    if (aObj.toLowerCase() < bObj.toLowerCase())
+      return +orderDirection === 0 ? -1 : 1;
+
     return 0;
   });
 };

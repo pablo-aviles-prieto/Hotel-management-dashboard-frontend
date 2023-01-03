@@ -32,7 +32,7 @@ const authReducer = (state: IReducerState, action: IReducerAction) => {
   }
 };
 
-export const AuthProvider: React.FC<{ children: JSX.Element }> = ({
+export const AuthProvider: React.FC<{ children: any }> = ({
   children,
 }) => {
   const [auth, dispatchAuth] = useReducer(authReducer, INIT_STATE());

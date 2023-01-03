@@ -5,12 +5,11 @@ import {
   MenuContainer,
   Table,
   MainCard,
-  FlexContainer,
   PaginationButtons,
   ButtonGreen,
 } from '../components/Styles';
 import { AuthContext } from '../store/authContext';
-import { Check, XCircle, Star } from '../assets/icons';
+import { Check, XCircle } from '../assets/icons';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper';
 import { useNavigate } from 'react-router-dom';
@@ -25,6 +24,7 @@ import {
 } from '../utils';
 import styled from 'styled-components';
 import { reorderHandler } from '../utils';
+import { listAllEventListeners } from '../utils/getListeners';
 
 const PAGINATION_OFFSET = 5;
 
@@ -145,7 +145,7 @@ const API_URI = process.env.REACT_APP_API_URI;
 const Contact = () => {
   const [page, setPage] = useState(1);
   const [orderBy, setOderBy] = useState('date1');
-  const [internalPage, setInternalPage] = useState('id');
+  const [pageFilteredBy, setPageFilteredBy] = useState('id');
   const [commentsListSliced, setCommentsListSliced] = useState<IContactObj[]>(
     []
   );
@@ -160,8 +160,6 @@ const Contact = () => {
   const navigate = useNavigate();
   const { authStatus } = useContext(AuthContext);
 
-  console.log('fetchStatusAPI', fetchStatusAPI);
-
   useEffect(() => {
     dispatch(
       fetchContacts({
@@ -174,7 +172,7 @@ const Contact = () => {
         },
       })
     );
-  }, [dispatch]);
+  }, [dispatch, authStatus.token]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -186,7 +184,7 @@ const Contact = () => {
     const orderDirection = orderBy.replace(/\D+/g, '');
 
     const filteredContactsPage =
-      internalPage === 'id'
+      pageFilteredBy === 'id'
         ? contactList
         : contactList.filter((contact) => contact?.archived === true);
 
@@ -203,15 +201,21 @@ const Contact = () => {
     );
     setCommentsListSliced(arrayToRender);
     setFilteredContactsList(filteredReorderedContacts);
-  }, [contactListRedux, orderBy, page, internalPage]);
+  }, [contactListRedux, orderBy, page, pageFilteredBy, fetchStatusAPI]);
 
   const totalPages = useMemo(() => {
     return numberOfPages(filteredContactsList.length, PAGINATION_OFFSET);
   }, [filteredContactsList.length]);
 
-  const archiveContactHandler = (id: number) => {
-    console.log('id contact pressed =>', id);
-    // Have to update the contact obj and add the archived prop with a true value
+  const archiveContactHandler = async (id: string) => {
+    await fetch(`${API_URI}/contacts/${id}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${authStatus.token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ archived: true }),
+    });
   };
 
   const inputSelectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -350,14 +354,14 @@ const Contact = () => {
       >
         <div id='pages-container'>
           <p
-            className={internalPage === 'id' ? 'active-page' : ''}
-            onClick={() => setInternalPage('id')}
+            className={pageFilteredBy === 'id' ? 'active-page' : ''}
+            onClick={() => setPageFilteredBy('id')}
           >
             All Contacts
           </p>
           <p
-            className={internalPage === 'Archived' ? 'active-page' : ''}
-            onClick={() => setInternalPage('Archived')}
+            className={pageFilteredBy === 'Archived' ? 'active-page' : ''}
+            onClick={() => setPageFilteredBy('Archived')}
           >
             Archived
           </p>
@@ -405,27 +409,17 @@ const Contact = () => {
                       style={{ cursor: 'pointer' }}
                       onClick={() => navigate(`/contacts/${contact.id}`)}
                     >
-                      #{contact.id}
+                      #
+                      {contact.id.substring(
+                        contact.id.length - 7,
+                        contact.id.length
+                      )}
                     </td>
                     <td>{dateHandler(contact.date)}</td>
                     <td>
                       <p>{contact.user.name}</p>
                     </td>
                     <td>
-                      {/* <FlexContainer>
-                        {[...Array(starsRateToRender(contact.rate))].map(
-                          (_, i) => (
-                            <div key={i}>
-                              <Star
-                                stroke='transparent'
-                                fill='#135846'
-                                width='22px'
-                                height='22px'
-                              />
-                            </div>
-                          )
-                        )}
-                      </FlexContainer> */}
                       <p>{contact.message.body}</p>
                     </td>
                     <td>

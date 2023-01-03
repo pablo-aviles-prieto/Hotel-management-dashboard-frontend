@@ -62,7 +62,7 @@ const NewContact = () => {
     e.preventDefault();
 
     const objToSave = {
-      date: new Date().toLocaleDateString(),
+      date: new Date().toISOString().substring(0, 10),
       user: {
         name: contactUserName,
         email: contactUserEmail,

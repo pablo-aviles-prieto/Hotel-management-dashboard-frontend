@@ -2,12 +2,13 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
 
 export interface IUserObj {
-  id: number;
+  id: string;
   photo: string;
   name: string;
   email: string;
+  password: string;
   startDate: string;
-  job: { position: string; description: string; schedule: string };
+  job: { position?: string; description?: string; schedule?: string };
   contact: string;
   status: string;
 }
@@ -80,12 +81,12 @@ export const userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createUser.fulfilled, (state, action) => {
-        state.status = 'idle';
-        state.usersList = action.payload;
-      })
       .addMatcher(
-        isAnyOf(deleteUser.fulfilled, updateUser.fulfilled),
+        isAnyOf(
+          deleteUser.fulfilled,
+          updateUser.fulfilled,
+          createUser.fulfilled
+        ),
         (state) => {
           state.status = 'idle';
         }

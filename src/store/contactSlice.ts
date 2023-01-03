@@ -2,11 +2,11 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
 
 export interface IContactObj {
-  id: number;
+  id: string;
   date: string;
   user: { name: string; email: string; phone: string };
   message: { subject: string; body: string };
-  rate: number;
+  rate?: number;
   archived?: boolean;
 }
 
@@ -78,10 +78,6 @@ export const contactSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createContact.fulfilled, (state, action) => {
-        state.status = 'idle';
-        state.contactList = action.payload;
-      })
       .addMatcher(
         isAnyOf(fetchContacts.fulfilled, fetchSingleContact.fulfilled),
         (state, action) => {
@@ -90,7 +86,11 @@ export const contactSlice = createSlice({
         }
       )
       .addMatcher(
-        isAnyOf(deleteContact.fulfilled, updateContact.fulfilled),
+        isAnyOf(
+          deleteContact.fulfilled,
+          updateContact.fulfilled,
+          createContact.fulfilled
+        ),
         (state) => {
           state.status = 'idle';
         }

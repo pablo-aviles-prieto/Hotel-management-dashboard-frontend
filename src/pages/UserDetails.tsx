@@ -34,7 +34,7 @@ const UserDetails = () => {
         },
       })
     );
-  }, [dispatch, id]);
+  }, [dispatch, id, authStatus.token]);
 
   const deleteRoomHandler = async () => {
     if (window.confirm('Are you sure you want to delete this user?') === false)

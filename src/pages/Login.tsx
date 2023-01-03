@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { InputText, ButtonGreen } from '../components/Styles';
 import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
+import { listAllEventListeners } from '../utils/getListeners';
 
 interface IDataFetch {
   email: string;

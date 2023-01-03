@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchSingleContact, updateContact } from '../store/contactSlice';
 import styled from 'styled-components';
+import { listAllEventListeners } from '../utils/getListeners';
 
 const StyledForm = styled.form`
   div {
@@ -75,7 +76,7 @@ const ContactEdit = () => {
         },
       })
     );
-  }, [dispatch, id]);
+  }, [dispatch, id, authStatus.token]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;

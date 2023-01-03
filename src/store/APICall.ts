@@ -10,5 +10,4 @@ export const APICall = async ({
     throw new Error(`Error fetching data to the endpoint ${url}`);
   }
   return response;
-  // return response.json();
 };

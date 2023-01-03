@@ -5,6 +5,7 @@ import { fetchSingleContact, deleteContact } from '../store/contactSlice';
 import { MainCard, ButtonGreen } from '../components/Styles';
 import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
+import { listAllEventListeners } from '../utils/getListeners';
 
 const RedButton = styled(ButtonGreen)`
   background-color: rgb(226, 52, 40);
@@ -22,6 +23,8 @@ const ContactDetails = () => {
   const params = useParams();
   const { id } = params;
 
+  console.table(listAllEventListeners());
+
   useEffect(() => {
     dispatch(
       fetchSingleContact({
@@ -34,7 +37,7 @@ const ContactDetails = () => {
         },
       })
     );
-  }, [dispatch, id]);
+  }, [dispatch, id, authStatus.token]);
 
   const deleteContactHandler = async () => {
     if (

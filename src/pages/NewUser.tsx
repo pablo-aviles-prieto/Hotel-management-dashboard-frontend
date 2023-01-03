@@ -52,12 +52,13 @@ const NewUser = () => {
     FileList | FileList[] | null
   >([]);
   const [userNameInput, setUserNameInput] = useState('');
-  const [userJobSelect, setUserJobSelect] = useState('Manager');
+  const [jobPosition, setJobPosition] = useState('Manager');
+  const [jobDescription, setJobDescription] = useState('');
+  const [jobSchedule, setJobSchedule] = useState('');
   const [userEmailInput, setUserEmailInput] = useState('');
   const [userPasswordInput, setUserPasswordInput] = useState('');
   const [userPhoneInput, setUserPhoneInput] = useState('');
   const [userStatusSelect, setUserStatusSelect] = useState('Active');
-  const usersListRedux = useAppSelector((state) => state.users.usersList);
   const statusAPI = useAppSelector((state) => state.users.status);
   const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -71,7 +72,11 @@ const NewUser = () => {
         'https://www.pngkey.com/png/detail/308-3081138_contact-avatar-generic.png',
       //   photo: userPhotoInput,
       name: userNameInput,
-      job: { position: userJobSelect, description: '', schedule: '' },
+      job: {
+        position: jobPosition,
+        description: jobDescription,
+        schedule: jobSchedule,
+      },
       email: userEmailInput,
       password: userPasswordInput,
       contact: userPhoneInput,
@@ -87,8 +92,6 @@ const NewUser = () => {
     ) {
       return alert('Please, fill all the required inputs');
     }
-
-    console.log('objToSave', objToSave);
 
     const result = await dispatch(
       createUser({
@@ -203,8 +206,8 @@ const NewUser = () => {
             id='user-job-position'
             padding='8px 5px'
             positionArrowY='0'
-            value={userJobSelect}
-            onChange={(e) => setUserJobSelect(e.target.value)}
+            value={jobPosition}
+            onChange={(e) => setJobPosition(e.target.value)}
           >
             {userJobPositionOptions.map((option) => (
               <option key={option.label} value={option.label}>
@@ -212,6 +215,34 @@ const NewUser = () => {
               </option>
             ))}
           </InputSelect>
+        </div>
+        <div>
+          <StyledLabel htmlFor='user-job-description'>
+            Job Description
+          </StyledLabel>
+          <InputText
+            borderRadius='4px'
+            padding='5px'
+            name='user-job-description'
+            placeholder='job description...'
+            value={jobDescription}
+            id='user-job-description'
+            type='text'
+            onChange={(e) => setJobDescription(e.target.value)}
+          />
+        </div>
+        <div>
+          <StyledLabel htmlFor='user-job-schedule'>Job Schedule</StyledLabel>
+          <InputText
+            borderRadius='4px'
+            padding='5px'
+            name='user-job-schedule'
+            placeholder='job schedule...'
+            value={jobSchedule}
+            id='user-job-schedule'
+            type='text'
+            onChange={(e) => setJobSchedule(e.target.value)}
+          />
         </div>
         <div>
           <StyledLabel htmlFor='user-status'>

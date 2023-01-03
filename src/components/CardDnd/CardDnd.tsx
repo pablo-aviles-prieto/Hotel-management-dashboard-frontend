@@ -4,7 +4,7 @@ import { ItemTypes } from './ItemTypes';
 import { IRoomObj } from '../../store/roomSlice';
 
 interface ICardDnd {
-  id: number;
+  id: string;
   index: number;
   moveCard: (dragIndex: number, hoverIndex: number) => void;
   data: IRoomObj;

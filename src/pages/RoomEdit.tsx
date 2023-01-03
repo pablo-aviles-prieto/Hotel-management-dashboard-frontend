@@ -101,12 +101,13 @@ const API_URI = process.env.REACT_APP_API_URI;
 
 const RoomEdit = () => {
   const [roomNameInput, setRoomNameInput] = useState('');
-  const [roomTypeSelect, setRoomTypeSelect] = useState('Single Bed');
-  const [roomNumberInput, setRoomNumberInput] = useState('');
+  const [roomBedTypeSelect, setRoomBedTypeSelect] = useState('Single Bed');
+  const [roomNumberInput, setRoomNumberInput] = useState<number | undefined >(undefined);
   const [roomFloorInput, setRoomFloorInput] = useState('');
   const [roomDescription, setRoomDescription] = useState<string | undefined>(
     ''
   );
+  const [roomType, setRoomType] = useState('');
   const [checkOffer, setCheckOffer] = useState(false);
   const [roomPriceInput, setRoomPriceInput] = useState(0);
   const [roomDiscountInput, setRoomDiscountInput] = useState(0);
@@ -122,8 +123,6 @@ const RoomEdit = () => {
   const params = useParams();
   const { id } = params;
 
-  console.log('fetchStatusAPI', fetchStatusAPI);
-
   useEffect(() => {
     dispatch(
       fetchSingleRoom({
@@ -136,7 +135,7 @@ const RoomEdit = () => {
         },
       })
     );
-  }, [dispatch, id]);
+  }, [dispatch, id, authStatus.token]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -145,15 +144,19 @@ const RoomEdit = () => {
       ? roomsListRedux[0]
       : roomsListRedux;
 
-    // When connected to the back, need to use the fetchSingleRoom thunk to make it work with routes
     setRoomNameInput(parsedRoom.roomName);
-    setRoomTypeSelect(parsedRoom.bedType);
+    setRoomBedTypeSelect(parsedRoom.bedType);
     setRoomNumberInput(parsedRoom.roomNumber);
     setRoomFloorInput(parsedRoom.roomFloor);
+    setRoomType(parsedRoom.roomType);
     setRoomPriceInput(parsedRoom.ratePerNight);
     setRoomDiscountInput(
       parsedRoom?.offerPrice
-        ? Number(((parsedRoom?.offerPrice * 100) / parsedRoom.ratePerNight).toFixed(2))
+        ? Number(
+            ((parsedRoom?.offerPrice * 100) / parsedRoom.ratePerNight).toFixed(
+              2
+            )
+          )
         : 0
     );
     setCheckOffer(parsedRoom?.offerPrice ? true : false);
@@ -161,18 +164,18 @@ const RoomEdit = () => {
     setAmenitiesSelect(
       parsedRoom.facilities?.length > 0 ? parsedRoom.facilities : []
     );
-  }, [roomsListRedux]);
+  }, [roomsListRedux, fetchStatusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToUpdate = {
       roomName: roomNameInput,
-      bedType: roomTypeSelect,
+      bedType: roomBedTypeSelect,
       roomNumber: roomNumberInput,
       roomFloor: roomFloorInput,
       roomDescription,
-      checkOffer,
+      roomType,
       ratePerNight: +roomPriceInput,
       discount: checkOffer ? +roomDiscountInput : 0,
       facilities: amenitiesSelect,
@@ -264,7 +267,7 @@ const RoomEdit = () => {
         </div>
         <div>
           <StyledLabel htmlFor='room-type'>
-            Type<span style={{ color: 'red' }}>*</span>
+            Bed Type<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
           <InputSelect
             style={{
@@ -275,8 +278,8 @@ const RoomEdit = () => {
             id='room-type'
             padding='8px 5px'
             positionArrowY='0'
-            value={roomTypeSelect}
-            onChange={(e) => setRoomTypeSelect(e.target.value)}
+            value={roomBedTypeSelect}
+            onChange={(e) => setRoomBedTypeSelect(e.target.value)}
           >
             {roomTypeOptionsSelect.map((option) => (
               <option key={option.label} value={option.label}>
@@ -284,6 +287,21 @@ const RoomEdit = () => {
               </option>
             ))}
           </InputSelect>
+        </div>
+        <div>
+          <StyledLabel htmlFor='room-type'>
+            Room Type<span style={{ color: 'red' }}>*</span>
+          </StyledLabel>
+          <InputText
+            borderRadius='4px'
+            padding='5px'
+            name='room-type'
+            placeholder='room type...'
+            value={roomType}
+            id='room-type'
+            type='text'
+            onChange={(e) => setRoomType(e.target.value)}
+          />
         </div>
         <div>
           <StyledLabel htmlFor='room-number'>
@@ -298,7 +316,7 @@ const RoomEdit = () => {
             id='room-number'
             type='number'
             min='1'
-            onChange={(e) => setRoomNumberInput(e.target.value)}
+            onChange={(e) => setRoomNumberInput(+e.target.value)}
           />
         </div>
         <div>

@@ -24,6 +24,7 @@ import {
   paginationButtonsHandler,
 } from '../utils';
 import { AuthContext } from '../store/authContext';
+import { listAllEventListeners } from '../utils/getListeners';
 
 const PAGINATION_OFFSET = 10;
 
@@ -86,8 +87,6 @@ const RoomsList = () => {
   const dispatch = useAppDispatch();
   const { authStatus } = useContext(AuthContext);
 
-  console.log('fetchStatusAPI', fetchStatusAPI);
-
   useEffect(() => {
     dispatch(
       fetchRooms({
@@ -100,7 +99,7 @@ const RoomsList = () => {
         },
       })
     );
-  }, [dispatch]);
+  }, [dispatch, authStatus.token]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -124,7 +123,7 @@ const RoomsList = () => {
     );
     setRoomsListSliced(arrayToRender);
     setFilteredRoomsList(filteredReorderedRooms);
-  }, [roomsListRedux, orderBy, page]);
+  }, [roomsListRedux, orderBy, page, fetchStatusAPI]);
 
   const totalPages = useMemo(() => {
     return numberOfPages(filteredRoomsList.length, PAGINATION_OFFSET);
@@ -169,7 +168,7 @@ const RoomsList = () => {
       <td>{room.bedType}</td>
       <td>Floor {room.roomFloor}</td>
       <td>
-        {room.facilities.map((facility) => (
+        {room?.facilities.map((facility) => (
           <span key={facility} style={{ marginRight: '5px' }}>
             {facility}
           </span>

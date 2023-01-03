@@ -23,6 +23,7 @@ import {
   MenuContainer,
 } from '../components/Styles';
 import { useContainerDimensions } from '../utils';
+import { listAllEventListeners } from '../utils/getListeners';
 
 const TopSection = styled.section`
   display: flex;

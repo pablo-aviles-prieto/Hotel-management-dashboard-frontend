@@ -101,10 +101,11 @@ const API_URI = process.env.REACT_APP_API_URI;
 
 const NewRoom = () => {
   const [roomNameInput, setRoomNameInput] = useState('');
-  const [roomTypeSelect, setRoomTypeSelect] = useState('Single Bed');
+  const [roomBedTypeSelect, setBedRoomTypeSelect] = useState('Single Bed');
   const [roomNumberInput, setRoomNumberInput] = useState('');
   const [roomFloorInput, setRoomFloorInput] = useState('');
   const [roomDescription, setRoomDescription] = useState('');
+  const [roomType, setRoomType] = useState('');
   const [checkOffer, setCheckOffer] = useState(false);
   const [roomPriceInput, setRoomPriceInput] = useState(0);
   const [roomDiscountInput, setRoomDiscountInput] = useState(0);
@@ -126,25 +127,27 @@ const NewRoom = () => {
         imagesUploadArray.push(imagesInput[i]);
       }
     }
-    console.log('imagesUploadArray', imagesUploadArray);
-
     const objToSave = {
+      // images: imagesUploadArray,
+      images:
+        'https://pablo-aviles-prieto.github.io/hotel-management-app/assets/hotel-rooms/room1.jpg',
       roomName: roomNameInput,
-      bedType: roomTypeSelect,
+      bedType: roomBedTypeSelect,
       roomNumber: +roomNumberInput,
       roomFloor: roomFloorInput,
       roomDescription,
-      // checkOffer,
+      roomType,
       ratePerNight: +roomPriceInput,
       discount: checkOffer ? +roomDiscountInput : 0,
       facilities: amenitiesSelect,
-      // images: imagesUploadArray,
+      status: 'Available',
     };
 
     if (
       !roomNameInput.trim() ||
       !roomNumberInput ||
       !roomFloorInput.trim() ||
+      !roomDescription.trim() ||
       !roomPriceInput ||
       amenitiesSelect.length === 0
       // imagesUploadArray.length < 3
@@ -154,7 +157,7 @@ const NewRoom = () => {
 
     const result = await dispatch(
       createRoom({
-        url: new URL(`${API_URI}/bookings`),
+        url: new URL(`${API_URI}/rooms`),
         fetchObjProps: {
           method: 'POST',
           headers: {
@@ -220,8 +223,8 @@ const NewRoom = () => {
           />
         </div>
         <div>
-          <StyledLabel htmlFor='room-type'>
-            Type<span style={{ color: 'red' }}>*</span>
+          <StyledLabel htmlFor='room-bed-type'>
+            Bed Type<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
           <InputSelect
             style={{
@@ -229,11 +232,11 @@ const NewRoom = () => {
               paddingRight: '62px',
               fontWeight: '400',
             }}
-            id='room-type'
+            id='room-bed-type'
             padding='8px 5px'
             positionArrowY='0'
-            value={roomTypeSelect}
-            onChange={(e) => setRoomTypeSelect(e.target.value)}
+            value={roomBedTypeSelect}
+            onChange={(e) => setBedRoomTypeSelect(e.target.value)}
           >
             {roomTypeOptionsSelect.map((option) => (
               <option key={option.label} value={option.label}>
@@ -241,6 +244,21 @@ const NewRoom = () => {
               </option>
             ))}
           </InputSelect>
+        </div>
+        <div>
+          <StyledLabel htmlFor='room-type'>
+            Room Type<span style={{ color: 'red' }}>*</span>
+          </StyledLabel>
+          <InputText
+            borderRadius='4px'
+            padding='5px'
+            name='room-type'
+            placeholder='room type...'
+            value={roomType}
+            id='room-type'
+            type='text'
+            onChange={(e) => setRoomType(e.target.value)}
+          />
         </div>
         <div>
           <StyledLabel htmlFor='room-number'>

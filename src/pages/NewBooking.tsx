@@ -70,7 +70,7 @@ const NewBooking = () => {
     useState('');
   const [bookingStatusSelect, setBookingStatusSelect] = useState('check in');
   const [bookingUserInput, setBookingUserInput] = useState('');
-  const [bookedRoom, setBookedRoom] = useState(1);
+  const [bookedRoom, setBookedRoom] = useState('');
   const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const statusAPI = useAppSelector((state) => state.bookings.status);
   const { authStatus } = useContext(AuthContext);
@@ -91,7 +91,7 @@ const NewBooking = () => {
     fetchAllRooms()
       .then((res) => setRoomsArray(res.result))
       .catch((err) => console.error('error fetching rooms', err));
-  }, []);
+  }, [authStatus.token]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -248,7 +248,7 @@ const NewBooking = () => {
             padding='8px 5px'
             positionArrowY='0'
             value={bookedRoom}
-            onChange={(e) => setBookedRoom(parseInt(e.target.value))}
+            onChange={(e) => setBookedRoom(e.target.value)}
           >
             {roomsArray.map((room) => (
               <option key={room.id} value={room.id}>

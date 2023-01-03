@@ -34,7 +34,7 @@ const BookingDetails = () => {
         },
       })
     );
-  }, [dispatch, id]);
+  }, [dispatch, id, authStatus.token]);
 
   const deleteBookingHandler = async () => {
     if (
@@ -91,8 +91,18 @@ const BookingDetails = () => {
           <ul>
             <li>Booked by: {parsedBookings.userName}</li>
             <li>Booking number: #{parsedBookings.bookingNumber}</li>
-            <li>Room type: {parsedBookings.roomType}</li>
-            <li>Room name: {parsedBookings.roomName}</li>
+            <li>
+              Room type:{' '}
+              {typeof parsedBookings.roomId === 'object'
+                ? parsedBookings.roomId.roomType
+                : ''}
+            </li>
+            <li>
+              Room name:{' '}
+              {typeof parsedBookings.roomId === 'object'
+                ? parsedBookings.roomId.roomName
+                : ''}
+            </li>
             <li>Order date: {parsedBookings.orderDate}</li>
             <li>Check-in: {parsedBookings.checkIn}</li>
             <li>Check-out: {parsedBookings.checkOut}</li>

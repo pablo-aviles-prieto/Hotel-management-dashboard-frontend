@@ -1,19 +1,17 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
+import { IRoomObj } from './roomSlice';
 
 export interface IBookingObj {
-  id: number;
+  id: string;
   bookingNumber: number;
   userName: string;
   orderDate: string;
   checkIn: string;
   checkOut: string;
-  specialRequest: null | string;
+  specialRequest: string;
   status: string;
-  roomId: number;
-  roomType?: string;
-  roomName?: string;
-  roomImg?: string;
+  roomId: IRoomObj;
 }
 
 interface IBookingsState {
@@ -84,12 +82,12 @@ export const bookingSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createBooking.fulfilled, (state, action) => {
-        state.status = 'idle';
-        state.bookingsList = action.payload;
-      })
       .addMatcher(
-        isAnyOf(deleteBooking.fulfilled, updateBooking.fulfilled),
+        isAnyOf(
+          deleteBooking.fulfilled,
+          updateBooking.fulfilled,
+          createBooking.fulfilled
+        ),
         (state) => {
           state.status = 'idle';
         }

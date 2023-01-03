@@ -56,7 +56,7 @@ const Users = () => {
   const [searchInput, setSearchInput] = useState('');
   const [page, setPage] = useState(1);
   const [orderBy, setOderBy] = useState('startDate1');
-  const [internalPage, setInternalPage] = useState('id');
+  const [pageFilteredBy, setPageFilteredBy] = useState('id');
   const [usersListSliced, setUsersListSliced] = useState<IUserObj[]>([]);
   const [filteredUsersList, setFilteredUsersList] = useState<IUserObj[]>([]);
   const usersListRedux = useAppSelector((state) => state.users.usersList);
@@ -77,7 +77,7 @@ const Users = () => {
         },
       })
     );
-  }, [dispatch]);
+  }, [dispatch, authStatus.token]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -93,9 +93,9 @@ const Users = () => {
     );
 
     const filteredUsersPage =
-      internalPage === 'id'
+      pageFilteredBy === 'id'
         ? filteredUsers
-        : filteredUsers.filter((user) => user.status === internalPage);
+        : filteredUsers.filter((user) => user.status === pageFilteredBy);
 
     const filteredReorderedUsers = reorderHandler({
       array: filteredUsersPage,
@@ -110,7 +110,7 @@ const Users = () => {
     );
     setUsersListSliced(arrayToRender);
     setFilteredUsersList(filteredReorderedUsers);
-  }, [usersListRedux, orderBy, page, searchInput, internalPage]);
+  }, [usersListRedux, orderBy, page, searchInput, pageFilteredBy, fetchStatusAPI]);
 
   const totalPages = useMemo(() => {
     return numberOfPages(filteredUsersList.length, PAGINATION_OFFSET);
@@ -126,20 +126,20 @@ const Users = () => {
       <MenuContainer style={{ marginBottom: '50px' }}>
         <div id='pages-container'>
           <p
-            className={internalPage === 'id' ? 'active-page' : ''}
-            onClick={() => setInternalPage('id')}
+            className={pageFilteredBy === 'id' ? 'active-page' : ''}
+            onClick={() => setPageFilteredBy('id')}
           >
             All Employee
           </p>
           <p
-            className={internalPage === 'Active' ? 'active-page' : ''}
-            onClick={() => setInternalPage('Active')}
+            className={pageFilteredBy === 'Active' ? 'active-page' : ''}
+            onClick={() => setPageFilteredBy('Active')}
           >
             Active Employee
           </p>
           <p
-            className={internalPage === 'Inactive' ? 'active-page' : ''}
-            onClick={() => setInternalPage('Inactive')}
+            className={pageFilteredBy === 'Inactive' ? 'active-page' : ''}
+            onClick={() => setPageFilteredBy('Inactive')}
           >
             Inactive Employee
           </p>
@@ -197,7 +197,7 @@ const Users = () => {
                         </ImgHolder>
                         <div>
                           <p style={{ fontWeight: '700' }}>{user.name}</p>
-                          <StyledParagraph>#{user.id}</StyledParagraph>
+                          {/* <StyledParagraph>#{user.id}</StyledParagraph> */}
                           <StyledParagraph>
                             Joined on {dateHandler(user.startDate)}
                           </StyledParagraph>

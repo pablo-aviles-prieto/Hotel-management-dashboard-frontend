@@ -70,7 +70,7 @@ const BookingEdit = () => {
     useState('');
   const [bookingStatusSelect, setBookingStatusSelect] = useState('');
   const [bookingUserInput, setBookingUserInput] = useState('');
-  const [bookedRoom, setBookedRoom] = useState(1);
+  const [bookedRoom, setBookedRoom] = useState('');
   const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
   const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
@@ -81,6 +81,17 @@ const BookingEdit = () => {
   const { id } = params;
 
   useEffect(() => {
+    const fetchAllRooms = async () => {
+      const response = await fetch(`${API_URI}/rooms`, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${authStatus.token}`,
+        },
+      });
+      const parsedRooms = await response.json();
+      return parsedRooms;
+    };
+
     fetchAllRooms()
       .then((res) => setRoomsArray(res.result))
       .catch((err) => console.error('error fetching rooms', err));
@@ -96,7 +107,7 @@ const BookingEdit = () => {
         },
       })
     );
-  }, [dispatch, id]);
+  }, [dispatch, id, authStatus.token]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -112,19 +123,8 @@ const BookingEdit = () => {
     );
     setBookingStatusSelect(parsedBookings.status);
     setBookingUserInput(parsedBookings.userName);
-    setBookedRoom(parsedBookings.roomId);
+    setBookedRoom(parsedBookings.roomId.id);
   }, [bookingRedux, fetchStatusAPI]);
-
-  const fetchAllRooms = async () => {
-    const response = await fetch(`${API_URI}/rooms`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${authStatus.token}`,
-      },
-    });
-    const parsedRooms = await response.json();
-    return parsedRooms;
-  };
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -286,7 +286,7 @@ const BookingEdit = () => {
             padding='8px 5px'
             positionArrowY='0'
             value={bookedRoom}
-            onChange={(e) => setBookedRoom(parseInt(e.target.value))}
+            onChange={(e) => setBookedRoom(e.target.value)}
           >
             {roomsArray.map((room) => (
               <option key={room.id} value={room.id}>
@@ -306,3 +306,6 @@ const BookingEdit = () => {
 };
 
 export default BookingEdit;
+function listAllEventListeners(): any {
+  throw new Error('Function not implemented.');
+}

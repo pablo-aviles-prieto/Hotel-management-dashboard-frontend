@@ -53,7 +53,9 @@ const UserEdit = () => {
     FileList | FileList[] | null
   >([]);
   const [userNameInput, setUserNameInput] = useState('');
-  const [userJobSelect, setUserJobSelect] = useState('Manager');
+  const [jobPosition, setJobPosition] = useState('Manager');
+  const [jobDescription, setJobDescription] = useState('');
+  const [jobSchedule, setJobSchedule] = useState('');
   const [userEmailInput, setUserEmailInput] = useState('');
   const [userPasswordInput, setUserPasswordInput] = useState('');
   const [userPhoneInput, setUserPhoneInput] = useState('');
@@ -78,7 +80,7 @@ const UserEdit = () => {
         },
       })
     );
-  }, [dispatch, id]);
+  }, [dispatch, id, authStatus.token]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -87,12 +89,15 @@ const UserEdit = () => {
       ? usersListRedux[0]
       : usersListRedux;
     setUserNameInput(parsedUsers.name);
-    setUserJobSelect(parsedUsers.job?.position);
+    setJobPosition(parsedUsers.job.position ? parsedUsers.job.position : '');
+    setJobDescription(
+      parsedUsers.job.description ? parsedUsers.job.description : ''
+    );
+    setJobSchedule(parsedUsers.job.schedule ? parsedUsers.job.schedule : '');
     setUserEmailInput(parsedUsers.email);
-    // setUserPasswordInput(parsedUsers.ratePerNight);
     setUserPhoneInput(parsedUsers.contact);
     setUserStatusSelect(parsedUsers.status);
-  }, [usersListRedux]);
+  }, [usersListRedux, fetchStatusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,9 +113,13 @@ const UserEdit = () => {
     const objToUpdate = {
       //   photo: userPhotoInput,
       name: userNameInput,
-      job: { position: userJobSelect },
+      job: {
+        position: jobPosition,
+        description: jobDescription,
+        schedule: jobSchedule,
+      },
       email: userEmailInput,
-      // password: userPasswordInput,
+      password: userPasswordInput ? userPasswordInput : null,
       contact: userPhoneInput,
       status: userStatusSelect,
     };
@@ -128,7 +137,7 @@ const UserEdit = () => {
         },
       })
     );
-    console.log('result', result);
+
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {
       alert('There was an error editing the booking!');
@@ -179,9 +188,7 @@ const UserEdit = () => {
           />
         </div>
         <div>
-          <StyledLabel htmlFor='user-name'>
-            Name<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
+          <StyledLabel htmlFor='user-name'>Name</StyledLabel>
           <InputText
             borderRadius='4px'
             padding='5px'
@@ -194,9 +201,7 @@ const UserEdit = () => {
           />
         </div>
         <div>
-          <StyledLabel htmlFor='user-email'>
-            Email<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
+          <StyledLabel htmlFor='user-email'>Email</StyledLabel>
           <InputText
             borderRadius='4px'
             padding='5px'
@@ -222,9 +227,7 @@ const UserEdit = () => {
           />
         </div>
         <div>
-          <StyledLabel htmlFor='user-phone'>
-            Contact number<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
+          <StyledLabel htmlFor='user-phone'>Contact number</StyledLabel>
           <InputText
             borderRadius='4px'
             padding='5px'
@@ -237,9 +240,7 @@ const UserEdit = () => {
           />
         </div>
         <div>
-          <StyledLabel htmlFor='user-job-position'>
-            Job position<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
+          <StyledLabel htmlFor='user-job-position'>Job position</StyledLabel>
           <InputSelect
             style={{
               borderRadius: '4px',
@@ -249,8 +250,8 @@ const UserEdit = () => {
             id='user-job-position'
             padding='8px 5px'
             positionArrowY='0'
-            value={userJobSelect}
-            onChange={(e) => setUserJobSelect(e.target.value)}
+            value={jobPosition}
+            onChange={(e) => setJobPosition(e.target.value)}
           >
             {userJobPositionOptions.map((option) => (
               <option key={option.label} value={option.label}>
@@ -260,9 +261,35 @@ const UserEdit = () => {
           </InputSelect>
         </div>
         <div>
-          <StyledLabel htmlFor='user-job-position'>
-            Status<span style={{ color: 'red' }}>*</span>
+          <StyledLabel htmlFor='user-job-description'>
+            Job Description
           </StyledLabel>
+          <InputText
+            borderRadius='4px'
+            padding='5px'
+            name='user-job-description'
+            placeholder='job description...'
+            value={jobDescription}
+            id='user-job-description'
+            type='text'
+            onChange={(e) => setJobDescription(e.target.value)}
+          />
+        </div>
+        <div>
+          <StyledLabel htmlFor='user-job-schedule'>Job Schedule</StyledLabel>
+          <InputText
+            borderRadius='4px'
+            padding='5px'
+            name='user-job-schedule'
+            placeholder='job schedule...'
+            value={jobSchedule}
+            id='user-job-schedule'
+            type='text'
+            onChange={(e) => setJobSchedule(e.target.value)}
+          />
+        </div>
+        <div>
+          <StyledLabel htmlFor='user-job-position'>Status</StyledLabel>
           <InputSelect
             style={{
               borderRadius: '4px',
