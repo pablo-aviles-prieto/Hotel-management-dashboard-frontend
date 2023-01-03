@@ -8,4 +8,4 @@ Hotel Miranda dashboard to manage all the internal structure of the hotel. Getti
 
 ## 💻 Take a look
 
-[https://miranda-dashboard.pabloaviles.es/](https://miranda-dashboard.pabloaviles.es/)_Deployed on my oracle free tier server using Aapanel_
+[https://miranda-dashboard.pabloaviles.es/](https://miranda-dashboard.pabloaviles.es/) _Deployed on my oracle server using Aapanel_
