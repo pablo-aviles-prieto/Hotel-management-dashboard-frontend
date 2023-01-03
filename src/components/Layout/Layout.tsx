@@ -386,7 +386,7 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
           </h3>
         </FlexDiv>
         <FlexDiv gap='30px'>
-          <div className='badge-container' onClick={() => navigate('/contact')}>
+          <div className='badge-container' onClick={() => navigate('/contacts')}>
             <Mail height='25px' />
             <div
               className='badge-container-icon'
