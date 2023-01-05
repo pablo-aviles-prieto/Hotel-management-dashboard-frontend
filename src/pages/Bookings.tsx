@@ -277,12 +277,8 @@ const Bookings = () => {
                       <FlexContainer>
                         <ImgHolder width='80px' height='80px'>
                           <img
-                            src={
-                              typeof bookings.roomId === 'object'
-                                ? bookings.roomId.photo
-                                : ''
-                            }
-                            alt={`Avatar from ${bookings.userName}`}
+                            src={bookings.roomId.photo}
+                            alt={`Room ${bookings.roomId.roomName}`}
                           />
                         </ImgHolder>
                         <div>
