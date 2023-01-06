@@ -340,7 +340,12 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
                 margin: 'auto',
                 marginTop: '-55px',
               }}
-            />
+            >
+              <img
+                src={authStatus.photo}
+                alt={`Photo from user ${authStatus.name}`}
+              />
+            </ImgHolder>
             <h3
               style={{
                 marginTop: '15px',
@@ -386,7 +391,10 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
           </h3>
         </FlexDiv>
         <FlexDiv gap='30px'>
-          <div className='badge-container' onClick={() => navigate('/contacts')}>
+          <div
+            className='badge-container'
+            onClick={() => navigate('/contacts')}
+          >
             <Mail height='25px' />
             <div
               className='badge-container-icon'

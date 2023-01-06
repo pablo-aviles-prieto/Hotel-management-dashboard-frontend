@@ -26,7 +26,7 @@ const StyledLabel = styled.label`
 const API_URI = process.env.REACT_APP_API_URI;
 
 const Login = () => {
-  const [usernameInput, setUsernameInput] = useState('');
+  const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const { authStatus, loginHandler, logoutHandler } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const Login = () => {
     e.preventDefault();
 
     const res = await sendLogin({
-      email: usernameInput,
+      email: emailInput,
       password: passwordInput,
     });
 
@@ -44,9 +44,10 @@ const Login = () => {
     const parsedRes = await res.json();
 
     loginHandler({
-      email: usernameInput,
-      name: 'test name',
+      email: emailInput,
+      name: parsedRes.user.name,
       token: parsedRes.token,
+      photo: parsedRes.user.photo,
     });
     navigate('/', { replace: true });
   };
@@ -79,11 +80,11 @@ const Login = () => {
                 borderRadius='4px'
                 padding='5px'
                 name='username'
-                placeholder='test@test.com'
-                value={usernameInput}
+                placeholder='hotel@miranda.com'
+                value={emailInput}
                 id='username'
                 type='text'
-                onChange={(e) => setUsernameInput(e.target.value)}
+                onChange={(e) => setEmailInput(e.target.value)}
                 autoComplete='username'
               />
             </div>
