@@ -88,6 +88,14 @@ const UserEdit = () => {
     const parsedUsers = Array.isArray(usersListRedux)
       ? usersListRedux[0]
       : usersListRedux;
+
+    if (parsedUsers.email === 'hotel@miranda.com') {
+      alert(
+        'This user is only editable by the CREATOR. Returning back to the user list!'
+      );
+      return navigate(`/users/`, { replace: true });
+    }
+
     setUserNameInput(parsedUsers.name);
     setJobPosition(parsedUsers.job.position ? parsedUsers.job.position : '');
     setJobDescription(

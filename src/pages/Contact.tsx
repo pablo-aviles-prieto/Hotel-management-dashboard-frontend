@@ -130,14 +130,14 @@ const optionsSelect = [
     label: 'Oldest',
     value: 'date0',
   },
-  {
-    label: 'Top rated',
-    value: 'rate1',
-  },
-  {
-    label: 'Low rated',
-    value: 'rate0',
-  },
+  // {
+  //   label: 'Top rated',
+  //   value: 'rate1',
+  // },
+  // {
+  //   label: 'Low rated',
+  //   value: 'rate0',
+  // },
 ];
 
 const API_URI = process.env.REACT_APP_API_URI;

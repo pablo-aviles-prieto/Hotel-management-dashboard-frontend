@@ -12,10 +12,11 @@ const getObjValue = ({
   value: string | string[];
 }) => {
   const search = Array.isArray(value) ? value : [value];
-  return search.reduce(
-    (acc, key) => (acc[key] !== 'undefined' ? acc[key] : undefined),
-    obj
-  );
+  return search.reduce((acc, key) => {
+    console.log('acc[key]', acc[key]);
+    console.log('key', key);
+    return acc[key];
+  }, obj);
 };
 
 export const reorderHandler = ({
@@ -26,11 +27,20 @@ export const reorderHandler = ({
   return array.sort((a, b) => {
     const aObj = getObjValue({ obj: a, value: orderValue });
     const bObj = getObjValue({ obj: b, value: orderValue });
+    console.log('aObj', aObj);
+    console.log('bObj', bObj);
 
-    if (aObj.toLowerCase() > bObj.toLowerCase())
+    // Since some objValues (returned from getObjValue) can be numbers or string, have to check for it
+    if (
+      (typeof aObj !== 'number' ? aObj.toLowerCase() : aObj) >
+      (typeof bObj !== 'number' ? bObj.toLowerCase() : bObj)
+    )
       return +orderDirection === 0 ? 1 : -1;
 
-    if (aObj.toLowerCase() < bObj.toLowerCase())
+    if (
+      (typeof aObj !== 'number' ? aObj.toLowerCase() : aObj) <
+      (typeof bObj !== 'number' ? bObj.toLowerCase() : bObj)
+    )
       return +orderDirection === 0 ? -1 : 1;
 
     return 0;

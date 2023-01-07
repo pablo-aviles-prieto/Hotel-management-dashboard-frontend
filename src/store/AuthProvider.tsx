@@ -2,6 +2,7 @@ import { useReducer, useCallback } from 'react';
 import { AuthContext, INIT_STATE, IAuthed } from './authContext';
 
 interface IReducerState {
+  id: string | number;
   name: string;
   email: string;
   token: string;
@@ -16,27 +17,38 @@ interface IReducerAction {
 const authReducer = (state: IReducerState, action: IReducerAction) => {
   switch (action.type) {
     case 'LOGIN': {
-      const { name, email, token, photo } = action.payload;
-      localStorage.setItem('AUTH', JSON.stringify({ name, email, token, photo }));
-      return { name, email, token, photo, authed: true };
+      const { id, name, email, token, photo } = action.payload;
+      localStorage.setItem(
+        'AUTH',
+        JSON.stringify({ id, name, email, token, photo })
+      );
+      return { id, name, email, token, photo, authed: true };
     }
     case 'LOGOUT': {
       localStorage.removeItem('AUTH');
-      return { name: '', email: '', token: '', photo: '', authed: false };
+      return {
+        id: '',
+        name: '',
+        email: '',
+        token: '',
+        photo: '',
+        authed: false,
+      };
     }
     default:
       return state;
   }
 };
 
-export const AuthProvider: React.FC<{ children: any }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: any }> = ({ children }) => {
   const [auth, dispatchAuth] = useReducer(authReducer, INIT_STATE());
 
   const loginHandler = useCallback(
-    ({ name, email, token, photo }: IAuthed) => {
-      dispatchAuth({ type: 'LOGIN', payload: { name, email, token, photo } });
+    ({ id, name, email, token, photo }: IAuthed) => {
+      dispatchAuth({
+        type: 'LOGIN',
+        payload: { id, name, email, token, photo },
+      });
     },
     [dispatchAuth]
   );

@@ -44,6 +44,7 @@ const Login = () => {
     const parsedRes = await res.json();
 
     loginHandler({
+      id: parsedRes.user.id,
       email: emailInput,
       name: parsedRes.user.name,
       token: parsedRes.token,

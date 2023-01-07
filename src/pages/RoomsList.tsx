@@ -50,11 +50,11 @@ const ButtonListRooms = styled(ButtonGreen)<{
 const optionsSelect = [
   {
     label: 'Newest',
-    value: 'id1',
+    value: 'roomNumber1',
   },
   {
     label: 'Oldest',
-    value: 'id0',
+    value: 'roomNumber0',
   },
   {
     label: 'Higher Price',
@@ -78,7 +78,7 @@ const API_URI = process.env.REACT_APP_API_URI;
 
 const RoomsList = () => {
   const [page, setPage] = useState(1);
-  const [orderBy, setOderBy] = useState('id1');
+  const [orderBy, setOderBy] = useState('roomNumber1');
   const [filteredRoomsList, setFilteredRoomsList] = useState<IRoomObj[]>([]);
   const [roomsListSliced, setRoomsListSliced] = useState<IRoomObj[]>([]);
   const roomsListRedux = useAppSelector((state) => state.rooms.roomList);
@@ -86,6 +86,7 @@ const RoomsList = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { authStatus } = useContext(AuthContext);
+  console.log('roomsListRedux', roomsListRedux);
 
   useEffect(() => {
     dispatch(

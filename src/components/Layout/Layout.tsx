@@ -363,7 +363,12 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
             >
               {authStatus.email}
             </p>
-            <ButtonSidebar padding='15px 45px'>Edit</ButtonSidebar>
+            <ButtonSidebar
+              onClick={() => navigate(`/users/${authStatus.id}`)}
+              padding='15px 45px'
+            >
+              Edit
+            </ButtonSidebar>
           </MainCard>
         )}
         <SidebarFooter>

@@ -40,6 +40,17 @@ const UserDetails = () => {
     if (window.confirm('Are you sure you want to delete this user?') === false)
       return;
 
+    if (
+      Array.isArray(userRedux)
+        ? userRedux[0].email === 'hotel@miranda.com'
+        : userRedux.email === 'hotel@miranda.com'
+    ) {
+      alert(
+        'This user is only editable by the CREATOR. Returning back to the user list!'
+      );
+      return navigate(`/users/`, { replace: true });
+    }
+
     const result = await dispatch(
       deleteUser({
         url: new URL(`${API_URI}/users/${id}`),

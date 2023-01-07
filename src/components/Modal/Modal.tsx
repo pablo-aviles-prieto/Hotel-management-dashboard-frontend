@@ -15,16 +15,15 @@ const BackDrop = styled.div`
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 2;
+  z-index: 3;
 `;
 
-// const ModalCard = styled(({borderRadius, ...rest}) => <MainCard {...rest}/>) <{borderRadius: string}>`
 const ModalCard = styled(MainCard)<{ borderRadius: string }>`
   position: fixed;
   width: 500px;
   text-align: center;
   left: calc(50% - 250px);
-  z-index: 2;
+  z-index: 3;
   h3 {
     font-size: 24px;
     margin-bottom: 10px;
