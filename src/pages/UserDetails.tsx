@@ -46,7 +46,7 @@ const UserDetails = () => {
         : userRedux.email === 'hotel@miranda.com'
     ) {
       alert(
-        'This user is only editable by the CREATOR. Returning back to the user list!'
+        `Can't delete this user (sometimes life give you lemons). Returning to the users list!`
       );
       return navigate(`/users/`, { replace: true });
     }

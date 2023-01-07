@@ -91,7 +91,7 @@ const UserEdit = () => {
 
     if (parsedUsers.email === 'hotel@miranda.com') {
       alert(
-        'This user is only editable by the CREATOR. Returning back to the user list!'
+        `This user is only editable by the CREATOR. Returning back to the user list!`
       );
       return navigate(`/users/`, { replace: true });
     }
