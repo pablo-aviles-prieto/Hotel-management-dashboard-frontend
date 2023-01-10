@@ -86,7 +86,6 @@ const RoomsList = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { authStatus } = useContext(AuthContext);
-  console.log('roomsListRedux', roomsListRedux);
 
   useEffect(() => {
     dispatch(

@@ -13,8 +13,6 @@ const getObjValue = ({
 }) => {
   const search = Array.isArray(value) ? value : [value];
   return search.reduce((acc, key) => {
-    console.log('acc[key]', acc[key]);
-    console.log('key', key);
     return acc[key];
   }, obj);
 };
@@ -27,8 +25,6 @@ export const reorderHandler = ({
   return array.sort((a, b) => {
     const aObj = getObjValue({ obj: a, value: orderValue });
     const bObj = getObjValue({ obj: b, value: orderValue });
-    console.log('aObj', aObj);
-    console.log('bObj', bObj);
 
     // Since some objValues (returned from getObjValue) can be numbers or string, have to check for it
     if (
