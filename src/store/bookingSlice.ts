@@ -31,16 +31,16 @@ const initialState: IBookingsState = {
   fetchStatus: 'loading',
 };
 
-export const fetchBookings = createAsyncThunk(
-  'booking/fetchBookings',
-  async ({
-    url,
-    fetchObjProps,
-  }: IFetchPayload): Promise<{ result: IBookingObj[] }> => {
-    const response = await APICall({ url, fetchObjProps });
-    return response.json();
-  }
-);
+// export const fetchBookings = createAsyncThunk(
+//   'booking/fetchBookings',
+//   async ({
+//     url,
+//     fetchObjProps,
+//   }: IFetchPayload): Promise<{ result: IBookingObj[] }> => {
+//     const response = await APICall({ url, fetchObjProps });
+//     return response.json();
+//   }
+// );
 
 export const fetchSingleBooking = createAsyncThunk(
   'booking/fetchSingleBooking',
