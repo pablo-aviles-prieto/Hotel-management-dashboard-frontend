@@ -161,17 +161,7 @@ const Contact = () => {
   const { authStatus } = useContext(AuthContext);
 
   useEffect(() => {
-    dispatch(
-      fetchContacts({
-        url: new URL(`${API_URI}/contacts`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
+    dispatch(fetchContacts());
   }, [dispatch, authStatus.token]);
 
   useEffect(() => {

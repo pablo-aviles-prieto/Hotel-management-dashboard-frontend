@@ -23,18 +23,8 @@ const ContactDetails = () => {
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleContact({
-        url: new URL(`${API_URI}/contacts/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleContact({ id }));
+  }, [dispatch, id]);
 
   const deleteContactHandler = async () => {
     if (
@@ -42,15 +32,7 @@ const ContactDetails = () => {
     )
       return;
 
-    const result = await dispatch(deleteContact({
-      url: new URL(`${API_URI}/contacts/${id}`),
-      fetchObjProps: {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${authStatus.token}`,
-        },
-      },
-    }));
+    const result = await dispatch(deleteContact({ id }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {

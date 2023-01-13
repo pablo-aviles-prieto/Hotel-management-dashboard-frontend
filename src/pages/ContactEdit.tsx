@@ -65,18 +65,8 @@ const ContactEdit = () => {
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleContact({
-        url: new URL(`${API_URI}/contacts/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleContact({ id }));
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -116,19 +106,7 @@ const ContactEdit = () => {
       archived: contactArchived === 'true' ? true : false,
     };
 
-    const result = await dispatch(
-      updateContact({
-        url: new URL(`${API_URI}/contacts/${id}`),
-        fetchObjProps: {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToUpdate),
-        },
-      })
-    );
+    const result = await dispatch(updateContact({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {

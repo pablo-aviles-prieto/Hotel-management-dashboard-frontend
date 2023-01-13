@@ -81,19 +81,7 @@ const NewContact = () => {
       return alert('Please, fill all the required inputs');
     }
 
-    const result = await dispatch(
-      createContact({
-        url: new URL(`${API_URI}/contacts`),
-        fetchObjProps: {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToSave),
-        },
-      })
-    );
+    const result = await dispatch(createContact({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {
