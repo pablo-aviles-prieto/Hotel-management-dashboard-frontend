@@ -36,7 +36,7 @@ const UserDetails = () => {
     );
   }, [dispatch, id, authStatus.token]);
 
-  const deleteRoomHandler = async () => {
+  const deleteUserHandler = async () => {
     if (window.confirm('Are you sure you want to delete this user?') === false)
       return;
 
@@ -115,7 +115,7 @@ const UserDetails = () => {
             >
               Edit user
             </ButtonGreen>
-            <RedButton padding='10px 52px' onClick={deleteRoomHandler}>
+            <RedButton padding='10px 52px' onClick={deleteUserHandler}>
               Delete user
             </RedButton>
           </div>

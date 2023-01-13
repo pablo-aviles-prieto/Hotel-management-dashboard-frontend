@@ -23,11 +23,6 @@ interface IRoomState {
   fetchStatus: 'idle' | 'loading' | 'failed';
 }
 
-interface IFetchPayload {
-  url: URL;
-  fetchObjProps: RequestInit;
-}
-
 const initialState: IRoomState = {
   roomList: [],
   status: 'idle',
@@ -39,13 +34,12 @@ const API_URI = process.env.REACT_APP_API_URI;
 export const fetchRooms = createAsyncThunk(
   'room/fetchRooms',
   async (): Promise<{ result: IRoomObj[] }> => {
-    const authInfo = getLocalStorage();
     const response = await APICall({
       url: new URL(`${API_URI}/rooms`),
       fetchObjProps: {
         method: 'GET',
         headers: {
-          Authorization: `Bearer ${authInfo?.token}`,
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
         },
       },
     });
@@ -55,35 +49,74 @@ export const fetchRooms = createAsyncThunk(
 
 export const fetchSingleRoom = createAsyncThunk(
   'room/fetchRoom',
-  async ({
-    url,
-    fetchObjProps,
-  }: IFetchPayload): Promise<{ result: IRoomObj }> => {
-    const response = await APICall({ url, fetchObjProps });
+  async ({ id }: { id: string | undefined }): Promise<{ result: IRoomObj }> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/rooms/${id}`),
+      fetchObjProps: {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+        },
+      },
+    });
     return response.json();
   }
 );
 
 export const createRoom = createAsyncThunk(
   'room/createRoom',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IRoomObj> => {
-    const response = await APICall({ url, fetchObjProps });
+  async ({ objToSave }: { objToSave: any }): Promise<IRoomObj> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/rooms`),
+      fetchObjProps: {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(objToSave),
+      },
+    });
     return response.json();
   }
 );
 
 export const updateRoom = createAsyncThunk(
   'room/updateRoom',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IRoomObj[]> => {
-    const response = await APICall({ url, fetchObjProps });
+  async ({
+    id,
+    objToUpdate,
+  }: {
+    id: string | undefined;
+    objToUpdate: any;
+  }): Promise<IRoomObj[]> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/rooms/${id}`),
+      fetchObjProps: {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(objToUpdate),
+      },
+    });
     return response.json();
   }
 );
 
 export const deleteRoom = createAsyncThunk(
   'room/deleteRoom',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<void> => {
-    await APICall({ url, fetchObjProps });
+  async ({ id }: { id: string | undefined }): Promise<void> => {
+    await APICall({
+      url: new URL(`${API_URI}/rooms/${id}`),
+      fetchObjProps: {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+        },
+      },
+    });
   }
 );
 

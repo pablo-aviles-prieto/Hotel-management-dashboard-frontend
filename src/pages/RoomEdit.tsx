@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -9,7 +9,6 @@ import {
 } from '../components/Styles';
 import { updateRoom, fetchSingleRoom } from '../store/roomSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {
@@ -97,12 +96,12 @@ const roomAmenitiesOptionsSelect = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const RoomEdit = () => {
   const [roomNameInput, setRoomNameInput] = useState('');
   const [roomBedTypeSelect, setRoomBedTypeSelect] = useState('Single Bed');
-  const [roomNumberInput, setRoomNumberInput] = useState<number | undefined >(undefined);
+  const [roomNumberInput, setRoomNumberInput] = useState<number | undefined>(
+    undefined
+  );
   const [roomFloorInput, setRoomFloorInput] = useState('');
   const [roomDescription, setRoomDescription] = useState<string | undefined>(
     ''
@@ -119,23 +118,12 @@ const RoomEdit = () => {
   const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleRoom({
-        url: new URL(`${API_URI}/rooms/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleRoom({ id }));
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -192,19 +180,7 @@ const RoomEdit = () => {
     ) {
       return alert('Please, fill all the required inputs');
     }
-    const result = await dispatch(
-      updateRoom({
-        url: new URL(`${API_URI}/rooms/${id}`),
-        fetchObjProps: {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToUpdate),
-        },
-      })
-    );
+    const result = await dispatch(updateRoom({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {
