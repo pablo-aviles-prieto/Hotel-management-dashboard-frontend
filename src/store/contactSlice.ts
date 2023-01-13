@@ -17,11 +17,6 @@ interface IContactState {
   statusPost: 'idle' | 'loading' | 'failed';
 }
 
-interface IFetchPayload {
-  url: URL;
-  fetchObjProps: RequestInit;
-}
-
 const initialState: IContactState = {
   contactList: [],
   status: 'idle',

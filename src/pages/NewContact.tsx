@@ -4,12 +4,11 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createContact } from '../store/contactSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {
@@ -44,8 +43,6 @@ const contactArchivedSelect = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const NewContact = () => {
   const [contactUserName, setContactUserName] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
@@ -54,7 +51,6 @@ const NewContact = () => {
   const [contactMessage, setContactMessage] = useState('');
   const [contactArchived, setContactArchived] = useState('false');
   const statusAPI = useAppSelector((state) => state.contacts.status);
-  const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 

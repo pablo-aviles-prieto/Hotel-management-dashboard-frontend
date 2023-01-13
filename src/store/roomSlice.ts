@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
+import { getLocalStorage } from '../utils';
 
 export interface IRoomObj {
   id: string;
@@ -33,13 +34,21 @@ const initialState: IRoomState = {
   fetchStatus: 'loading',
 };
 
+const API_URI = process.env.REACT_APP_API_URI;
+
 export const fetchRooms = createAsyncThunk(
   'room/fetchRooms',
-  async ({
-    url,
-    fetchObjProps,
-  }: IFetchPayload): Promise<{ result: IRoomObj[] }> => {
-    const response = await APICall({ url, fetchObjProps });
+  async (): Promise<{ result: IRoomObj[] }> => {
+    const authInfo = getLocalStorage();
+    const response = await APICall({
+      url: new URL(`${API_URI}/rooms`),
+      fetchObjProps: {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${authInfo?.token}`,
+        },
+      },
+    });
     return response.json();
   }
 );

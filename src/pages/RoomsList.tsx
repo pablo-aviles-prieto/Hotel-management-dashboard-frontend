@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import update from 'immutability-helper';
-import { useState, useCallback, useMemo, useEffect, useContext } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   ButtonGreen,
   InputSelect,
@@ -23,8 +23,6 @@ import {
   numberOfPages,
   paginationButtonsHandler,
 } from '../utils';
-import { AuthContext } from '../store/authContext';
-import { listAllEventListeners } from '../utils/getListeners';
 
 const PAGINATION_OFFSET = 10;
 
@@ -74,8 +72,6 @@ const optionsSelect = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const RoomsList = () => {
   const [page, setPage] = useState(1);
   const [orderBy, setOderBy] = useState('roomNumber1');
@@ -85,21 +81,10 @@ const RoomsList = () => {
   const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { authStatus } = useContext(AuthContext);
 
   useEffect(() => {
-    dispatch(
-      fetchRooms({
-        url: new URL(`${API_URI}/rooms`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, authStatus.token]);
+    dispatch(fetchRooms());
+  }, [dispatch]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;

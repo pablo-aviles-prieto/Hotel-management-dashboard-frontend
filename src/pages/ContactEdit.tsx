@@ -4,13 +4,11 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import { AuthContext } from '../store/authContext';
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import { fetchSingleContact, updateContact } from '../store/contactSlice';
 import styled from 'styled-components';
-import { listAllEventListeners } from '../utils/getListeners';
 
 const StyledForm = styled.form`
   div {
@@ -45,8 +43,6 @@ const contactArchivedSelect = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const ContactEdit = () => {
   const [contactUserName, setContactUserName] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
@@ -60,7 +56,6 @@ const ContactEdit = () => {
   const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 

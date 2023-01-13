@@ -24,7 +24,6 @@ import {
 } from '../utils';
 import styled from 'styled-components';
 import { reorderHandler } from '../utils';
-import { listAllEventListeners } from '../utils/getListeners';
 
 const PAGINATION_OFFSET = 5;
 
@@ -162,7 +161,7 @@ const Contact = () => {
 
   useEffect(() => {
     dispatch(fetchContacts());
-  }, [dispatch, authStatus.token]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;

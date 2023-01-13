@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
 import { IRoomObj } from './roomSlice';
 import { getLocalStorage } from '../utils';
-import { IAuthed } from './authContext';
 
 export interface IBookingObj {
   id: string;

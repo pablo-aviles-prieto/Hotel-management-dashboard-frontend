@@ -1,9 +1,8 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useContext, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleContact, deleteContact } from '../store/contactSlice';
 import { MainCard, ButtonGreen } from '../components/Styles';
-import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
 
 const RedButton = styled(ButtonGreen)`
@@ -11,14 +10,11 @@ const RedButton = styled(ButtonGreen)`
   margin-left: 10px;
 `;
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const ContactDetails = () => {
   const contactRedux = useAppSelector((state) => state.contacts.contactList);
   const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
