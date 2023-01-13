@@ -1,3 +1,9 @@
+import { IResponseError } from '../interfaces/error';
+
+interface IErrorObj {
+  error: IResponseError;
+}
+
 export const APICall = async ({
   url,
   fetchObjProps,
@@ -7,7 +13,8 @@ export const APICall = async ({
 }): Promise<Response> => {
   const response = await fetch(url, fetchObjProps);
   if (!response.ok) {
-    throw new Error(`Error fetching data to the endpoint ${url}`);
+    const { error }: IErrorObj = await response.json();
+    throw new Error(error.message);
   }
   return response;
 };

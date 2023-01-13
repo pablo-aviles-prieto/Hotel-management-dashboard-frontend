@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -10,7 +10,6 @@ import {
 } from '../components/Styles';
 import { updateUser, fetchSingleUser } from '../store/userSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {
@@ -46,8 +45,6 @@ const userStatusOptions = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const UserEdit = () => {
   const [userPhotoInput, setUserPhotoInput] = useState<
     FileList | FileList[] | null
@@ -64,23 +61,12 @@ const UserEdit = () => {
   const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleUser({
-        url: new URL(`${API_URI}/users/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleUser({ id }));
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -132,19 +118,7 @@ const UserEdit = () => {
       status: userStatusSelect,
     };
 
-    const result = await dispatch(
-      updateUser({
-        url: new URL(`${API_URI}/users/${id}`),
-        fetchObjProps: {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToUpdate),
-        },
-      })
-    );
+    const result = await dispatch(updateUser({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, useContext } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Phone } from '../assets/icons';
@@ -21,7 +21,6 @@ import {
   reorderHandler,
   dateHandler,
 } from '../utils';
-import { AuthContext } from '../store/authContext';
 
 const PAGINATION_OFFSET = 10;
 
@@ -50,8 +49,6 @@ const optionsSelect = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const Users = () => {
   const [searchInput, setSearchInput] = useState('');
   const [page, setPage] = useState(1);
@@ -63,21 +60,10 @@ const Users = () => {
   const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { authStatus } = useContext(AuthContext);
 
   useEffect(() => {
-    dispatch(
-      fetchUsers({
-        url: new URL(`${API_URI}/users`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, authStatus.token]);
+    dispatch(fetchUsers());
+  }, [dispatch]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -110,7 +96,14 @@ const Users = () => {
     );
     setUsersListSliced(arrayToRender);
     setFilteredUsersList(filteredReorderedUsers);
-  }, [usersListRedux, orderBy, page, searchInput, pageFilteredBy, fetchStatusAPI]);
+  }, [
+    usersListRedux,
+    orderBy,
+    page,
+    searchInput,
+    pageFilteredBy,
+    fetchStatusAPI,
+  ]);
 
   const totalPages = useMemo(() => {
     return numberOfPages(filteredUsersList.length, PAGINATION_OFFSET);

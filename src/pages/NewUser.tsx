@@ -4,12 +4,11 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createUser } from '../store/userSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {
@@ -45,8 +44,6 @@ const userStatusOptions = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const NewUser = () => {
   const [userPhotoInput, setUserPhotoInput] = useState<
     FileList | FileList[] | null
@@ -60,7 +57,7 @@ const NewUser = () => {
   const [userPhoneInput, setUserPhoneInput] = useState('');
   const [userStatusSelect, setUserStatusSelect] = useState('Active');
   const statusAPI = useAppSelector((state) => state.users.status);
-  const { authStatus } = useContext(AuthContext);
+  const errorMessageAPI = useAppSelector((state) => state.users.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
@@ -92,24 +89,11 @@ const NewUser = () => {
     ) {
       return alert('Please, fill all the required inputs');
     }
-
-    const result = await dispatch(
-      createUser({
-        url: new URL(`${API_URI}/users`),
-        fetchObjProps: {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToSave),
-        },
-      })
-    );
+    const result = await dispatch(createUser({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {
-      alert('Error creating the user');
+      alert(errorMessageAPI);
       return;
     }
     navigate('/users', { replace: true });
