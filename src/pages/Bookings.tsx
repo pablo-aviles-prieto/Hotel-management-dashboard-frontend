@@ -18,11 +18,9 @@ import {
   dateHandler,
   reorderHandler,
 } from '../utils';
-import { AuthContext } from '../store/authContext';
 import { fetchBookings, IBookingObj } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { Modal } from '../components';
-import { listAllEventListeners } from '../utils/getListeners';
 
 interface IModalState {
   title: string;
@@ -120,8 +118,6 @@ const optionsSelect2 = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const Bookings = () => {
   const [modalState, setModalState] = useState<IModalState | null>(null);
   const [page, setPage] = useState(1);
@@ -140,21 +136,10 @@ const Bookings = () => {
   const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { authStatus } = useContext(AuthContext);
 
   useEffect(() => {
-    dispatch(
-      fetchBookings({
-        url: new URL(`${API_URI}/bookings`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, authStatus.token]);
+    dispatch(fetchBookings());
+  }, [dispatch]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;

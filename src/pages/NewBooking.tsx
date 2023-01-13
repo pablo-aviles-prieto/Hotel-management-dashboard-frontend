@@ -116,19 +116,7 @@ const NewBooking = () => {
       return alert('Please, fill all the required inputs');
     }
 
-    const result = await dispatch(
-      createBooking({
-        url: new URL(`${API_URI}/bookings`),
-        fetchObjProps: {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToSave),
-        },
-      })
-    );
+    const result = await dispatch(createBooking({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {

@@ -96,18 +96,8 @@ const BookingEdit = () => {
       .then((res) => setRoomsArray(res.result))
       .catch((err) => console.error('error fetching rooms', err));
 
-    dispatch(
-      fetchSingleBooking({
-        url: new URL(`${API_URI}/bookings/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleBooking({ id }));
+  }, [dispatch, id]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -148,19 +138,7 @@ const BookingEdit = () => {
       roomId: bookedRoom,
     };
 
-    const result = await dispatch(
-      updateBooking({
-        url: new URL(`${API_URI}/bookings/${id}`),
-        fetchObjProps: {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToUpdate),
-        },
-      })
-    );
+    const result = await dispatch(updateBooking({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) {
