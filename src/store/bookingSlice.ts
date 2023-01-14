@@ -118,7 +118,7 @@ export const deleteBooking = createAsyncThunk(
   async ({ id }: { id: string | undefined }): Promise<void> => {
     const authInfo = getLocalStorage();
     await APICall({
-      url: new URL(`${API_URI}/bookings/${id}132`),
+      url: new URL(`${API_URI}/bookings/${id}`),
       fetchObjProps: {
         method: 'DELETE',
         headers: {
