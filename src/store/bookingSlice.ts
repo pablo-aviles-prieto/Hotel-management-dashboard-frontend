@@ -19,12 +19,14 @@ interface IBookingsState {
   bookingsList: IBookingObj[] | IBookingObj;
   status: 'idle' | 'loading' | 'failed';
   fetchStatus: 'idle' | 'loading' | 'failed';
+  error: string | null;
 }
 
 const initialState: IBookingsState = {
   bookingsList: [],
   status: 'idle',
   fetchStatus: 'loading',
+  error: null,
 };
 
 const API_URI = process.env.REACT_APP_API_URI;
@@ -116,7 +118,7 @@ export const deleteBooking = createAsyncThunk(
   async ({ id }: { id: string | undefined }): Promise<void> => {
     const authInfo = getLocalStorage();
     await APICall({
-      url: new URL(`${API_URI}/bookings/${id}`),
+      url: new URL(`${API_URI}/bookings/${id}132`),
       fetchObjProps: {
         method: 'DELETE',
         headers: {
@@ -141,13 +143,17 @@ export const bookingSlice = createSlice({
         ),
         (state) => {
           state.status = 'idle';
+          state.fetchStatus = 'idle';
+          state.error = null;
         }
       )
       .addMatcher(
         isAnyOf(fetchSingleBooking.fulfilled, fetchBookings.fulfilled),
         (state, action) => {
           state.fetchStatus = 'idle';
+          state.status = 'idle';
           state.bookingsList = action.payload.result;
+          state.error = null;
         }
       )
       .addMatcher(
@@ -158,11 +164,13 @@ export const bookingSlice = createSlice({
         ),
         (state) => {
           state.status = 'loading';
+          state.fetchStatus = 'loading';
         }
       )
       .addMatcher(
         isAnyOf(fetchSingleBooking.pending, fetchBookings.pending),
         (state) => {
+          state.status = 'loading';
           state.fetchStatus = 'loading';
         }
       )
@@ -172,13 +180,19 @@ export const bookingSlice = createSlice({
           createBooking.rejected,
           deleteBooking.rejected
         ),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
           state.status = 'failed';
+          state.fetchStatus = 'failed';
         }
       )
       .addMatcher(
         isAnyOf(fetchSingleBooking.rejected, fetchBookings.rejected),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
+          state.status = 'failed';
           state.fetchStatus = 'failed';
         }
       );

@@ -59,6 +59,7 @@ const UserEdit = () => {
   const [userStatusSelect, setUserStatusSelect] = useState('Active');
   const usersListRedux = useAppSelector((state) => state.users.usersList);
   const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
+  const errorMessageAPI = useAppSelector((state) => state.users.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const params = useParams();
@@ -67,6 +68,12 @@ const UserEdit = () => {
   useEffect(() => {
     dispatch(fetchSingleUser({ id }));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -121,26 +128,29 @@ const UserEdit = () => {
     const result = await dispatch(updateUser({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('There was an error editing the booking!');
-      return;
-    }
+    if (hasError) return;
+
     navigate(`/users/${id}`, { replace: true });
   };
 
-  if (fetchStatusAPI === 'failed')
+  if (
+    fetchStatusAPI === 'failed' &&
+    errorMessageAPI?.includes('Error getting the user')
+  ) {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Problem fetching the user. Check the ID!
       </h1>
     );
+  }
 
-  if (fetchStatusAPI === 'loading')
+  if (fetchStatusAPI === 'loading') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Editing user...
       </h1>
     );
+  }
 
   return (
     <MainCard borderRadius='16px'>

@@ -4,7 +4,7 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createUser } from '../store/userSlice';
@@ -61,6 +61,12 @@ const NewUser = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    if (errorMessageAPI && statusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, statusAPI]);
+
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -92,10 +98,8 @@ const NewUser = () => {
     const result = await dispatch(createUser({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert(errorMessageAPI);
-      return;
-    }
+    if (hasError) return;
+
     navigate('/users', { replace: true });
   };
 

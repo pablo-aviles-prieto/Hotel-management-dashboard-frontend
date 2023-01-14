@@ -73,6 +73,7 @@ const NewBooking = () => {
   const [bookedRoom, setBookedRoom] = useState('');
   const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const statusAPI = useAppSelector((state) => state.bookings.status);
+  const errorMessageAPI = useAppSelector((state) => state.bookings.error);
   const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -92,6 +93,12 @@ const NewBooking = () => {
       .then((res) => setRoomsArray(res.result))
       .catch((err) => console.error('error fetching rooms', err));
   }, [authStatus.token]);
+
+  useEffect(() => {
+    if (errorMessageAPI && statusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, statusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,10 +126,8 @@ const NewBooking = () => {
     const result = await dispatch(createBooking({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('Error creating the booking');
-      return;
-    }
+    if (hasError) return;
+    
     navigate('/bookings', { replace: true });
   };
 

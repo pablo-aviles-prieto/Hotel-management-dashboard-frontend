@@ -13,6 +13,7 @@ const RedButton = styled(ButtonGreen)`
 const ContactDetails = () => {
   const contactRedux = useAppSelector((state) => state.contacts.contactList);
   const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
+  const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const params = useParams();
@@ -21,6 +22,12 @@ const ContactDetails = () => {
   useEffect(() => {
     dispatch(fetchSingleContact({ id }));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI]);
 
   const deleteContactHandler = async () => {
     if (
@@ -31,10 +38,8 @@ const ContactDetails = () => {
     const result = await dispatch(deleteContact({ id }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('ID provided is not valid!');
-      return;
-    }
+    if (hasError) return;
+
     navigate('/contacts/', { replace: true });
   };
 
@@ -43,7 +48,10 @@ const ContactDetails = () => {
     [contactRedux]
   );
 
-  if (fetchStatusAPI === 'failed')
+  if (
+    fetchStatusAPI === 'failed' &&
+    errorMessageAPI?.includes('Error getting the contact')
+  )
     return (
       <h1>
         We couldn't find the contact selected. Please check the ID and if it's

@@ -13,6 +13,7 @@ const RedButton = styled(ButtonGreen)`
 const BookingDetails = () => {
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
   const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
+  const errorMessageAPI = useAppSelector((state) => state.bookings.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const params = useParams();
@@ -21,6 +22,12 @@ const BookingDetails = () => {
   useEffect(() => {
     dispatch(fetchSingleBooking({ id }));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI]);
 
   const deleteBookingHandler = async () => {
     if (
@@ -32,10 +39,8 @@ const BookingDetails = () => {
     const result = await dispatch(deleteBooking({ id }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('ID provided is not valid!');
-      return;
-    }
+    if (hasError) return;
+
     navigate('/bookings/', { replace: true });
   };
 
@@ -44,7 +49,10 @@ const BookingDetails = () => {
     [bookingRedux]
   );
 
-  if (fetchStatusAPI === 'failed') {
+  if (
+    fetchStatusAPI === 'failed' &&
+    errorMessageAPI?.includes('Error getting the booking')
+  ) {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         We couldn't find the booking selected. Please check the ID and if it's

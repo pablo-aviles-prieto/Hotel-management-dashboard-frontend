@@ -15,12 +15,14 @@ interface IContactState {
   contactList: IContactObj[] | IContactObj;
   status: 'idle' | 'loading' | 'failed';
   statusPost: 'idle' | 'loading' | 'failed';
+  error: string | null;
 }
 
 const initialState: IContactState = {
   contactList: [],
   status: 'idle',
   statusPost: 'loading',
+  error: null,
 };
 
 const API_URI = process.env.REACT_APP_API_URI;
@@ -133,7 +135,9 @@ export const contactSlice = createSlice({
         isAnyOf(fetchContacts.fulfilled, fetchSingleContact.fulfilled),
         (state, action) => {
           state.statusPost = 'idle';
+          state.status = 'idle';
           state.contactList = action.payload.result;
+          state.error = null;
         }
       )
       .addMatcher(
@@ -144,6 +148,8 @@ export const contactSlice = createSlice({
         ),
         (state) => {
           state.status = 'idle';
+          state.statusPost = 'idle';
+          state.error = null;
         }
       )
       .addMatcher(
@@ -154,12 +160,14 @@ export const contactSlice = createSlice({
         ),
         (state) => {
           state.status = 'loading';
+          state.statusPost = 'loading';
         }
       )
       .addMatcher(
         isAnyOf(fetchContacts.pending, fetchSingleContact.pending),
         (state) => {
           state.statusPost = 'loading';
+          state.status = 'loading';
         }
       )
       .addMatcher(
@@ -168,14 +176,20 @@ export const contactSlice = createSlice({
           createContact.rejected,
           deleteContact.rejected
         ),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
           state.status = 'failed';
+          state.statusPost = 'failed';
         }
       )
       .addMatcher(
         isAnyOf(fetchSingleContact.rejected, fetchContacts.rejected),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
           state.statusPost = 'failed';
+          state.status = 'failed';
         }
       );
   },

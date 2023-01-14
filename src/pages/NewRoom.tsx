@@ -4,7 +4,7 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createRoom } from '../store/roomSlice';
@@ -111,8 +111,15 @@ const NewRoom = () => {
     null
   );
   const statusAPI = useAppSelector((state) => state.rooms.status);
+  const errorMessageAPI = useAppSelector((state) => state.rooms.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (errorMessageAPI && statusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, statusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,10 +162,8 @@ const NewRoom = () => {
 
     const hasError = result.meta.requestStatus === 'rejected';
     console.log('result.meta.', result.meta);
-    if (hasError) {
-      alert('Problem creating the room');
-      return;
-    }
+    if (hasError) return;
+
     navigate('/rooms', { replace: true });
   };
 

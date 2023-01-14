@@ -54,6 +54,7 @@ const ContactEdit = () => {
     (state) => state.contacts.contactList
   );
   const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
+  const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const params = useParams();
@@ -62,6 +63,12 @@ const ContactEdit = () => {
   useEffect(() => {
     dispatch(fetchSingleContact({ id }));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -104,13 +111,21 @@ const ContactEdit = () => {
     const result = await dispatch(updateContact({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('There was an error editing the contact!');
-      return;
-    }
+    if (hasError) return;
 
     navigate(`/contacts/${id}`, { replace: true });
   };
+
+  if (
+    fetchStatusAPI === 'failed' &&
+    errorMessageAPI?.includes('Error getting the contact')
+  ) {
+    return (
+      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
+        Problem fetching the contact. Check the ID!
+      </h1>
+    );
+  }
 
   if (fetchStatusAPI === 'loading') return <h1>Editing contact message...</h1>;
 

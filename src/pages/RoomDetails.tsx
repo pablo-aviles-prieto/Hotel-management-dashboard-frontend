@@ -13,6 +13,7 @@ const RedButton = styled(ButtonGreen)`
 const RoomDetails = () => {
   const roomRedux = useAppSelector((state) => state.rooms.roomList);
   const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
+  const errorMessageAPI = useAppSelector((state) => state.rooms.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const params = useParams();
@@ -22,6 +23,12 @@ const RoomDetails = () => {
     dispatch(fetchSingleRoom({ id }));
   }, [dispatch, id]);
 
+  useEffect(() => {
+    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI]);
+
   const deleteRoomHandler = async () => {
     if (window.confirm('Are you sure you want to delete this room?') === false)
       return;
@@ -29,10 +36,8 @@ const RoomDetails = () => {
     const result = await dispatch(deleteRoom({ id }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('ID provided is not valid!');
-      return;
-    }
+    if (hasError) return;
+
     navigate('/rooms/', { replace: true });
   };
 
@@ -41,7 +46,10 @@ const RoomDetails = () => {
     [roomRedux]
   );
 
-  if (fetchStatusAPI === 'failed')
+  if (
+    fetchStatusAPI === 'failed' &&
+    errorMessageAPI?.includes('Error getting the room')
+  )
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         We couldn't find the room selected. Please check the ID and if it's
@@ -55,7 +63,7 @@ const RoomDetails = () => {
         <h1
           style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
-          Loading booking {id}...
+          Loading room {id}...
         </h1>
       ) : (
         <>

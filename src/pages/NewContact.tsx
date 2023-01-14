@@ -4,7 +4,7 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createContact } from '../store/contactSlice';
@@ -51,8 +51,15 @@ const NewContact = () => {
   const [contactMessage, setContactMessage] = useState('');
   const [contactArchived, setContactArchived] = useState('false');
   const statusAPI = useAppSelector((state) => state.contacts.status);
+  const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (errorMessageAPI && statusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, statusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,10 +87,8 @@ const NewContact = () => {
     const result = await dispatch(createContact({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('Problem creating the contact');
-      return;
-    }
+    if (hasError) return;
+    
     navigate('/contacts', { replace: true });
   };
 

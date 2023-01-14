@@ -74,6 +74,7 @@ const BookingEdit = () => {
   const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
   const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
+  const errorMessageAPI = useAppSelector((state) => state.bookings.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { authStatus } = useContext(AuthContext);
@@ -98,6 +99,12 @@ const BookingEdit = () => {
 
     dispatch(fetchSingleBooking({ id }));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -141,20 +148,29 @@ const BookingEdit = () => {
     const result = await dispatch(updateBooking({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('There was an error editing the booking!');
-      return;
-    }
+    if (hasError) return;
 
     navigate(`/bookings/${id}`, { replace: true });
   };
 
-  if (fetchStatusAPI === 'loading')
+  if (
+    fetchStatusAPI === 'failed' &&
+    errorMessageAPI?.includes('Error getting the booking')
+  ) {
+    return (
+      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
+        Problem fetching the booking. Check the ID!
+      </h1>
+    );
+  }
+
+  if (fetchStatusAPI === 'loading') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Editing booking...
       </h1>
     );
+  }
 
   return (
     <MainCard borderRadius='16px'>

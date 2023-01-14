@@ -116,6 +116,7 @@ const RoomEdit = () => {
   );
   const roomsListRedux = useAppSelector((state) => state.rooms.roomList);
   const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
+  const errorMessageAPI = useAppSelector((state) => state.rooms.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const params = useParams();
@@ -124,6 +125,12 @@ const RoomEdit = () => {
   useEffect(() => {
     dispatch(fetchSingleRoom({ id }));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -183,10 +190,7 @@ const RoomEdit = () => {
     const result = await dispatch(updateRoom({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('There was an error editing the room!');
-      return;
-    }
+    if (hasError) return;
 
     navigate(`/rooms/${id}`, { replace: true });
   };
@@ -199,12 +203,24 @@ const RoomEdit = () => {
     setAmenitiesSelect(value);
   };
 
-  if (fetchStatusAPI === 'loading')
+  if (
+    fetchStatusAPI === 'failed' &&
+    errorMessageAPI?.includes('Error getting the room')
+  ) {
+    return (
+      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
+        Problem fetching the room. Check the ID!
+      </h1>
+    );
+  }
+
+  if (fetchStatusAPI === 'loading') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Editing room...
       </h1>
     );
+  }
 
   return (
     <MainCard borderRadius='16px'>

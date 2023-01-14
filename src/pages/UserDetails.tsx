@@ -13,6 +13,7 @@ const RedButton = styled(ButtonGreen)`
 const UserDetails = () => {
   const userRedux = useAppSelector((state) => state.users.usersList);
   const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
+  const errorMessageAPI = useAppSelector((state) => state.users.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const params = useParams();
@@ -21,6 +22,12 @@ const UserDetails = () => {
   useEffect(() => {
     dispatch(fetchSingleUser({ id }));
   }, [dispatch, id]);
+
+  useEffect(() => {
+    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+      alert(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI]);
 
   const deleteUserHandler = async () => {
     if (window.confirm('Are you sure you want to delete this user?') === false)
@@ -40,10 +47,8 @@ const UserDetails = () => {
     const result = await dispatch(deleteUser({ id }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('ID provided is not valid!');
-      return;
-    }
+    if (hasError) return;
+
     navigate('/users/', { replace: true });
   };
 
@@ -52,7 +57,10 @@ const UserDetails = () => {
     [userRedux]
   );
 
-  if (fetchStatusAPI === 'failed') {
+  if (
+    fetchStatusAPI === 'failed' &&
+    errorMessageAPI?.includes('Error getting the user')
+  ) {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         We couldn't find the user selected. Please check the ID and if it's

@@ -21,12 +21,14 @@ interface IRoomState {
   roomList: IRoomObj[] | IRoomObj;
   status: 'idle' | 'loading' | 'failed';
   fetchStatus: 'idle' | 'loading' | 'failed';
+  error: string | null;
 }
 
 const initialState: IRoomState = {
   roomList: [],
   status: 'idle',
   fetchStatus: 'loading',
+  error: null,
 };
 
 const API_URI = process.env.REACT_APP_API_URI;
@@ -130,11 +132,13 @@ export const roomSlice = createSlice({
         isAnyOf(fetchRooms.pending, fetchSingleRoom.pending),
         (state) => {
           state.fetchStatus = 'loading';
+          state.status = 'loading';
         }
       )
       .addMatcher(
         isAnyOf(createRoom.pending, updateRoom.pending, deleteRoom.pending),
         (state) => {
+          state.fetchStatus = 'loading';
           state.status = 'loading';
         }
       )
@@ -145,25 +149,35 @@ export const roomSlice = createSlice({
           createRoom.fulfilled
         ),
         (state) => {
+          state.fetchStatus = 'idle';
           state.status = 'idle';
+          state.error = null;
         }
       )
       .addMatcher(
         isAnyOf(fetchRooms.fulfilled, fetchSingleRoom.fulfilled),
         (state, action) => {
           state.fetchStatus = 'idle';
+          state.status = 'idle';
           state.roomList = action.payload.result;
+          state.error = null;
         }
       )
       .addMatcher(
         isAnyOf(fetchRooms.rejected, fetchSingleRoom.rejected),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
           state.fetchStatus = 'failed';
+          state.status = 'failed';
         }
       )
       .addMatcher(
         isAnyOf(createRoom.rejected, updateRoom.rejected, deleteRoom.rejected),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
+          state.fetchStatus = 'failed';
           state.status = 'failed';
         }
       );
