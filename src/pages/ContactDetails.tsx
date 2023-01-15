@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleContact, deleteContact } from '../store/contactSlice';
 import { MainCard, ButtonGreen } from '../components/Styles';
@@ -25,7 +26,7 @@ const ContactDetails = () => {
 
   useEffect(() => {
     if (errorMessageAPI && fetchStatusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, fetchStatusAPI]);
 
@@ -40,6 +41,7 @@ const ContactDetails = () => {
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
 
+    toast.success('Contact deleted successfully');
     navigate('/contacts/', { replace: true });
   };
 

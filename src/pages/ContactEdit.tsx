@@ -4,6 +4,7 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
+import { toast } from 'react-toastify';
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -66,7 +67,7 @@ const ContactEdit = () => {
 
   useEffect(() => {
     if (errorMessageAPI && fetchStatusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, fetchStatusAPI]);
 
@@ -94,7 +95,10 @@ const ContactEdit = () => {
       !contactSubject.trim() ||
       !contactMessage.trim()
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
     const objToUpdate = {
@@ -113,6 +117,7 @@ const ContactEdit = () => {
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
 
+    toast.success('Contact edited successfully');
     navigate(`/contacts/${id}`, { replace: true });
   };
 

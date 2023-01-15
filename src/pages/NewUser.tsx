@@ -7,6 +7,7 @@ import {
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { createUser } from '../store/userSlice';
 import styled from 'styled-components';
 
@@ -63,7 +64,7 @@ const NewUser = () => {
 
   useEffect(() => {
     if (errorMessageAPI && statusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, statusAPI]);
 
@@ -93,13 +94,17 @@ const NewUser = () => {
       !userPasswordInput.trim() ||
       !userPhoneInput.trim()
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
     const result = await dispatch(createUser({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
 
+    toast.success('User created successfully');
     navigate('/users', { replace: true });
   };
 

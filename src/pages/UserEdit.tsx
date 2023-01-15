@@ -8,6 +8,7 @@ import {
   ButtonGreen,
   ImgHolder,
 } from '../components/Styles';
+import { toast } from 'react-toastify';
 import { updateUser, fetchSingleUser } from '../store/userSlice';
 import styled from 'styled-components';
 
@@ -71,7 +72,7 @@ const UserEdit = () => {
 
   useEffect(() => {
     if (errorMessageAPI && fetchStatusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, fetchStatusAPI]);
 
@@ -83,8 +84,12 @@ const UserEdit = () => {
       : usersListRedux;
 
     if (parsedUsers.email === 'hotel@miranda.com') {
-      alert(
-        `This user is only editable by the CREATOR. Returning back to the user list!`
+      toast.warn(
+        `This user is only editable by the CREATOR. Returning back to the user list!`,
+        {
+          autoClose: 3000,
+          hideProgressBar: true,
+        }
       );
       return navigate(`/users/`, { replace: true });
     }
@@ -108,7 +113,10 @@ const UserEdit = () => {
       !userEmailInput.trim() ||
       !userPhoneInput.trim()
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
     const objToUpdate = {
@@ -130,6 +138,7 @@ const UserEdit = () => {
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
 
+    toast.success('User edited successfully');
     navigate(`/users/${id}`, { replace: true });
   };
 

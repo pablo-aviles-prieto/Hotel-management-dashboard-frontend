@@ -4,6 +4,7 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
+import { toast } from 'react-toastify';
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
@@ -57,7 +58,7 @@ const NewContact = () => {
 
   useEffect(() => {
     if (errorMessageAPI && statusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, statusAPI]);
 
@@ -81,7 +82,10 @@ const NewContact = () => {
       !contactSubject.trim() ||
       !contactMessage.trim()
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
     const result = await dispatch(createContact({ objToSave }));
@@ -89,6 +93,7 @@ const NewContact = () => {
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
     
+    toast.success('Contact created successfully');
     navigate('/contacts', { replace: true });
   };
 

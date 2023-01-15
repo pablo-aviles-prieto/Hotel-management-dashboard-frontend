@@ -5,6 +5,7 @@ import {
   MainCard,
 } from '../components/Styles';
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createRoom } from '../store/roomSlice';
@@ -117,7 +118,7 @@ const NewRoom = () => {
 
   useEffect(() => {
     if (errorMessageAPI && statusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, statusAPI]);
 
@@ -155,15 +156,18 @@ const NewRoom = () => {
       amenitiesSelect.length === 0
       // imagesUploadArray.length < 3
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
     const result = await dispatch(createRoom({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    console.log('result.meta.', result.meta);
     if (hasError) return;
 
+    toast.success('Room created successfully');
     navigate('/rooms', { replace: true });
   };
 

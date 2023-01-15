@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleRoom, deleteRoom } from '../store/roomSlice';
 import styled from 'styled-components';
@@ -25,7 +26,7 @@ const RoomDetails = () => {
 
   useEffect(() => {
     if (errorMessageAPI && fetchStatusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, fetchStatusAPI]);
 
@@ -38,6 +39,7 @@ const RoomDetails = () => {
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
 
+    toast.success('Room deleted successfully');
     navigate('/rooms/', { replace: true });
   };
 

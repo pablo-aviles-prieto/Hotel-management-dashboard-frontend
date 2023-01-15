@@ -8,6 +8,7 @@ import {
   InputText,
   ButtonGreen,
 } from '../components/Styles';
+import { toast } from 'react-toastify';
 import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
 import { IRoomObj } from '../store/roomSlice';
@@ -98,11 +99,11 @@ const BookingEdit = () => {
       .catch((err) => console.error('error fetching rooms', err));
 
     dispatch(fetchSingleBooking({ id }));
-  }, [dispatch, id]);
+  }, [dispatch, id, authStatus.token]);
 
   useEffect(() => {
     if (errorMessageAPI && fetchStatusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, fetchStatusAPI]);
 
@@ -132,7 +133,10 @@ const BookingEdit = () => {
       !bookingCheckOutInput ||
       !bookingStatusSelect
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
     const objToUpdate = {
@@ -150,6 +154,7 @@ const BookingEdit = () => {
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
 
+    toast.success('Booking edited successfully');
     navigate(`/bookings/${id}`, { replace: true });
   };
 

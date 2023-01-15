@@ -7,6 +7,7 @@ import {
 import { useState, useContext, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { createBooking } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { AuthContext } from '../store/authContext';
@@ -90,13 +91,16 @@ const NewBooking = () => {
       return parsedRooms;
     };
     fetchAllRooms()
-      .then((res) => setRoomsArray(res.result))
+      .then((res) => {
+        setRoomsArray(res.result);
+        setBookedRoom(res.result[0].id);
+      })
       .catch((err) => console.error('error fetching rooms', err));
   }, [authStatus.token]);
 
   useEffect(() => {
     if (errorMessageAPI && statusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, statusAPI]);
 
@@ -120,14 +124,18 @@ const NewBooking = () => {
       !bookingCheckOutInput ||
       !bookingStatusSelect
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
     const result = await dispatch(createBooking({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
-    
+
+    toast.success('Booking created successfully');
     navigate('/bookings', { replace: true });
   };
 

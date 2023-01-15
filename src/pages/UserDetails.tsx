@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleUser, deleteUser } from '../store/userSlice';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { MainCard, ButtonGreen, ImgHolder } from '../components/Styles';
 
@@ -25,7 +26,7 @@ const UserDetails = () => {
 
   useEffect(() => {
     if (errorMessageAPI && fetchStatusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, fetchStatusAPI]);
 
@@ -38,8 +39,12 @@ const UserDetails = () => {
         ? userRedux[0].email === 'hotel@miranda.com'
         : userRedux.email === 'hotel@miranda.com'
     ) {
-      alert(
-        `Can't delete this user (sometimes life give you lemons). Returning to the users list!`
+      toast.warn(
+        `Can't delete this user. Returning to the users list!`,
+        {
+          autoClose: 3000,
+          hideProgressBar: true,
+        }
       );
       return navigate(`/users/`, { replace: true });
     }
@@ -49,6 +54,7 @@ const UserDetails = () => {
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
 
+    toast.success('User deleted successfully');
     navigate('/users/', { replace: true });
   };
 

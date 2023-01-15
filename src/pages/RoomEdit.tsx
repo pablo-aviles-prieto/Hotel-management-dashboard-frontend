@@ -7,6 +7,7 @@ import {
   InputText,
   ButtonGreen,
 } from '../components/Styles';
+import { toast } from 'react-toastify';
 import { updateRoom, fetchSingleRoom } from '../store/roomSlice';
 import styled from 'styled-components';
 
@@ -128,7 +129,7 @@ const RoomEdit = () => {
 
   useEffect(() => {
     if (errorMessageAPI && fetchStatusAPI === 'failed') {
-      alert(errorMessageAPI);
+      toast.error(errorMessageAPI);
     }
   }, [errorMessageAPI, fetchStatusAPI]);
 
@@ -185,13 +186,17 @@ const RoomEdit = () => {
       amenitiesSelect.length === 0
       // imagesUploadArray.length < 3
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
     const result = await dispatch(updateRoom({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
 
+    toast.success('Room edited successfully');
     navigate(`/rooms/${id}`, { replace: true });
   };
 

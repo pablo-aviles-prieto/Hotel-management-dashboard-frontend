@@ -2,8 +2,8 @@ import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { InputText, ButtonGreen } from '../components/Styles';
 import { AuthContext } from '../store/authContext';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { listAllEventListeners } from '../utils/getListeners';
 
 interface IDataFetch {
   email: string;
@@ -39,7 +39,7 @@ const Login = () => {
       password: passwordInput,
     });
 
-    if (!res.ok) return alert('Check username and/or password');
+    if (!res.ok) return toast.error('Check username and/or password');
 
     const parsedRes = await res.json();
 
@@ -49,6 +49,10 @@ const Login = () => {
       name: parsedRes.user.name,
       token: parsedRes.token,
       photo: parsedRes.user.photo,
+    });
+    toast(`🤗 Welcome back ${parsedRes.user.name} 🤗`, {
+      autoClose: 3000,
+      hideProgressBar: true,
     });
     navigate('/', { replace: true });
   };
