@@ -212,8 +212,6 @@ const Contact = () => {
     setPage(1);
   };
 
-  // const starsRateToRender = (rate: number) => Math.ceil(rate / 20);
-
   return (
     <>
       <SliderSection id='bottom-container'>
@@ -344,13 +342,19 @@ const Contact = () => {
         <div id='pages-container'>
           <p
             className={pageFilteredBy === 'id' ? 'active-page' : ''}
-            onClick={() => setPageFilteredBy('id')}
+            onClick={() => {
+              setPageFilteredBy('id');
+              setPage(1);
+            }}
           >
             All Contacts
           </p>
           <p
             className={pageFilteredBy === 'Archived' ? 'active-page' : ''}
-            onClick={() => setPageFilteredBy('Archived')}
+            onClick={() => {
+              setPageFilteredBy('Archived');
+              setPage(1);
+            }}
           >
             Archived
           </p>
@@ -426,7 +430,7 @@ const Contact = () => {
           <PaginationButtons style={{ margin: '50px 30px' }}>
             <p>
               Showing {commentsListSliced.length} of{' '}
-              {Array.isArray(contactListRedux) && contactListRedux.length} Data
+              {filteredContactsList.length} Contacts
             </p>
             <div id='pagination-container'>
               {paginationButtonsHandler(page, totalPages, setPage)}

@@ -337,8 +337,7 @@ const Bookings = () => {
           <PaginationButtons>
             <p>
               Showing {bookingsListSliced.length} of{' '}
-              {Array.isArray(bookingsListRedux) && bookingsListRedux.length}{' '}
-              Data
+              {filteredBookingsList.length} Bookings
             </p>
             <div id='pagination-container'>
               {paginationButtonsHandler(page, totalPages, setPage)}

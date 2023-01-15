@@ -231,7 +231,7 @@ const Users = () => {
           <PaginationButtons style={{ margin: '50px 0' }}>
             <p>
               Showing {usersListSliced.length} of {filteredUsersList.length}{' '}
-              Data
+              Users
             </p>
             <div id='pagination-container'>
               {paginationButtonsHandler(page, totalPages, setPage)}

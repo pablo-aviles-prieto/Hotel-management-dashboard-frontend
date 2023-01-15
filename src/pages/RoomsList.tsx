@@ -270,7 +270,7 @@ const RoomsList = () => {
           <PaginationButtons>
             <p>
               Showing {roomsListSliced.length} of {filteredRoomsList.length}{' '}
-              Data
+              Rooms
             </p>
             <div id='pagination-container'>
               {paginationButtonsHandler(page, totalPages, setPage)}
