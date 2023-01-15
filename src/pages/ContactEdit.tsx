@@ -55,6 +55,7 @@ const ContactEdit = () => {
     (state) => state.contacts.contactList
   );
   const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
+  const statusAPI = useAppSelector((state) => state.contacts.status);
   const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -66,10 +67,13 @@ const ContactEdit = () => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
       toast.error(errorMessageAPI);
     }
-  }, [errorMessageAPI, fetchStatusAPI]);
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -121,10 +125,7 @@ const ContactEdit = () => {
     navigate(`/contacts/${id}`, { replace: true });
   };
 
-  if (
-    fetchStatusAPI === 'failed' &&
-    errorMessageAPI?.includes('Error getting the contact')
-  ) {
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Problem fetching the contact. Check the ID!
@@ -132,7 +133,13 @@ const ContactEdit = () => {
     );
   }
 
-  if (fetchStatusAPI === 'loading') return <h1>Editing contact message...</h1>;
+  if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
+    return (
+      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
+        Loading...
+      </h1>
+    );
+  }
 
   return (
     <MainCard borderRadius='16px'>

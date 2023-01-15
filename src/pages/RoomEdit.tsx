@@ -117,6 +117,7 @@ const RoomEdit = () => {
   );
   const roomsListRedux = useAppSelector((state) => state.rooms.roomList);
   const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.rooms.status);
   const errorMessageAPI = useAppSelector((state) => state.rooms.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -128,10 +129,13 @@ const RoomEdit = () => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
       toast.error(errorMessageAPI);
     }
-  }, [errorMessageAPI, fetchStatusAPI]);
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -208,10 +212,7 @@ const RoomEdit = () => {
     setAmenitiesSelect(value);
   };
 
-  if (
-    fetchStatusAPI === 'failed' &&
-    errorMessageAPI?.includes('Error getting the room')
-  ) {
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Problem fetching the room. Check the ID!
@@ -219,10 +220,10 @@ const RoomEdit = () => {
     );
   }
 
-  if (fetchStatusAPI === 'loading') {
+  if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Editing room...
+        Loading...
       </h1>
     );
   }

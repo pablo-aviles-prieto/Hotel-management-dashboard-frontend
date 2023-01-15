@@ -133,14 +133,12 @@ export const userSlice = createSlice({
         ),
         (state) => {
           state.status = 'idle';
-          state.fetchStatus = 'idle';
           state.error = null;
         }
       )
       .addMatcher(
         isAnyOf(fetchUsers.fulfilled, fetchSingleUser.fulfilled),
         (state, action) => {
-          state.status = 'idle';
           state.fetchStatus = 'idle';
           state.usersList = action.payload.result;
           state.error = null;
@@ -149,7 +147,6 @@ export const userSlice = createSlice({
       .addMatcher(
         isAnyOf(fetchUsers.pending, fetchSingleUser.pending),
         (state) => {
-          state.status = 'loading';
           state.fetchStatus = 'loading';
         }
       )
@@ -158,7 +155,6 @@ export const userSlice = createSlice({
         (state, action) => {
           const { message } = action.error;
           state.error = message ? message : 'ERROR! Try again later!';
-          state.status = 'failed';
           state.fetchStatus = 'failed';
         }
       )
@@ -166,7 +162,6 @@ export const userSlice = createSlice({
         isAnyOf(createUser.pending, deleteUser.pending, updateUser.pending),
         (state) => {
           state.status = 'loading';
-          state.fetchStatus = 'loading';
         }
       )
       .addMatcher(
@@ -175,7 +170,6 @@ export const userSlice = createSlice({
           const { message } = action.error;
           state.error = message ? message : 'ERROR! Try again later!';
           state.status = 'failed';
-          state.fetchStatus = 'failed';
         }
       );
   },

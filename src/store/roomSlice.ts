@@ -132,13 +132,11 @@ export const roomSlice = createSlice({
         isAnyOf(fetchRooms.pending, fetchSingleRoom.pending),
         (state) => {
           state.fetchStatus = 'loading';
-          state.status = 'loading';
         }
       )
       .addMatcher(
         isAnyOf(createRoom.pending, updateRoom.pending, deleteRoom.pending),
         (state) => {
-          state.fetchStatus = 'loading';
           state.status = 'loading';
         }
       )
@@ -149,7 +147,6 @@ export const roomSlice = createSlice({
           createRoom.fulfilled
         ),
         (state) => {
-          state.fetchStatus = 'idle';
           state.status = 'idle';
           state.error = null;
         }
@@ -158,7 +155,6 @@ export const roomSlice = createSlice({
         isAnyOf(fetchRooms.fulfilled, fetchSingleRoom.fulfilled),
         (state, action) => {
           state.fetchStatus = 'idle';
-          state.status = 'idle';
           state.roomList = action.payload.result;
           state.error = null;
         }
@@ -169,7 +165,6 @@ export const roomSlice = createSlice({
           const { message } = action.error;
           state.error = message ? message : 'ERROR! Try again later!';
           state.fetchStatus = 'failed';
-          state.status = 'failed';
         }
       )
       .addMatcher(
@@ -177,7 +172,6 @@ export const roomSlice = createSlice({
         (state, action) => {
           const { message } = action.error;
           state.error = message ? message : 'ERROR! Try again later!';
-          state.fetchStatus = 'failed';
           state.status = 'failed';
         }
       );

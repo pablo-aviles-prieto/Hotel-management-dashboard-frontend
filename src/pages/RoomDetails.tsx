@@ -14,6 +14,7 @@ const RedButton = styled(ButtonGreen)`
 const RoomDetails = () => {
   const roomRedux = useAppSelector((state) => state.rooms.roomList);
   const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.rooms.status);
   const errorMessageAPI = useAppSelector((state) => state.rooms.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -25,10 +26,13 @@ const RoomDetails = () => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
       toast.error(errorMessageAPI);
     }
-  }, [errorMessageAPI, fetchStatusAPI]);
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   const deleteRoomHandler = async () => {
     if (window.confirm('Are you sure you want to delete this room?') === false)
@@ -48,10 +52,7 @@ const RoomDetails = () => {
     [roomRedux]
   );
 
-  if (
-    fetchStatusAPI === 'failed' &&
-    errorMessageAPI?.includes('Error getting the room')
-  )
+  if (fetchStatusAPI === 'failed')
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         We couldn't find the room selected. Please check the ID and if it's
@@ -61,11 +62,11 @@ const RoomDetails = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      {fetchStatusAPI === 'loading' ? (
+      {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
         <h1
           style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
-          Loading room {id}...
+          Loading...
         </h1>
       ) : (
         <>

@@ -14,6 +14,7 @@ const RedButton = styled(ButtonGreen)`
 const ContactDetails = () => {
   const contactRedux = useAppSelector((state) => state.contacts.contactList);
   const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
+  const statusAPI = useAppSelector((state) => state.contacts.status);
   const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -25,10 +26,13 @@ const ContactDetails = () => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
       toast.error(errorMessageAPI);
     }
-  }, [errorMessageAPI, fetchStatusAPI]);
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   const deleteContactHandler = async () => {
     if (
@@ -50,10 +54,7 @@ const ContactDetails = () => {
     [contactRedux]
   );
 
-  if (
-    fetchStatusAPI === 'failed' &&
-    errorMessageAPI?.includes('Error getting the contact')
-  )
+  if (fetchStatusAPI === 'failed')
     return (
       <h1>
         We couldn't find the contact selected. Please check the ID and if it's
@@ -63,11 +64,11 @@ const ContactDetails = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      {fetchStatusAPI === 'loading' ? (
+      {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
         <h1
           style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
-          Loading contact...
+          Loading...
         </h1>
       ) : (
         <>

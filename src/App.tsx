@@ -32,9 +32,7 @@ const App = () => {
   const { authStatus, setLayoutTheme } = useContext(AuthContext);
 
   const switchThemeHandler = () => {
-    console.log('1', lightTheme);
     setLightTheme((prevState) => !prevState);
-    console.log('2', lightTheme);
     setLayoutTheme({ theme: lightTheme });
   };
 

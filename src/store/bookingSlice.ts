@@ -143,7 +143,6 @@ export const bookingSlice = createSlice({
         ),
         (state) => {
           state.status = 'idle';
-          state.fetchStatus = 'idle';
           state.error = null;
         }
       )
@@ -151,7 +150,6 @@ export const bookingSlice = createSlice({
         isAnyOf(fetchSingleBooking.fulfilled, fetchBookings.fulfilled),
         (state, action) => {
           state.fetchStatus = 'idle';
-          state.status = 'idle';
           state.bookingsList = action.payload.result;
           state.error = null;
         }
@@ -164,13 +162,11 @@ export const bookingSlice = createSlice({
         ),
         (state) => {
           state.status = 'loading';
-          state.fetchStatus = 'loading';
         }
       )
       .addMatcher(
         isAnyOf(fetchSingleBooking.pending, fetchBookings.pending),
         (state) => {
-          state.status = 'loading';
           state.fetchStatus = 'loading';
         }
       )
@@ -184,7 +180,6 @@ export const bookingSlice = createSlice({
           const { message } = action.error;
           state.error = message ? message : 'ERROR! Try again later!';
           state.status = 'failed';
-          state.fetchStatus = 'failed';
         }
       )
       .addMatcher(
@@ -192,7 +187,6 @@ export const bookingSlice = createSlice({
         (state, action) => {
           const { message } = action.error;
           state.error = message ? message : 'ERROR! Try again later!';
-          state.status = 'failed';
           state.fetchStatus = 'failed';
         }
       );

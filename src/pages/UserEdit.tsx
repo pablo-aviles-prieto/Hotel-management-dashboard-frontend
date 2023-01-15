@@ -60,6 +60,7 @@ const UserEdit = () => {
   const [userStatusSelect, setUserStatusSelect] = useState('Active');
   const usersListRedux = useAppSelector((state) => state.users.usersList);
   const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.users.status);
   const errorMessageAPI = useAppSelector((state) => state.users.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -71,10 +72,13 @@ const UserEdit = () => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
       toast.error(errorMessageAPI);
     }
-  }, [errorMessageAPI, fetchStatusAPI]);
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -142,10 +146,7 @@ const UserEdit = () => {
     navigate(`/users/${id}`, { replace: true });
   };
 
-  if (
-    fetchStatusAPI === 'failed' &&
-    errorMessageAPI?.includes('Error getting the user')
-  ) {
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Problem fetching the user. Check the ID!
@@ -153,10 +154,10 @@ const UserEdit = () => {
     );
   }
 
-  if (fetchStatusAPI === 'loading') {
+  if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Editing user...
+        Loading...
       </h1>
     );
   }

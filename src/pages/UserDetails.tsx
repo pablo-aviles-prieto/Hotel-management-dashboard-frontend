@@ -14,6 +14,7 @@ const RedButton = styled(ButtonGreen)`
 const UserDetails = () => {
   const userRedux = useAppSelector((state) => state.users.usersList);
   const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.users.status);
   const errorMessageAPI = useAppSelector((state) => state.users.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -25,10 +26,13 @@ const UserDetails = () => {
   }, [dispatch, id]);
 
   useEffect(() => {
-    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
       toast.error(errorMessageAPI);
     }
-  }, [errorMessageAPI, fetchStatusAPI]);
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   const deleteUserHandler = async () => {
     if (window.confirm('Are you sure you want to delete this user?') === false)
@@ -39,13 +43,10 @@ const UserDetails = () => {
         ? userRedux[0].email === 'hotel@miranda.com'
         : userRedux.email === 'hotel@miranda.com'
     ) {
-      toast.warn(
-        `Can't delete this user. Returning to the users list!`,
-        {
-          autoClose: 3000,
-          hideProgressBar: true,
-        }
-      );
+      toast.warn(`Can't delete this user. Returning to the users list!`, {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
       return navigate(`/users/`, { replace: true });
     }
 
@@ -63,10 +64,7 @@ const UserDetails = () => {
     [userRedux]
   );
 
-  if (
-    fetchStatusAPI === 'failed' &&
-    errorMessageAPI?.includes('Error getting the user')
-  ) {
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         We couldn't find the user selected. Please check the ID and if it's
@@ -77,11 +75,11 @@ const UserDetails = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      {fetchStatusAPI === 'loading' ? (
+      {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
         <h1
           style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
         >
-          Loading user {id}...
+          Loading...
         </h1>
       ) : (
         <>

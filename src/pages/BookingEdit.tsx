@@ -75,6 +75,7 @@ const BookingEdit = () => {
   const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
   const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.bookings.status);
   const errorMessageAPI = useAppSelector((state) => state.bookings.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -96,16 +97,25 @@ const BookingEdit = () => {
 
     fetchAllRooms()
       .then((res) => setRoomsArray(res.result))
-      .catch((err) => console.error('error fetching rooms', err));
+      .catch((err) => {
+        console.error('error fetching the rooms available', err);
+        toast.error(
+          'Error fetching the rooms available for bookings. Returning back!'
+        );
+        navigate(`/bookings/${id}`, { replace: true });
+      });
 
     dispatch(fetchSingleBooking({ id }));
   }, [dispatch, id, authStatus.token]);
 
   useEffect(() => {
-    if (errorMessageAPI && fetchStatusAPI === 'failed') {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
       toast.error(errorMessageAPI);
     }
-  }, [errorMessageAPI, fetchStatusAPI]);
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -158,10 +168,7 @@ const BookingEdit = () => {
     navigate(`/bookings/${id}`, { replace: true });
   };
 
-  if (
-    fetchStatusAPI === 'failed' &&
-    errorMessageAPI?.includes('Error getting the booking')
-  ) {
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Problem fetching the booking. Check the ID!
@@ -169,10 +176,10 @@ const BookingEdit = () => {
     );
   }
 
-  if (fetchStatusAPI === 'loading') {
+  if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Editing booking...
+        Loading...
       </h1>
     );
   }
