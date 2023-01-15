@@ -1,5 +1,5 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import Homepage from './pages/Homepage';
 import Login from './pages/Login';
 import Bookings from './pages/Bookings';
@@ -16,19 +16,26 @@ import UserDetails from './pages/UserDetails';
 import UserEdit from './pages/UserEdit';
 import Contact from './pages/Contact';
 import ContactDetails from './pages/ContactDetails';
+import NewContact from './pages/NewContact';
+import ContactEdit from './pages/ContactEdit';
 import { NotFound, ProtectRoute, Layout } from './components';
 import { ThemeProvider } from 'styled-components';
 import { LIGHT_THEME, DARK_THEME } from './themes';
 import { AuthContext } from './store/authContext';
-import NewContact from './pages/NewContact';
-import ContactEdit from './pages/ContactEdit';
+import { getLocalStorage } from './utils';
 
 const App = () => {
-  const [lightTheme, setLightTheme] = useState(true);
-  const { authStatus } = useContext(AuthContext);
+  // If we don't find in localStorage a theme prop set as dark, we set the lightTheme to true as default
+  const [lightTheme, setLightTheme] = useState<boolean>(
+    getLocalStorage()?.theme !== 'dark'
+  );
+  const { authStatus, setLayoutTheme } = useContext(AuthContext);
 
   const switchThemeHandler = () => {
+    console.log('1', lightTheme);
     setLightTheme((prevState) => !prevState);
+    console.log('2', lightTheme);
+    setLayoutTheme({ theme: lightTheme });
   };
 
   return (
@@ -39,13 +46,13 @@ const App = () => {
             path='/'
             element={
               authStatus.authed ? (
-                <Homepage/>
+                <Homepage />
               ) : (
                 <Navigate to='/login' replace />
               )
             }
           />
-          <Route path='/login' element={<Login />} />
+          <Route path='/login' element={<Login lightTheme={lightTheme} />} />
           <Route path='*' element={<ProtectRoute />}>
             <Route path='bookings' element={<Bookings />} />
             <Route path='bookings/new' element={<NewBooking />} />

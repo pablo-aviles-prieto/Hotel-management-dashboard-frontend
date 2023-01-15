@@ -25,12 +25,12 @@ const StyledLabel = styled.label`
 
 const API_URI = process.env.REACT_APP_API_URI;
 
-const Login = () => {
+const Login: React.FC<{ lightTheme: boolean }> = ({ lightTheme }) => {
   const [emailInput, setEmailInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const { authStatus, loginHandler, logoutHandler } = useContext(AuthContext);
   const navigate = useNavigate();
-
+  
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -49,6 +49,7 @@ const Login = () => {
       name: parsedRes.user.name,
       token: parsedRes.token,
       photo: parsedRes.user.photo,
+      theme: lightTheme ? 'light' : 'dark',
     });
     toast(`🤗 Welcome back ${parsedRes.user.name} 🤗`, {
       autoClose: 3000,

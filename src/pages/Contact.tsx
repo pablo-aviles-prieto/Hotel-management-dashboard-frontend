@@ -22,6 +22,7 @@ import {
   paginationButtonsHandler,
   dateHandler,
 } from '../utils';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { reorderHandler } from '../utils';
 
@@ -197,7 +198,7 @@ const Contact = () => {
   }, [filteredContactsList.length]);
 
   const archiveContactHandler = async (id: string) => {
-    await fetch(`${API_URI}/contacts/${id}`, {
+    const res = await fetch(`${API_URI}/contacts/${id}`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${authStatus.token}`,
@@ -205,6 +206,13 @@ const Contact = () => {
       },
       body: JSON.stringify({ archived: true }),
     });
+    if (res.ok) {
+      toast.success('Contact archived correctly', {
+        hideProgressBar: true,
+      });
+    } else {
+      toast.error('There was an error archiving the contact, try again later!');
+    }
   };
 
   const inputSelectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
