@@ -211,6 +211,7 @@ const Contact = () => {
       toast.success('Contact archived correctly', {
         hideProgressBar: true,
       });
+      navigate(`/contacts/${id}`);
     } else {
       toast.error('There was an error archiving the contact, try again later!');
     }
