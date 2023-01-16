@@ -1,5 +1,6 @@
 import { useNavigate, NavLink } from 'react-router-dom';
 import { useState, useContext } from 'react';
+import { ToastContainer } from 'react-toastify';
 import { MainCard, ImgHolder, ButtonSidebar } from '../Styles';
 import { AuthContext } from '../../store/authContext';
 import { LayoutContext } from '../../store/layoutContext';
@@ -21,6 +22,7 @@ import {
   UpperArrow,
 } from '../../assets/icons';
 import styled from 'styled-components';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface ILayout {
   children: JSX.Element;
@@ -221,6 +223,11 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
 
   return (
     <>
+      <ToastContainer
+        position='top-center'
+        theme={lightTheme ? 'light' : 'dark'}
+        autoClose={2500}
+      />
       <SideBarDiv
         id='sidebar-menu'
         sideBarState={sideBarState}

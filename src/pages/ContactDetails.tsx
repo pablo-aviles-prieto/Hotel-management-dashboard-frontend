@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useContext, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleContact, deleteContact } from '../store/contactSlice';
 import { MainCard, ButtonGreen } from '../components/Styles';
-import { AuthContext } from '../store/authContext';
+import { PulseSpinner } from '../components';
 import styled from 'styled-components';
 
 const RedButton = styled(ButtonGreen)`
@@ -11,30 +12,28 @@ const RedButton = styled(ButtonGreen)`
   margin-left: 10px;
 `;
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const ContactDetails = () => {
   const contactRedux = useAppSelector((state) => state.contacts.contactList);
   const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
+  const statusAPI = useAppSelector((state) => state.contacts.status);
+  const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleContact({
-        url: new URL(`${API_URI}/contacts/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleContact({ id }));
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   const deleteContactHandler = async () => {
     if (
@@ -42,21 +41,12 @@ const ContactDetails = () => {
     )
       return;
 
-    const result = await dispatch(deleteContact({
-      url: new URL(`${API_URI}/contacts/${id}`),
-      fetchObjProps: {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${authStatus.token}`,
-        },
-      },
-    }));
+    const result = await dispatch(deleteContact({ id }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('ID provided is not valid!');
-      return;
-    }
+    if (hasError) return;
+
+    toast.success('Contact deleted successfully');
     navigate('/contacts/', { replace: true });
   };
 
@@ -75,12 +65,8 @@ const ContactDetails = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      {fetchStatusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading contact...
-        </h1>
+      {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <h1>Contacts details for {id}</h1>

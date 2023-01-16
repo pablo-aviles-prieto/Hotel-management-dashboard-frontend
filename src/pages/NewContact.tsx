@@ -4,12 +4,13 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState, useContext } from 'react';
+import { toast } from 'react-toastify';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
+import { PulseSpinner } from '../components';
 import { createContact } from '../store/contactSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {
@@ -44,8 +45,6 @@ const contactArchivedSelect = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const NewContact = () => {
   const [contactUserName, setContactUserName] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
@@ -54,9 +53,15 @@ const NewContact = () => {
   const [contactMessage, setContactMessage] = useState('');
   const [contactArchived, setContactArchived] = useState('false');
   const statusAPI = useAppSelector((state) => state.contacts.status);
-  const { authStatus } = useContext(AuthContext);
+  const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (errorMessageAPI && statusAPI === 'failed') {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, statusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,32 +83,22 @@ const NewContact = () => {
       !contactSubject.trim() ||
       !contactMessage.trim()
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
-    const result = await dispatch(
-      createContact({
-        url: new URL(`${API_URI}/contacts`),
-        fetchObjProps: {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToSave),
-        },
-      })
-    );
+    const result = await dispatch(createContact({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('Problem creating the contact');
-      return;
-    }
+    if (hasError) return;
+
+    toast.success('Contact created successfully');
     navigate('/contacts', { replace: true });
   };
 
-  if (statusAPI === 'loading') return <h1>Saving contact message...</h1>;
+  if (statusAPI === 'loading') return <PulseSpinner isLoading={true} />;
 
   return (
     <MainCard borderRadius='16px'>

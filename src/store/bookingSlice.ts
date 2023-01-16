@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
 import { IRoomObj } from './roomSlice';
+import { getLocalStorage } from '../utils';
 
 export interface IBookingObj {
   id: string;
@@ -18,26 +19,31 @@ interface IBookingsState {
   bookingsList: IBookingObj[] | IBookingObj;
   status: 'idle' | 'loading' | 'failed';
   fetchStatus: 'idle' | 'loading' | 'failed';
-}
-
-interface IFetchPayload {
-  url: URL;
-  fetchObjProps: RequestInit;
+  error: string | null;
 }
 
 const initialState: IBookingsState = {
   bookingsList: [],
   status: 'idle',
   fetchStatus: 'loading',
+  error: null,
 };
+
+const API_URI = process.env.REACT_APP_API_URI;
 
 export const fetchBookings = createAsyncThunk(
   'booking/fetchBookings',
-  async ({
-    url,
-    fetchObjProps,
-  }: IFetchPayload): Promise<{ result: IBookingObj[] }> => {
-    const response = await APICall({ url, fetchObjProps });
+  async (): Promise<{ result: IBookingObj[] }> => {
+    const authInfo = getLocalStorage();
+    const response = await APICall({
+      url: new URL(`${API_URI}/bookings`),
+      fetchObjProps: {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${authInfo?.token}`,
+        },
+      },
+    });
     return response.json();
   }
 );
@@ -45,34 +51,81 @@ export const fetchBookings = createAsyncThunk(
 export const fetchSingleBooking = createAsyncThunk(
   'booking/fetchSingleBooking',
   async ({
-    url,
-    fetchObjProps,
-  }: IFetchPayload): Promise<{ result: IBookingObj }> => {
-    const response = await APICall({ url, fetchObjProps });
+    id,
+  }: {
+    id: string | undefined;
+  }): Promise<{ result: IBookingObj }> => {
+    const authInfo = getLocalStorage();
+    const response = await APICall({
+      url: new URL(`${API_URI}/bookings/${id}`),
+      fetchObjProps: {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${authInfo?.token}`,
+        },
+      },
+    });
     return response.json();
   }
 );
 
 export const createBooking = createAsyncThunk(
   'booking/createBooking',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IBookingObj> => {
-    const response = await APICall({ url, fetchObjProps });
+  async ({ objToSave }: { objToSave: any }): Promise<IBookingObj> => {
+    const authInfo = getLocalStorage();
+    const response = await APICall({
+      url: new URL(`${API_URI}/bookings`),
+      fetchObjProps: {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${authInfo?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(objToSave),
+      },
+    });
     return response.json();
   }
 );
 
 export const updateBooking = createAsyncThunk(
   'booking/updateBooking',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IBookingObj[]> => {
-    const response = await APICall({ url, fetchObjProps });
+  async ({
+    id,
+    objToUpdate,
+  }: {
+    id: string | undefined;
+    objToUpdate: any;
+  }): Promise<IBookingObj[]> => {
+    const authInfo = getLocalStorage();
+    const response = await APICall({
+      url: new URL(`${API_URI}/bookings/${id}`),
+      fetchObjProps: {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${authInfo?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(objToUpdate),
+      },
+    });
     return response.json();
   }
 );
 
 export const deleteBooking = createAsyncThunk(
   'booking/deleteBooking',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<void> => {
-    await APICall({ url, fetchObjProps });
+  async ({ id }: { id: string | undefined }): Promise<void> => {
+    const authInfo = getLocalStorage();
+    await APICall({
+      url: new URL(`${API_URI}/bookings/${id}`),
+      fetchObjProps: {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${authInfo?.token}`,
+        },
+      },
+    });
   }
 );
 
@@ -90,6 +143,7 @@ export const bookingSlice = createSlice({
         ),
         (state) => {
           state.status = 'idle';
+          state.error = null;
         }
       )
       .addMatcher(
@@ -97,6 +151,7 @@ export const bookingSlice = createSlice({
         (state, action) => {
           state.fetchStatus = 'idle';
           state.bookingsList = action.payload.result;
+          state.error = null;
         }
       )
       .addMatcher(
@@ -121,13 +176,17 @@ export const bookingSlice = createSlice({
           createBooking.rejected,
           deleteBooking.rejected
         ),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
           state.status = 'failed';
         }
       )
       .addMatcher(
         isAnyOf(fetchSingleBooking.rejected, fetchBookings.rejected),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
           state.fetchStatus = 'failed';
         }
       );

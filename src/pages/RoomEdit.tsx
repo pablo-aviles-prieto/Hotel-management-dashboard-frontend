@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -7,9 +7,10 @@ import {
   InputText,
   ButtonGreen,
 } from '../components/Styles';
+import { toast } from 'react-toastify';
+import { PulseSpinner } from '../components';
 import { updateRoom, fetchSingleRoom } from '../store/roomSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {
@@ -97,12 +98,12 @@ const roomAmenitiesOptionsSelect = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const RoomEdit = () => {
   const [roomNameInput, setRoomNameInput] = useState('');
   const [roomBedTypeSelect, setRoomBedTypeSelect] = useState('Single Bed');
-  const [roomNumberInput, setRoomNumberInput] = useState<number | undefined >(undefined);
+  const [roomNumberInput, setRoomNumberInput] = useState<number | undefined>(
+    undefined
+  );
   const [roomFloorInput, setRoomFloorInput] = useState('');
   const [roomDescription, setRoomDescription] = useState<string | undefined>(
     ''
@@ -117,25 +118,25 @@ const RoomEdit = () => {
   );
   const roomsListRedux = useAppSelector((state) => state.rooms.roomList);
   const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.rooms.status);
+  const errorMessageAPI = useAppSelector((state) => state.rooms.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleRoom({
-        url: new URL(`${API_URI}/rooms/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleRoom({ id }));
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -190,28 +191,17 @@ const RoomEdit = () => {
       amenitiesSelect.length === 0
       // imagesUploadArray.length < 3
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
-    const result = await dispatch(
-      updateRoom({
-        url: new URL(`${API_URI}/rooms/${id}`),
-        fetchObjProps: {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToUpdate),
-        },
-      })
-    );
+    const result = await dispatch(updateRoom({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('There was an error editing the room!');
-      return;
-    }
+    if (hasError) return;
 
+    toast.success('Room edited successfully');
     navigate(`/rooms/${id}`, { replace: true });
   };
 
@@ -223,12 +213,21 @@ const RoomEdit = () => {
     setAmenitiesSelect(value);
   };
 
-  if (fetchStatusAPI === 'loading')
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Editing room...
+        Problem fetching the room. Check the ID!
       </h1>
     );
+  }
+
+  if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
+    return (
+      <MainCard borderRadius='16px'>
+        <PulseSpinner isLoading={true} />
+      </MainCard>
+    );
+  }
 
   return (
     <MainCard borderRadius='16px'>

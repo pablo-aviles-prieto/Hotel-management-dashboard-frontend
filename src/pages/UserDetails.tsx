@@ -1,42 +1,41 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useContext, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleUser, deleteUser } from '../store/userSlice';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import { PulseSpinner } from '../components';
 import { MainCard, ButtonGreen, ImgHolder } from '../components/Styles';
-import { AuthContext } from '../store/authContext';
 
 const RedButton = styled(ButtonGreen)`
   background-color: rgb(226, 52, 40);
   margin-left: 10px;
 `;
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const UserDetails = () => {
   const userRedux = useAppSelector((state) => state.users.usersList);
   const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.users.status);
+  const errorMessageAPI = useAppSelector((state) => state.users.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleUser({
-        url: new URL(`${API_URI}/users/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleUser({ id }));
+  }, [dispatch, id]);
 
-  const deleteRoomHandler = async () => {
+  useEffect(() => {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
+
+  const deleteUserHandler = async () => {
     if (window.confirm('Are you sure you want to delete this user?') === false)
       return;
 
@@ -45,29 +44,19 @@ const UserDetails = () => {
         ? userRedux[0].email === 'hotel@miranda.com'
         : userRedux.email === 'hotel@miranda.com'
     ) {
-      alert(
-        `Can't delete this user (sometimes life give you lemons). Returning to the users list!`
-      );
+      toast.warn(`Can't delete this user. Returning to the users list!`, {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
       return navigate(`/users/`, { replace: true });
     }
 
-    const result = await dispatch(
-      deleteUser({
-        url: new URL(`${API_URI}/users/${id}`),
-        fetchObjProps: {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
+    const result = await dispatch(deleteUser({ id }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('ID provided is not valid!');
-      return;
-    }
+    if (hasError) return;
+
+    toast.success('User deleted successfully');
     navigate('/users/', { replace: true });
   };
 
@@ -87,15 +76,11 @@ const UserDetails = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      {fetchStatusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading user {id}...
-        </h1>
+      {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
-          <h1>User details for {id}</h1>
+          <h1>User details of {parsedUsers.name}</h1>
           <ImgHolder width='200px' height='200px' style={{ margin: '50px 0' }}>
             <img src={parsedUsers.photo} alt={`Pic of ${parsedUsers.name}`} />
           </ImgHolder>
@@ -115,7 +100,7 @@ const UserDetails = () => {
             >
               Edit user
             </ButtonGreen>
-            <RedButton padding='10px 52px' onClick={deleteRoomHandler}>
+            <RedButton padding='10px 52px' onClick={deleteUserHandler}>
               Delete user
             </RedButton>
           </div>

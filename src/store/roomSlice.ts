@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
+import { getLocalStorage } from '../utils';
 
 export interface IRoomObj {
   id: string;
@@ -20,61 +21,104 @@ interface IRoomState {
   roomList: IRoomObj[] | IRoomObj;
   status: 'idle' | 'loading' | 'failed';
   fetchStatus: 'idle' | 'loading' | 'failed';
-}
-
-interface IFetchPayload {
-  url: URL;
-  fetchObjProps: RequestInit;
+  error: string | null;
 }
 
 const initialState: IRoomState = {
   roomList: [],
   status: 'idle',
   fetchStatus: 'loading',
+  error: null,
 };
+
+const API_URI = process.env.REACT_APP_API_URI;
 
 export const fetchRooms = createAsyncThunk(
   'room/fetchRooms',
-  async ({
-    url,
-    fetchObjProps,
-  }: IFetchPayload): Promise<{ result: IRoomObj[] }> => {
-    const response = await APICall({ url, fetchObjProps });
+  async (): Promise<{ result: IRoomObj[] }> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/rooms`),
+      fetchObjProps: {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+        },
+      },
+    });
     return response.json();
   }
 );
 
 export const fetchSingleRoom = createAsyncThunk(
   'room/fetchRoom',
-  async ({
-    url,
-    fetchObjProps,
-  }: IFetchPayload): Promise<{ result: IRoomObj }> => {
-    const response = await APICall({ url, fetchObjProps });
+  async ({ id }: { id: string | undefined }): Promise<{ result: IRoomObj }> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/rooms/${id}`),
+      fetchObjProps: {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+        },
+      },
+    });
     return response.json();
   }
 );
 
 export const createRoom = createAsyncThunk(
   'room/createRoom',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IRoomObj> => {
-    const response = await APICall({ url, fetchObjProps });
+  async ({ objToSave }: { objToSave: any }): Promise<IRoomObj> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/rooms`),
+      fetchObjProps: {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(objToSave),
+      },
+    });
     return response.json();
   }
 );
 
 export const updateRoom = createAsyncThunk(
   'room/updateRoom',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IRoomObj[]> => {
-    const response = await APICall({ url, fetchObjProps });
+  async ({
+    id,
+    objToUpdate,
+  }: {
+    id: string | undefined;
+    objToUpdate: any;
+  }): Promise<IRoomObj[]> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/rooms/${id}`),
+      fetchObjProps: {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(objToUpdate),
+      },
+    });
     return response.json();
   }
 );
 
 export const deleteRoom = createAsyncThunk(
   'room/deleteRoom',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<void> => {
-    await APICall({ url, fetchObjProps });
+  async ({ id }: { id: string | undefined }): Promise<void> => {
+    await APICall({
+      url: new URL(`${API_URI}/rooms/${id}`),
+      fetchObjProps: {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+        },
+      },
+    });
   }
 );
 
@@ -104,6 +148,7 @@ export const roomSlice = createSlice({
         ),
         (state) => {
           state.status = 'idle';
+          state.error = null;
         }
       )
       .addMatcher(
@@ -111,17 +156,22 @@ export const roomSlice = createSlice({
         (state, action) => {
           state.fetchStatus = 'idle';
           state.roomList = action.payload.result;
+          state.error = null;
         }
       )
       .addMatcher(
         isAnyOf(fetchRooms.rejected, fetchSingleRoom.rejected),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
           state.fetchStatus = 'failed';
         }
       )
       .addMatcher(
         isAnyOf(createRoom.rejected, updateRoom.rejected, deleteRoom.rejected),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
           state.status = 'failed';
         }
       );

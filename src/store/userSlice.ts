@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
+import { getLocalStorage } from '../utils';
 
 export interface IUserObj {
   id: string;
@@ -17,61 +18,104 @@ interface IUserState {
   usersList: IUserObj[] | IUserObj;
   status: 'idle' | 'loading' | 'failed';
   fetchStatus: 'idle' | 'loading' | 'failed';
-}
-
-interface IFetchPayload {
-  url: URL;
-  fetchObjProps: RequestInit;
+  error: string | null;
 }
 
 const initialState: IUserState = {
   usersList: [],
   status: 'idle',
   fetchStatus: 'loading',
+  error: null,
 };
+
+const API_URI = process.env.REACT_APP_API_URI;
 
 export const fetchUsers = createAsyncThunk(
   'user/fetchUsers',
-  async ({
-    url,
-    fetchObjProps,
-  }: IFetchPayload): Promise<{ result: IUserObj[] }> => {
-    const response = await APICall({ url, fetchObjProps });
+  async (): Promise<{ result: IUserObj[] }> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/users`),
+      fetchObjProps: {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+        },
+      },
+    });
     return response.json();
   }
 );
 
 export const fetchSingleUser = createAsyncThunk(
   'user/fetchSingleUser',
-  async ({
-    url,
-    fetchObjProps,
-  }: IFetchPayload): Promise<{ result: IUserObj }> => {
-    const response = await APICall({ url, fetchObjProps });
+  async ({ id }: { id: string | undefined }): Promise<{ result: IUserObj }> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/users/${id}`),
+      fetchObjProps: {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+        },
+      },
+    });
     return response.json();
   }
 );
 
 export const createUser = createAsyncThunk(
   'user/createUser',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IUserObj> => {
-    const response = await APICall({ url, fetchObjProps });
-    return response.json();
+  async ({ objToSave }: { objToSave: any }): Promise<IUserObj> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/users`),
+      fetchObjProps: {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(objToSave),
+      },
+    });
+    return await response.json();
   }
 );
 
 export const updateUser = createAsyncThunk(
   'user/updateUser',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<IUserObj[]> => {
-    const response = await APICall({ url, fetchObjProps });
+  async ({
+    id,
+    objToUpdate,
+  }: {
+    id: string | undefined;
+    objToUpdate: any;
+  }): Promise<IUserObj[]> => {
+    const response = await APICall({
+      url: new URL(`${API_URI}/users/${id}`),
+      fetchObjProps: {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(objToUpdate),
+      },
+    });
     return response.json();
   }
 );
 
 export const deleteUser = createAsyncThunk(
   'user/deleteUser',
-  async ({ url, fetchObjProps }: IFetchPayload): Promise<void> => {
-    await APICall({ url, fetchObjProps });
+  async ({ id }: { id: string | undefined }): Promise<void> => {
+    await APICall({
+      url: new URL(`${API_URI}/users/${id}`),
+      fetchObjProps: {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${getLocalStorage()?.token}`,
+        },
+      },
+    });
   }
 );
 
@@ -89,6 +133,7 @@ export const userSlice = createSlice({
         ),
         (state) => {
           state.status = 'idle';
+          state.error = null;
         }
       )
       .addMatcher(
@@ -96,6 +141,7 @@ export const userSlice = createSlice({
         (state, action) => {
           state.fetchStatus = 'idle';
           state.usersList = action.payload.result;
+          state.error = null;
         }
       )
       .addMatcher(
@@ -106,7 +152,9 @@ export const userSlice = createSlice({
       )
       .addMatcher(
         isAnyOf(fetchUsers.rejected, fetchSingleUser.rejected),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
           state.fetchStatus = 'failed';
         }
       )
@@ -118,7 +166,9 @@ export const userSlice = createSlice({
       )
       .addMatcher(
         isAnyOf(createUser.rejected, deleteUser.rejected, updateUser.rejected),
-        (state) => {
+        (state, action) => {
+          const { message } = action.error;
+          state.error = message ? message : 'ERROR! Try again later!';
           state.status = 'failed';
         }
       );

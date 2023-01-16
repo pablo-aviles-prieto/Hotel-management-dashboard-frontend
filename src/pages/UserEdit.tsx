@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
@@ -8,9 +8,10 @@ import {
   ButtonGreen,
   ImgHolder,
 } from '../components/Styles';
+import { toast } from 'react-toastify';
+import { PulseSpinner } from '../components';
 import { updateUser, fetchSingleUser } from '../store/userSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {
@@ -46,8 +47,6 @@ const userStatusOptions = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const UserEdit = () => {
   const [userPhotoInput, setUserPhotoInput] = useState<
     FileList | FileList[] | null
@@ -62,25 +61,25 @@ const UserEdit = () => {
   const [userStatusSelect, setUserStatusSelect] = useState('Active');
   const usersListRedux = useAppSelector((state) => state.users.usersList);
   const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.users.status);
+  const errorMessageAPI = useAppSelector((state) => state.users.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleUser({
-        url: new URL(`${API_URI}/users/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleUser({ id }));
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -90,8 +89,12 @@ const UserEdit = () => {
       : usersListRedux;
 
     if (parsedUsers.email === 'hotel@miranda.com') {
-      alert(
-        `This user is only editable by the CREATOR. Returning back to the user list!`
+      toast.warn(
+        `This user is only editable by the CREATOR. Returning back to the user list!`,
+        {
+          autoClose: 3000,
+          hideProgressBar: true,
+        }
       );
       return navigate(`/users/`, { replace: true });
     }
@@ -115,7 +118,10 @@ const UserEdit = () => {
       !userEmailInput.trim() ||
       !userPhoneInput.trim()
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
     const objToUpdate = {
@@ -132,41 +138,30 @@ const UserEdit = () => {
       status: userStatusSelect,
     };
 
-    const result = await dispatch(
-      updateUser({
-        url: new URL(`${API_URI}/users/${id}`),
-        fetchObjProps: {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToUpdate),
-        },
-      })
-    );
+    const result = await dispatch(updateUser({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('There was an error editing the booking!');
-      return;
-    }
+    if (hasError) return;
+
+    toast.success('User edited successfully');
     navigate(`/users/${id}`, { replace: true });
   };
 
-  if (fetchStatusAPI === 'failed')
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         Problem fetching the user. Check the ID!
       </h1>
     );
+  }
 
-  if (fetchStatusAPI === 'loading')
+  if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
     return (
-      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Editing user...
-      </h1>
+      <MainCard borderRadius='16px'>
+        <PulseSpinner isLoading={true} />
+      </MainCard>
     );
+  }
 
   return (
     <MainCard borderRadius='16px'>

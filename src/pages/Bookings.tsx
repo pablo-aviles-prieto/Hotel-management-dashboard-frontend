@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useContext } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -18,11 +18,9 @@ import {
   dateHandler,
   reorderHandler,
 } from '../utils';
-import { AuthContext } from '../store/authContext';
 import { fetchBookings, IBookingObj } from '../store/bookingSlice';
 import styled from 'styled-components';
-import { Modal } from '../components';
-import { listAllEventListeners } from '../utils/getListeners';
+import { Modal, PulseSpinner } from '../components';
 
 interface IModalState {
   title: string;
@@ -120,8 +118,6 @@ const optionsSelect2 = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const Bookings = () => {
   const [modalState, setModalState] = useState<IModalState | null>(null);
   const [page, setPage] = useState(1);
@@ -140,21 +136,10 @@ const Bookings = () => {
   const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { authStatus } = useContext(AuthContext);
 
   useEffect(() => {
-    dispatch(
-      fetchBookings({
-        url: new URL(`${API_URI}/bookings`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, authStatus.token]);
+    dispatch(fetchBookings());
+  }, [dispatch]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -246,15 +231,7 @@ const Bookings = () => {
         </div>
       </MenuContainer>
       {fetchStatusAPI === 'loading' ? (
-        <h1
-          style={{
-            textAlign: 'center',
-            padding: '100px 0',
-            fontSize: '30px',
-          }}
-        >
-          Loading bookings...
-        </h1>
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <TableCard borderRadius='20px'>
@@ -352,8 +329,7 @@ const Bookings = () => {
           <PaginationButtons>
             <p>
               Showing {bookingsListSliced.length} of{' '}
-              {Array.isArray(bookingsListRedux) && bookingsListRedux.length}{' '}
-              Data
+              {filteredBookingsList.length} Bookings
             </p>
             <div id='pagination-container'>
               {paginationButtonsHandler(page, totalPages, setPage)}

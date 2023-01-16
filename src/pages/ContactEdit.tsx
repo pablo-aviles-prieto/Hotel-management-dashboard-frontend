@@ -4,13 +4,13 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import { AuthContext } from '../store/authContext';
-import React, { useState, useEffect, useContext } from 'react';
+import { toast } from 'react-toastify';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
+import { PulseSpinner } from '../components';
 import { fetchSingleContact, updateContact } from '../store/contactSlice';
 import styled from 'styled-components';
-import { listAllEventListeners } from '../utils/getListeners';
 
 const StyledForm = styled.form`
   div {
@@ -45,8 +45,6 @@ const contactArchivedSelect = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const ContactEdit = () => {
   const [contactUserName, setContactUserName] = useState('');
   const [contactUserEmail, setContactUserEmail] = useState('');
@@ -58,25 +56,25 @@ const ContactEdit = () => {
     (state) => state.contacts.contactList
   );
   const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
+  const statusAPI = useAppSelector((state) => state.contacts.status);
+  const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleContact({
-        url: new URL(`${API_URI}/contacts/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleContact({ id }));
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -102,7 +100,10 @@ const ContactEdit = () => {
       !contactSubject.trim() ||
       !contactMessage.trim()
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
     const objToUpdate = {
@@ -116,30 +117,30 @@ const ContactEdit = () => {
       archived: contactArchived === 'true' ? true : false,
     };
 
-    const result = await dispatch(
-      updateContact({
-        url: new URL(`${API_URI}/contacts/${id}`),
-        fetchObjProps: {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToUpdate),
-        },
-      })
-    );
+    const result = await dispatch(updateContact({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('There was an error editing the contact!');
-      return;
-    }
+    if (hasError) return;
 
+    toast.success('Contact edited successfully');
     navigate(`/contacts/${id}`, { replace: true });
   };
 
-  if (fetchStatusAPI === 'loading') return <h1>Editing contact message...</h1>;
+  if (fetchStatusAPI === 'failed') {
+    return (
+      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
+        Problem fetching the contact. Check the ID!
+      </h1>
+    );
+  }
+
+  if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
+    return (
+      <MainCard borderRadius='16px'>
+        <PulseSpinner isLoading={true} />
+      </MainCard>
+    );
+  }
 
   return (
     <MainCard borderRadius='16px'>

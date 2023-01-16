@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useContext, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleRoom, deleteRoom } from '../store/roomSlice';
-import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
+import { PulseSpinner } from '../components';
 import { MainCard, ButtonGreen } from '../components/Styles';
 
 const RedButton = styled(ButtonGreen)`
@@ -11,52 +12,39 @@ const RedButton = styled(ButtonGreen)`
   margin-left: 10px;
 `;
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const RoomDetails = () => {
   const roomRedux = useAppSelector((state) => state.rooms.roomList);
   const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.rooms.status);
+  const errorMessageAPI = useAppSelector((state) => state.rooms.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleRoom({
-        url: new URL(`${API_URI}/rooms/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleRoom({ id }));
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   const deleteRoomHandler = async () => {
     if (window.confirm('Are you sure you want to delete this room?') === false)
       return;
 
-    const result = await dispatch(
-      deleteRoom({
-        url: new URL(`${API_URI}/rooms/${id}`),
-        fetchObjProps: {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
+    const result = await dispatch(deleteRoom({ id }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('ID provided is not valid!');
-      return;
-    }
+    if (hasError) return;
+
+    toast.success('Room deleted successfully');
     navigate('/rooms/', { replace: true });
   };
 
@@ -75,12 +63,8 @@ const RoomDetails = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      {fetchStatusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading booking {id}...
-        </h1>
+      {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <h1>Room details for {id}</h1>

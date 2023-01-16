@@ -7,9 +7,11 @@ import {
 import { useState, useContext, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { createBooking } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { AuthContext } from '../store/authContext';
+import { PulseSpinner } from '../components';
 import { IRoomObj } from '../store/roomSlice';
 
 const StyledForm = styled.form`
@@ -73,6 +75,7 @@ const NewBooking = () => {
   const [bookedRoom, setBookedRoom] = useState('');
   const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const statusAPI = useAppSelector((state) => state.bookings.status);
+  const errorMessageAPI = useAppSelector((state) => state.bookings.error);
   const { authStatus } = useContext(AuthContext);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -89,9 +92,18 @@ const NewBooking = () => {
       return parsedRooms;
     };
     fetchAllRooms()
-      .then((res) => setRoomsArray(res.result))
+      .then((res) => {
+        setRoomsArray(res.result);
+        setBookedRoom(res.result[0].id);
+      })
       .catch((err) => console.error('error fetching rooms', err));
   }, [authStatus.token]);
+
+  useEffect(() => {
+    if (errorMessageAPI && statusAPI === 'failed') {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, statusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,32 +125,22 @@ const NewBooking = () => {
       !bookingCheckOutInput ||
       !bookingStatusSelect
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
-    const result = await dispatch(
-      createBooking({
-        url: new URL(`${API_URI}/bookings`),
-        fetchObjProps: {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToSave),
-        },
-      })
-    );
+    const result = await dispatch(createBooking({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('Error creating the booking');
-      return;
-    }
+    if (hasError) return;
+
+    toast.success('Booking created successfully');
     navigate('/bookings', { replace: true });
   };
 
-  if (statusAPI === 'loading') return <h1>Saving booking data...</h1>;
+  if (statusAPI === 'loading') return <PulseSpinner isLoading={true} />;
 
   return (
     <MainCard borderRadius='16px'>

@@ -8,6 +8,8 @@ import {
   InputText,
   ButtonGreen,
 } from '../components/Styles';
+import { toast } from 'react-toastify';
+import { PulseSpinner } from '../components';
 import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
 import { IRoomObj } from '../store/roomSlice';
@@ -74,6 +76,8 @@ const BookingEdit = () => {
   const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
   const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.bookings.status);
+  const errorMessageAPI = useAppSelector((state) => state.bookings.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { authStatus } = useContext(AuthContext);
@@ -94,20 +98,25 @@ const BookingEdit = () => {
 
     fetchAllRooms()
       .then((res) => setRoomsArray(res.result))
-      .catch((err) => console.error('error fetching rooms', err));
+      .catch((err) => {
+        console.error('error fetching the rooms available', err);
+        toast.error(
+          'Error fetching the rooms available for bookings. Returning back!'
+        );
+        navigate(`/bookings/${id}`, { replace: true });
+      });
 
-    dispatch(
-      fetchSingleBooking({
-        url: new URL(`${API_URI}/bookings/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
+    dispatch(fetchSingleBooking({ id }));
   }, [dispatch, id, authStatus.token]);
+
+  useEffect(() => {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -135,7 +144,10 @@ const BookingEdit = () => {
       !bookingCheckOutInput ||
       !bookingStatusSelect
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
 
     const objToUpdate = {
@@ -148,35 +160,30 @@ const BookingEdit = () => {
       roomId: bookedRoom,
     };
 
-    const result = await dispatch(
-      updateBooking({
-        url: new URL(`${API_URI}/bookings/${id}`),
-        fetchObjProps: {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToUpdate),
-        },
-      })
-    );
+    const result = await dispatch(updateBooking({ id, objToUpdate }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('There was an error editing the booking!');
-      return;
-    }
+    if (hasError) return;
 
+    toast.success('Booking edited successfully');
     navigate(`/bookings/${id}`, { replace: true });
   };
 
-  if (fetchStatusAPI === 'loading')
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Editing booking...
+        Problem fetching the booking. Check the ID!
       </h1>
     );
+  }
+
+  if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
+    return (
+      <MainCard borderRadius='16px'>
+        <PulseSpinner isLoading={true} />
+      </MainCard>
+    );
+  }
 
   return (
     <MainCard borderRadius='16px'>

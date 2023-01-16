@@ -4,12 +4,13 @@ import {
   InputSelect,
   MainCard,
 } from '../components/Styles';
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { PulseSpinner } from '../components';
 import { createUser } from '../store/userSlice';
 import styled from 'styled-components';
-import { AuthContext } from '../store/authContext';
 
 const StyledForm = styled.form`
   div {
@@ -45,8 +46,6 @@ const userStatusOptions = [
   },
 ];
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const NewUser = () => {
   const [userPhotoInput, setUserPhotoInput] = useState<
     FileList | FileList[] | null
@@ -60,9 +59,15 @@ const NewUser = () => {
   const [userPhoneInput, setUserPhoneInput] = useState('');
   const [userStatusSelect, setUserStatusSelect] = useState('Active');
   const statusAPI = useAppSelector((state) => state.users.status);
-  const { authStatus } = useContext(AuthContext);
+  const errorMessageAPI = useAppSelector((state) => state.users.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    if (errorMessageAPI && statusAPI === 'failed') {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, statusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,32 +95,21 @@ const NewUser = () => {
       !userPasswordInput.trim() ||
       !userPhoneInput.trim()
     ) {
-      return alert('Please, fill all the required inputs');
+      return toast.warn('Fill all the required inputs', {
+        autoClose: 3000,
+        hideProgressBar: true,
+      });
     }
-
-    const result = await dispatch(
-      createUser({
-        url: new URL(`${API_URI}/users`),
-        fetchObjProps: {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(objToSave),
-        },
-      })
-    );
+    const result = await dispatch(createUser({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('Error creating the user');
-      return;
-    }
+    if (hasError) return;
+
+    toast.success('User created successfully');
     navigate('/users', { replace: true });
   };
 
-  if (statusAPI === 'loading') return <h1>Saving user data...</h1>;
+  if (statusAPI === 'loading') return <PulseSpinner isLoading={true} />;
 
   return (
     <MainCard borderRadius='16px'>

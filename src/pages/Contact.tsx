@@ -16,15 +16,16 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchContacts, IContactObj } from '../store/contactSlice';
 import React, { useState, useEffect, useMemo, useContext } from 'react';
+import { PulseSpinner } from '../components';
 import {
   paginationDataHandler,
   numberOfPages,
   paginationButtonsHandler,
   dateHandler,
 } from '../utils';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { reorderHandler } from '../utils';
-import { listAllEventListeners } from '../utils/getListeners';
 
 const PAGINATION_OFFSET = 5;
 
@@ -161,18 +162,8 @@ const Contact = () => {
   const { authStatus } = useContext(AuthContext);
 
   useEffect(() => {
-    dispatch(
-      fetchContacts({
-        url: new URL(`${API_URI}/contacts`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, authStatus.token]);
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   useEffect(() => {
     if (fetchStatusAPI !== 'idle') return;
@@ -208,7 +199,7 @@ const Contact = () => {
   }, [filteredContactsList.length]);
 
   const archiveContactHandler = async (id: string) => {
-    await fetch(`${API_URI}/contacts/${id}`, {
+    const res = await fetch(`${API_URI}/contacts/${id}`, {
       method: 'PATCH',
       headers: {
         Authorization: `Bearer ${authStatus.token}`,
@@ -216,14 +207,19 @@ const Contact = () => {
       },
       body: JSON.stringify({ archived: true }),
     });
+    if (res.ok) {
+      toast.success('Contact archived correctly', {
+        hideProgressBar: true,
+      });
+    } else {
+      toast.error('There was an error archiving the contact, try again later!');
+    }
   };
 
   const inputSelectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setOderBy(e.target.value);
     setPage(1);
   };
-
-  // const starsRateToRender = (rate: number) => Math.ceil(rate / 20);
 
   return (
     <>
@@ -355,13 +351,19 @@ const Contact = () => {
         <div id='pages-container'>
           <p
             className={pageFilteredBy === 'id' ? 'active-page' : ''}
-            onClick={() => setPageFilteredBy('id')}
+            onClick={() => {
+              setPageFilteredBy('id');
+              setPage(1);
+            }}
           >
             All Contacts
           </p>
           <p
             className={pageFilteredBy === 'Archived' ? 'active-page' : ''}
-            onClick={() => setPageFilteredBy('Archived')}
+            onClick={() => {
+              setPageFilteredBy('Archived');
+              setPage(1);
+            }}
           >
             Archived
           </p>
@@ -381,11 +383,7 @@ const Contact = () => {
         </div>
       </MenuContainer>
       {fetchStatusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading contacts...
-        </h1>
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <MainCard
@@ -437,7 +435,7 @@ const Contact = () => {
           <PaginationButtons style={{ margin: '50px 30px' }}>
             <p>
               Showing {commentsListSliced.length} of{' '}
-              {Array.isArray(contactListRedux) && contactListRedux.length} Data
+              {filteredContactsList.length} Contacts
             </p>
             <div id='pagination-container'>
               {paginationButtonsHandler(page, totalPages, setPage)}

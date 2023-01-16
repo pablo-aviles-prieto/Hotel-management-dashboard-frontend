@@ -1,9 +1,10 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useContext, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleBooking, deleteBooking } from '../store/bookingSlice';
 import { MainCard, ButtonGreen } from '../components/Styles';
-import { AuthContext } from '../store/authContext';
+import { PulseSpinner } from '../components';
 import styled from 'styled-components';
 
 const RedButton = styled(ButtonGreen)`
@@ -11,30 +12,28 @@ const RedButton = styled(ButtonGreen)`
   margin-left: 10px;
 `;
 
-const API_URI = process.env.REACT_APP_API_URI;
-
 const BookingDetails = () => {
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
   const fetchStatusAPI = useAppSelector((state) => state.bookings.fetchStatus);
+  const statusAPI = useAppSelector((state) => state.bookings.status);
+  const errorMessageAPI = useAppSelector((state) => state.bookings.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { authStatus } = useContext(AuthContext);
   const params = useParams();
   const { id } = params;
 
   useEffect(() => {
-    dispatch(
-      fetchSingleBooking({
-        url: new URL(`${API_URI}/bookings/${id}`),
-        fetchObjProps: {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
-  }, [dispatch, id, authStatus.token]);
+    dispatch(fetchSingleBooking({ id }));
+  }, [dispatch, id]);
+
+  useEffect(() => {
+    if (
+      errorMessageAPI &&
+      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
+    ) {
+      toast.error(errorMessageAPI);
+    }
+  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
 
   const deleteBookingHandler = async () => {
     if (
@@ -43,23 +42,12 @@ const BookingDetails = () => {
       return;
     }
 
-    const result = await dispatch(
-      deleteBooking({
-        url: new URL(`${API_URI}/bookings/${id}`),
-        fetchObjProps: {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${authStatus.token}`,
-          },
-        },
-      })
-    );
+    const result = await dispatch(deleteBooking({ id }));
 
     const hasError = result.meta.requestStatus === 'rejected';
-    if (hasError) {
-      alert('ID provided is not valid!');
-      return;
-    }
+    if (hasError) return;
+
+    toast.success('Booking deleted successfully');
     navigate('/bookings/', { replace: true });
   };
 
@@ -79,12 +67,8 @@ const BookingDetails = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      {fetchStatusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading booking {id}...
-        </h1>
+      {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <h1>Booking details for {id}</h1>
