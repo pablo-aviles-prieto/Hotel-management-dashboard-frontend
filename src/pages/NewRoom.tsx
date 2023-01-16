@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { createRoom } from '../store/roomSlice';
+import { PulseSpinner } from '../components';
 import styled from 'styled-components';
 
 const StyledForm = styled.form`
@@ -179,7 +180,7 @@ const NewRoom = () => {
     setAmenitiesSelect(value);
   };
 
-  if (statusAPI === 'loading') return <h1>Saving room data...</h1>;
+  if (statusAPI === 'loading') return <PulseSpinner isLoading={true} />;
 
   return (
     <MainCard borderRadius='16px'>

@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchContacts, IContactObj } from '../store/contactSlice';
 import React, { useState, useEffect, useMemo, useContext } from 'react';
+import { PulseSpinner } from '../components';
 import {
   paginationDataHandler,
   numberOfPages,
@@ -382,11 +383,7 @@ const Contact = () => {
         </div>
       </MenuContainer>
       {fetchStatusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading contacts...
-        </h1>
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <MainCard

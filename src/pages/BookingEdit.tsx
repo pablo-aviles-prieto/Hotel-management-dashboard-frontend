@@ -9,6 +9,7 @@ import {
   ButtonGreen,
 } from '../components/Styles';
 import { toast } from 'react-toastify';
+import { PulseSpinner } from '../components';
 import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
 import { IRoomObj } from '../store/roomSlice';
@@ -178,9 +179,9 @@ const BookingEdit = () => {
 
   if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
     return (
-      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Loading...
-      </h1>
+      <MainCard borderRadius='16px'>
+        <PulseSpinner isLoading={true} />
+      </MainCard>
     );
   }
 

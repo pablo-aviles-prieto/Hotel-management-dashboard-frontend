@@ -9,6 +9,7 @@ import {
   ImgHolder,
 } from '../components/Styles';
 import { toast } from 'react-toastify';
+import { PulseSpinner } from '../components';
 import { updateUser, fetchSingleUser } from '../store/userSlice';
 import styled from 'styled-components';
 
@@ -156,9 +157,9 @@ const UserEdit = () => {
 
   if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
     return (
-      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Loading...
-      </h1>
+      <MainCard borderRadius='16px'>
+        <PulseSpinner isLoading={true} />
+      </MainCard>
     );
   }
 

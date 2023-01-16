@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import { createBooking } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { AuthContext } from '../store/authContext';
+import { PulseSpinner } from '../components';
 import { IRoomObj } from '../store/roomSlice';
 
 const StyledForm = styled.form`
@@ -139,7 +140,7 @@ const NewBooking = () => {
     navigate('/bookings', { replace: true });
   };
 
-  if (statusAPI === 'loading') return <h1>Saving booking data...</h1>;
+  if (statusAPI === 'loading') return <PulseSpinner isLoading={true} />;
 
   return (
     <MainCard borderRadius='16px'>

@@ -8,6 +8,7 @@ import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import { PulseSpinner } from '../components';
 import { createUser } from '../store/userSlice';
 import styled from 'styled-components';
 
@@ -108,7 +109,7 @@ const NewUser = () => {
     navigate('/users', { replace: true });
   };
 
-  if (statusAPI === 'loading') return <h1>Saving user data...</h1>;
+  if (statusAPI === 'loading') return <PulseSpinner isLoading={true} />;
 
   return (
     <MainCard borderRadius='16px'>

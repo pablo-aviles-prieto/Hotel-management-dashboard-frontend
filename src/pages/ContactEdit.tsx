@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
+import { PulseSpinner } from '../components';
 import { fetchSingleContact, updateContact } from '../store/contactSlice';
 import styled from 'styled-components';
 
@@ -135,9 +136,9 @@ const ContactEdit = () => {
 
   if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
     return (
-      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Loading...
-      </h1>
+      <MainCard borderRadius='16px'>
+        <PulseSpinner isLoading={true} />
+      </MainCard>
     );
   }
 

@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleContact, deleteContact } from '../store/contactSlice';
 import { MainCard, ButtonGreen } from '../components/Styles';
+import { PulseSpinner } from '../components';
 import styled from 'styled-components';
 
 const RedButton = styled(ButtonGreen)`
@@ -65,11 +66,7 @@ const ContactDetails = () => {
   return (
     <MainCard borderRadius='16px'>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading...
-        </h1>
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <h1>Contacts details for {id}</h1>

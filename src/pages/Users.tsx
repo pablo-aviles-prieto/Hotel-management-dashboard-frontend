@@ -14,6 +14,7 @@ import {
 } from '../components/Styles';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchUsers, IUserObj } from '../store/userSlice';
+import { PulseSpinner } from '../components';
 import {
   numberOfPages,
   paginationButtonsHandler,
@@ -162,11 +163,7 @@ const Users = () => {
         </div>
       </MenuContainer>
       {fetchStatusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading users...
-        </h1>
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <MainCard borderRadius='20px' style={{ padding: '0' }}>

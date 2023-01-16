@@ -8,6 +8,7 @@ import { toast } from 'react-toastify';
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
+import { PulseSpinner } from '../components';
 import { createContact } from '../store/contactSlice';
 import styled from 'styled-components';
 
@@ -92,12 +93,12 @@ const NewContact = () => {
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
-    
+
     toast.success('Contact created successfully');
     navigate('/contacts', { replace: true });
   };
 
-  if (statusAPI === 'loading') return <h1>Saving contact message...</h1>;
+  if (statusAPI === 'loading') return <PulseSpinner isLoading={true} />;
 
   return (
     <MainCard borderRadius='16px'>

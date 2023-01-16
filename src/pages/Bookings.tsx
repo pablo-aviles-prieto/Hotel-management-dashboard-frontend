@@ -20,7 +20,7 @@ import {
 } from '../utils';
 import { fetchBookings, IBookingObj } from '../store/bookingSlice';
 import styled from 'styled-components';
-import { Modal } from '../components';
+import { Modal, PulseSpinner } from '../components';
 
 interface IModalState {
   title: string;
@@ -231,15 +231,7 @@ const Bookings = () => {
         </div>
       </MenuContainer>
       {fetchStatusAPI === 'loading' ? (
-        <h1
-          style={{
-            textAlign: 'center',
-            padding: '100px 0',
-            fontSize: '30px',
-          }}
-        >
-          Loading bookings...
-        </h1>
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <TableCard borderRadius='20px'>

@@ -12,7 +12,7 @@ import {
 } from '../components/Styles';
 import { fetchRooms, IRoomObj } from '../store/roomSlice';
 import { DotMenu } from '../assets/icons';
-import { CardDnd } from '../components';
+import { CardDnd, PulseSpinner } from '../components';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { DndProvider } from 'react-dnd';
 import { useNavigate } from 'react-router-dom';
@@ -229,11 +229,7 @@ const RoomsList = () => {
         </div>
       </MenuContainer>
       {fetchStatusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading rooms...
-        </h1>
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <DndProvider backend={HTML5Backend}>

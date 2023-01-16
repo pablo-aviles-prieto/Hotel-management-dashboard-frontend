@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleRoom, deleteRoom } from '../store/roomSlice';
 import styled from 'styled-components';
+import { PulseSpinner } from '../components';
 import { MainCard, ButtonGreen } from '../components/Styles';
 
 const RedButton = styled(ButtonGreen)`
@@ -63,11 +64,7 @@ const RoomDetails = () => {
   return (
     <MainCard borderRadius='16px'>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading...
-        </h1>
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
           <h1>Room details for {id}</h1>

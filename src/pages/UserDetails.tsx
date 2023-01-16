@@ -4,6 +4,7 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleUser, deleteUser } from '../store/userSlice';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
+import { PulseSpinner } from '../components';
 import { MainCard, ButtonGreen, ImgHolder } from '../components/Styles';
 
 const RedButton = styled(ButtonGreen)`
@@ -76,14 +77,10 @@ const UserDetails = () => {
   return (
     <MainCard borderRadius='16px'>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
-        <h1
-          style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}
-        >
-          Loading...
-        </h1>
+        <PulseSpinner isLoading={true} />
       ) : (
         <>
-          <h1>User details for {id}</h1>
+          <h1>User details of {parsedUsers.name}</h1>
           <ImgHolder width='200px' height='200px' style={{ margin: '50px 0' }}>
             <img src={parsedUsers.photo} alt={`Pic of ${parsedUsers.name}`} />
           </ImgHolder>
