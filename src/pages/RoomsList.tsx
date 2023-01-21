@@ -34,6 +34,14 @@ const FlexContainer = styled.div`
 
 const TableCard = styled(MainCard)`
   padding: 0;
+  tbody {
+    tr {
+      &:hover {
+        cursor: pointer;
+        background-color: ${({ theme }) => theme.secondBground};
+      }
+    }
+  }
 `;
 
 const ButtonListRooms = styled(ButtonGreen)<{
@@ -139,7 +147,11 @@ const RoomsList = () => {
     <tr ref={ref} style={{ opacity: dragOpacity }} data-handler-id={handlerId}>
       <td>
         <FlexContainer>
-          <ImgHolder width='150px' height='77px'>
+          <ImgHolder
+            width='150px'
+            height='77px'
+            onClick={() => navigate(`/rooms/${room.id}`)}
+          >
             <img src={room.photo} alt='View of the Hotel' />
           </ImgHolder>
           <div style={{ width: '73%' }}>
@@ -186,7 +198,7 @@ const RoomsList = () => {
           style={{ marginRight: '20px' }}
           padding='12px 22px'
           bground={room.status === 'Available' ? '#5AD07A' : '#E23428'}
-          onClick={() => console.log('check btn')}
+          onClick={() => navigate(`/rooms/${room.id}`)}
         >
           {room.status}
         </ButtonListRooms>
