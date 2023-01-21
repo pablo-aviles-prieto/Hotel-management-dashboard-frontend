@@ -22,10 +22,10 @@ import {
   numberOfPages,
   paginationButtonsHandler,
   dateHandler,
+  reorderHandler,
 } from '../utils';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { reorderHandler } from '../utils';
 
 const PAGINATION_OFFSET = 5;
 
@@ -80,6 +80,7 @@ const SliderSection = styled.section`
   .slider-container {
     &-content {
       color: ${({ theme }) => theme.greyToWhite};
+      min-height: 71px;
     }
     &-author {
       display: flex;
@@ -242,106 +243,42 @@ const Contact = () => {
                 },
               }}
             >
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
+              {Array.isArray(contactListRedux) &&
+                contactListRedux
+                  .slice(contactListRedux.length - 5, contactListRedux.length)
+                  .map((contact) => (
+                    <SwiperSlide key={contact.id}>
+                      <AlternativeCard
+                        className='slider-container'
+                        borderRadius='16px'
+                      >
+                        <p className='slider-container-content'>
+                          {contact.message.body}
+                        </p>
+                        <div className='slider-container-author'>
+                          <div className='slider-container-author-info'>
+                            <ImgHolder width='56px' height='56px'></ImgHolder>
+                            <div className='slider-container-author-info--flex'>
+                              <p id='author-name'>{contact.user.name}</p>
+                              <p id='publish-date'>{contact.date}</p>
+                            </div>
+                          </div>
+                          <div className='slider-container-author-btns'>
+                            <Check
+                              stroke='#5AD07A'
+                              width='30px'
+                              height='30px'
+                            />
+                            <XCircle
+                              stroke='#E23428'
+                              width='30px'
+                              height='30px'
+                            />
+                          </div>
+                        </div>
+                      </AlternativeCard>
+                    </SwiperSlide>
+                  ))}
             </Swiper>
           </div>
         </div>

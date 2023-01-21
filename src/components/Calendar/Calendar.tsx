@@ -81,16 +81,28 @@ const CalendarContainer = styled.div`
 
 const DUMMY_BOOKINGS = [
   {
-    checkIn: '2022-12-03',
-    checkOut: '2022-12-08',
+    checkIn: '2023-01-03',
+    checkOut: '2023-01-08',
   },
   {
-    checkIn: '2022-12-08',
-    checkOut: '2022-12-14',
+    checkIn: '2023-01-08',
+    checkOut: '2023-01-14',
   },
   {
-    checkIn: '2022-12-13',
-    checkOut: '2022-12-18',
+    checkIn: '2023-01-13',
+    checkOut: '2023-01-18',
+  },
+  {
+    checkIn: '2023-02-03',
+    checkOut: '2023-02-08',
+  },
+  {
+    checkIn: '2023-02-08',
+    checkOut: '2023-02-20',
+  },
+  {
+    checkIn: '2023-02-16',
+    checkOut: '2023-02-18',
   },
 ];
 
