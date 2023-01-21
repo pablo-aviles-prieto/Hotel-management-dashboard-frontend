@@ -5,29 +5,11 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleRoom, deleteRoom } from '../store/roomSlice';
 import styled from 'styled-components';
 import { PulseSpinner } from '../components';
-import {
-  MainCard,
-  ButtonGreen,
-  ImgHolder,
-  FlexContainer,
-} from '../components/Styles';
-import { DotMenu } from '../assets/icons';
+import { MainCard, ButtonGreen } from '../components/Styles';
 
 const RedButton = styled(ButtonGreen)`
   background-color: rgb(226, 52, 40);
   margin-left: 10px;
-`;
-
-const RoomContainer = styled.div`
-  display: flex;
-  .side-container {
-    width: 50%;
-  }
-  #left-container {
-    padding-right: 20px;
-  }
-  .info {
-  }
 `;
 
 const RoomDetails = () => {
@@ -84,26 +66,35 @@ const RoomDetails = () => {
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
         <PulseSpinner isLoading={true} />
       ) : (
-        <RoomContainer>
-          <div id='left-container' className='side-container info'>
-            <div className='info-name'>
-              <h1>Placeholder room name</h1>
-              <FlexContainer>
-                <p>Room type</p>
-                <p>Bed type</p>
-              </FlexContainer>
-            </div>
-            <hr></hr>
-            <div className='info-room'></div>
+        <>
+          <h1>Room details for {id}</h1>
+          <ul>
+            <li>Bed type: {dataChecked.bedType}</li>
+            <li>Room number: {dataChecked.roomNumber}</li>
+            <li>Room name: {dataChecked.roomName}</li>
+            <li>Room floor: {dataChecked.roomFloor}</li>
+            <li>Rate: {dataChecked.ratePerNight}$/Night</li>
+            <li>
+              Discount to apply:{' '}
+              {dataChecked.offerPrice
+                ? `${dataChecked.offerPrice}%`
+                : 'There is no discount for this room'}
+            </li>
+            <li>Facilities: {dataChecked.facilities.join(', ')}</li>
+            <li>Status: {dataChecked.status}</li>
+          </ul>
+          <div style={{ marginTop: '50px' }}>
+            <ButtonGreen
+              padding='10px 52px'
+              onClick={() => navigate(`/rooms/${id}/edit`)}
+            >
+              Edit room
+            </ButtonGreen>
+            <RedButton padding='10px 52px' onClick={deleteRoomHandler}>
+              Delete room
+            </RedButton>
           </div>
-          <div id='right-container' className='side-container'>
-            <ImgHolder
-              style={{ borderRadius: '0 8px 8px 0' }}
-              height='100%'
-              width='auto'
-            ></ImgHolder>
-          </div>
-        </RoomContainer>
+        </>
       )}
     </MainCard>
   );
