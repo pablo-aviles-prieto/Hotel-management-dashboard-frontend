@@ -4,30 +4,17 @@ import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleRoom, deleteRoom } from '../store/roomSlice';
 import styled from 'styled-components';
-import { PulseSpinner } from '../components';
+import { PulseSpinner, RoomContainer } from '../components';
 import {
   MainCard,
   ButtonGreen,
   ImgHolder,
   FlexContainer,
 } from '../components/Styles';
-import { DotMenu } from '../assets/icons';
 
 const RedButton = styled(ButtonGreen)`
   background-color: rgb(226, 52, 40);
   margin-left: 10px;
-`;
-
-const RoomContainer = styled.div`
-  display: flex;
-  .side-container {
-    width: 50%;
-  }
-  #left-container {
-    padding-right: 20px;
-  }
-  .info {
-  }
 `;
 
 const RoomDetails = () => {
@@ -71,41 +58,23 @@ const RoomDetails = () => {
     [roomRedux]
   );
 
-  if (fetchStatusAPI === 'failed')
+  if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         We couldn't find the room selected. Please check the ID and if it's
         correct try again later!
       </h1>
     );
+  }
 
   return (
-    <MainCard borderRadius='16px'>
+    <>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
         <PulseSpinner isLoading={true} />
       ) : (
-        <RoomContainer>
-          <div id='left-container' className='side-container info'>
-            <div className='info-name'>
-              <h1>Placeholder room name</h1>
-              <FlexContainer>
-                <p>Room type</p>
-                <p>Bed type</p>
-              </FlexContainer>
-            </div>
-            <hr></hr>
-            <div className='info-room'></div>
-          </div>
-          <div id='right-container' className='side-container'>
-            <ImgHolder
-              style={{ borderRadius: '0 8px 8px 0' }}
-              height='100%'
-              width='auto'
-            ></ImgHolder>
-          </div>
-        </RoomContainer>
+        <RoomContainer />
       )}
-    </MainCard>
+    </>
   );
 };
 
