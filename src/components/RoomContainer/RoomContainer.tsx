@@ -1,4 +1,10 @@
-import { FlexContainer, ImgHolder, MainCard } from '../Styles';
+import { FlexContainer, ImgHolder, MainCard, ButtonGreen } from '../Styles';
+import {
+  DoubleBed,
+  AirConditioner,
+  LedTV,
+  Coffee,
+} from '../../assets/icons/facilities';
 import styled from 'styled-components';
 
 const Container = styled.div`
@@ -67,8 +73,33 @@ const Container = styled.div`
       &-description {
         margin: 30px 0;
       }
+      &-facilities {
+        &-container {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+          gap: 20px;
+          &-individuals {
+            border-radius: 8px;
+            display: inline-block;
+            padding: 10px 20px;
+            color: ${({ theme }) => theme.buttonSidebarColor};
+            background-color: ${({ theme }) => theme.buttonSidebarBground};
+            p {
+              font-size: 13px;
+            }
+            .initial-mod {
+              align-items: end;
+            }
+          }
+        }
+      }
     }
   }
+`;
+
+const RedButton = styled(ButtonGreen)`
+  background-color: rgb(226, 52, 40);
+  margin-left: 10px;
 `;
 
 export const RoomContainer: React.FC = () => {
@@ -116,8 +147,62 @@ export const RoomContainer: React.FC = () => {
           </div>
           <div className='info-data-block info-room-facilities'>
             <p>Facilities</p>
-            <div className='info-room-facilities-container'></div>
+            <div className='info-room-facilities-container'>
+              <div className='info-room-facilities-container-individuals'>
+                <FlexContainer className='initial-mod'>
+                  <DoubleBed height={22} />
+                  <p>Beedroom</p>
+                </FlexContainer>
+              </div>
+              <div className='info-room-facilities-container-individuals'>
+                <FlexContainer className='initial-mod'>
+                  <DoubleBed height={22} />
+                  <p>Beedroom</p>
+                </FlexContainer>
+              </div>
+              <div className='info-room-facilities-container-individuals'>
+                <FlexContainer className='initial-mod'>
+                  <AirConditioner height={22} />
+                  <p>Air Conditioner</p>
+                </FlexContainer>
+              </div>
+              <div className='info-room-facilities-container-individuals'>
+                <FlexContainer className='initial-mod'>
+                  <LedTV height={22} />
+                  <p>Led TV</p>
+                </FlexContainer>
+              </div>
+              <div className='info-room-facilities-container-individuals'>
+                <FlexContainer className='initial-mod'>
+                  <DoubleBed height={22} />
+                  <p>Beedroom</p>
+                </FlexContainer>
+              </div>
+              <div className='info-room-facilities-container-individuals'>
+                <FlexContainer className='initial-mod'>
+                  <Coffee height={22} />
+                  <p>Coffee</p>
+                </FlexContainer>
+              </div>
+            </div>
           </div>
+        </div>
+        <hr />
+        <div className='info-data-block'>
+          <p>Actions</p>
+          <FlexContainer>
+            <ButtonGreen
+              padding='10px 52px'
+              style={{ width: '100%' }}
+              // onClick={() => navigate(`/rooms/${id}/edit`)}
+            >
+              Edit room
+            </ButtonGreen>
+            {/* <RedButton padding='10px 52px' onClick={deleteRoomHandler}> */}
+            <RedButton padding='10px 52px' style={{ width: '100%' }}>
+              Delete room
+            </RedButton>
+          </FlexContainer>
         </div>
       </MainCard>
       <div className='side-container'>

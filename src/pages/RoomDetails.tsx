@@ -70,7 +70,9 @@ const RoomDetails = () => {
   return (
     <>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
-        <PulseSpinner isLoading={true} />
+        <MainCard borderRadius='16px'>
+          <PulseSpinner isLoading={true} />
+        </MainCard>
       ) : (
         <RoomContainer />
       )}
