@@ -10,10 +10,8 @@ import {
 import { toast } from 'react-toastify';
 import { PulseSpinner } from '../components';
 import { updateRoom, fetchSingleRoom } from '../store/roomSlice';
-import { facilitiesArray } from '../utils';
+import { facilitiesArray as roomAmenitiesOptionsSelect } from '../utils';
 import styled from 'styled-components';
-
-const roomAmenitiesOptionsSelect = facilitiesArray;
 
 const StyledForm = styled.form`
   div {
@@ -80,39 +78,24 @@ const roomTypeOptionsSelect = [
   },
 ];
 
-interface IRoomData {
-  photo: string | FileList | FileList[] | null;
-  roomName: string;
-  roomNumber: number;
-  roomType: string;
-  roomFloor: string;
-  bedType: string;
-  roomDiscount: number;
-  ratePerNight: number;
-  roomDescription?: string;
-  facilities: string[];
-  status: string;
-  checkOffer: boolean;
-  [key: string]: any;
-}
-
-const roomDataSkeleton = {
-  photo: '',
-  roomName: '',
-  roomNumber: 0,
-  roomType: '',
-  roomFloor: '',
-  bedType: '',
-  roomDiscount: 0,
-  ratePerNight: 0,
-  roomDescription: '',
-  facilities: [],
-  status: '',
-  checkOffer: false,
-};
-
 const RoomEdit = () => {
-  const [roomData, setRoomData] = useState<IRoomData>(roomDataSkeleton);
+  const [roomNameInput, setRoomNameInput] = useState('');
+  const [roomBedTypeSelect, setRoomBedTypeSelect] = useState('Single Bed');
+  const [roomNumberInput, setRoomNumberInput] = useState<number | undefined>(
+    undefined
+  );
+  const [roomFloorInput, setRoomFloorInput] = useState('');
+  const [roomDescription, setRoomDescription] = useState<string | undefined>(
+    ''
+  );
+  const [roomType, setRoomType] = useState('');
+  const [checkOffer, setCheckOffer] = useState(false);
+  const [roomPriceInput, setRoomPriceInput] = useState(0);
+  const [roomDiscountInput, setRoomDiscountInput] = useState(0);
+  const [amenitiesSelect, setAmenitiesSelect] = useState<string[]>([]);
+  const [imagesInput, setImagesInput] = useState<FileList | FileList[] | null>(
+    []
+  );
   const roomsListRedux = useAppSelector((state) => state.rooms.roomList);
   const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
   const statusAPI = useAppSelector((state) => state.rooms.status);
@@ -121,8 +104,6 @@ const RoomEdit = () => {
   const navigate = useNavigate();
   const params = useParams();
   const { id } = params;
-
-  console.log('roomData', roomData);
 
   useEffect(() => {
     dispatch(fetchSingleRoom({ id }));
@@ -144,66 +125,50 @@ const RoomEdit = () => {
       ? roomsListRedux[0]
       : roomsListRedux;
 
-    const newState = {
-      photo: parsedRoom.photo,
-      roomName: parsedRoom.roomName,
-      roomNumber: parsedRoom.roomNumber,
-      roomType: parsedRoom.roomType,
-      roomFloor: parsedRoom.roomFloor,
-      bedType: parsedRoom.bedType,
-      roomDiscount: parsedRoom?.offerPrice
+    setRoomNameInput(parsedRoom.roomName);
+    setRoomBedTypeSelect(parsedRoom.bedType);
+    setRoomNumberInput(parsedRoom.roomNumber);
+    setRoomFloorInput(parsedRoom.roomFloor);
+    setRoomType(parsedRoom.roomType);
+    setRoomPriceInput(parsedRoom.ratePerNight);
+    setRoomDiscountInput(
+      parsedRoom?.offerPrice
         ? Number(
             ((parsedRoom?.offerPrice * 100) / parsedRoom.ratePerNight).toFixed(
               2
             )
           )
-        : 0,
-      ratePerNight: parsedRoom.ratePerNight,
-      roomDescription: parsedRoom?.roomDescription,
-      facilities:
-        parsedRoom.facilities?.length > 0 ? parsedRoom.facilities : [],
-      status: parsedRoom.status,
-      checkOffer: parsedRoom?.offerPrice ? true : false,
-    };
-    setRoomData(newState);
+        : 0
+    );
+    setCheckOffer(parsedRoom?.offerPrice ? true : false);
+    setRoomDescription(parsedRoom?.roomDescription);
+    setAmenitiesSelect(
+      parsedRoom.facilities?.length > 0 ? parsedRoom.facilities : []
+    );
   }, [roomsListRedux, fetchStatusAPI]);
-
-  const stateInputsHandler = ({
-    roomProp,
-    newValue,
-  }: {
-    roomProp: keyof IRoomData;
-    newValue: IRoomData[keyof IRoomData];
-  }) => {
-    setRoomData((prevState) => {
-      const newState: IRoomData = { ...prevState };
-      newState[roomProp] = newValue;
-      return newState;
-    });
-  };
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToUpdate = {
-      roomName: roomData.roomName,
-      bedType: roomData.bedType,
-      roomNumber: roomData.roomNumber,
-      roomFloor: roomData.roomFloor,
-      roomDescription: roomData.roomDescription,
-      roomType: roomData.roomType,
-      ratePerNight: roomData.ratePerNight,
-      discount: roomData.checkOffer ? roomData.roomDiscount : 0,
-      facilities: roomData.facilities,
-      // images: roomData.photo,
+      roomName: roomNameInput,
+      bedType: roomBedTypeSelect,
+      roomNumber: roomNumberInput,
+      roomFloor: roomFloorInput,
+      roomDescription,
+      roomType,
+      ratePerNight: +roomPriceInput,
+      discount: checkOffer ? +roomDiscountInput : 0,
+      facilities: amenitiesSelect,
+      // images: imagesUploadArray,
     };
 
     if (
-      !roomData.roomName.trim() ||
-      !roomData.roomNumber ||
-      !roomData.roomFloor.trim() ||
-      !roomData.ratePerNight ||
-      roomData.facilities.length === 0
+      !roomNameInput.trim() ||
+      !roomNumberInput ||
+      !roomFloorInput.trim() ||
+      !roomPriceInput ||
+      amenitiesSelect.length === 0
       // imagesUploadArray.length < 3
     ) {
       return toast.warn('Fill all the required inputs', {
@@ -220,16 +185,12 @@ const RoomEdit = () => {
     navigate(`/rooms/${id}`, { replace: true });
   };
 
-  const facilitiesHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const amenitiesHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = Array.from(
       e.target.selectedOptions,
       (option) => option.value
     );
-    setRoomData((prevState) => {
-      const newState = { ...prevState };
-      newState.facilities = value;
-      return newState;
-    });
+    setAmenitiesSelect(value);
   };
 
   if (fetchStatusAPI === 'failed') {
@@ -261,15 +222,10 @@ const RoomEdit = () => {
             padding='5px'
             name='room-name'
             placeholder='name...'
-            value={roomData.roomName}
+            value={roomNameInput}
             id='room-name'
             type='text'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomName',
-                newValue: e.target.value,
-              })
-            }
+            onChange={(e) => setRoomNameInput(e.target.value)}
           />
         </div>
         <div>
@@ -283,12 +239,7 @@ const RoomEdit = () => {
           <input
             type='file'
             id='room-images'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'photo',
-                newValue: e.target.files,
-              })
-            }
+            onChange={(e) => setImagesInput(e.target.files)}
             multiple={true}
             accept='image/jpg,image/png'
           />
@@ -306,13 +257,8 @@ const RoomEdit = () => {
             id='room-type'
             padding='8px 5px'
             positionArrowY='0'
-            value={roomData.bedType}
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'bedType',
-                newValue: e.target.value,
-              })
-            }
+            value={roomBedTypeSelect}
+            onChange={(e) => setRoomBedTypeSelect(e.target.value)}
           >
             {roomTypeOptionsSelect.map((option) => (
               <option key={option.label} value={option.label}>
@@ -330,15 +276,10 @@ const RoomEdit = () => {
             padding='5px'
             name='room-type'
             placeholder='room type...'
-            value={roomData.roomType}
+            value={roomType}
             id='room-type'
             type='text'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomType',
-                newValue: e.target.value,
-              })
-            }
+            onChange={(e) => setRoomType(e.target.value)}
           />
         </div>
         <div>
@@ -350,16 +291,11 @@ const RoomEdit = () => {
             padding='5px'
             name='room-number'
             placeholder='number...'
-            value={roomData.roomNumber}
+            value={roomNumberInput}
             id='room-number'
             type='number'
             min='1'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomNumber',
-                newValue: +e.target.value,
-              })
-            }
+            onChange={(e) => setRoomNumberInput(+e.target.value)}
           />
         </div>
         <div>
@@ -371,15 +307,10 @@ const RoomEdit = () => {
             padding='5px'
             name='room-floor'
             placeholder='floor...'
-            value={roomData.roomFloor}
+            value={roomFloorInput}
             id='room-floor'
             type='text'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomFloor',
-                newValue: e.target.value,
-              })
-            }
+            onChange={(e) => setRoomFloorInput(e.target.value)}
           />
         </div>
         <div>
@@ -391,17 +322,12 @@ const RoomEdit = () => {
             padding='5px'
             name='room-price'
             placeholder='price...'
-            value={roomData.ratePerNight}
+            value={roomPriceInput}
             id='room-price'
             type='number'
             min='1'
             step='0.01'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'ratePerNight',
-                newValue: +e.target.value,
-              })
-            }
+            onChange={(e) => setRoomPriceInput(+e.target.value)}
           />
         </div>
         <div>
@@ -411,31 +337,21 @@ const RoomEdit = () => {
             borderRadius='4px'
             padding='5px'
             name='room-discount'
-            value={roomData.roomDiscount}
+            value={roomDiscountInput}
             id='room-discount'
             type='number'
             min='0'
+            max='100'
             step='0.01'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomDiscount',
-                newValue: +e.target.value,
-              })
-            }
+            onChange={(e) => setRoomDiscountInput(+e.target.value)}
           />
         </div>
         <CheckBoxContainer>
           <input
             id='room-offer'
             type='checkbox'
-            checked={roomData.checkOffer}
-            onChange={() => {
-              const newOfferValue = !roomData.checkOffer;
-              stateInputsHandler({
-                roomProp: 'checkOffer',
-                newValue: newOfferValue,
-              });
-            }}
+            checked={checkOffer}
+            onChange={() => setCheckOffer((prevState) => !prevState)}
           />
           <StyledLabel htmlFor='room-offer'>
             Offer{' '}
@@ -450,13 +366,8 @@ const RoomEdit = () => {
             placeholder='Enter description...'
             id='room-description'
             rows={5}
-            value={roomData.roomDescription}
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomDescription',
-                newValue: e.target.value,
-              })
-            }
+            value={roomDescription}
+            onChange={(e) => setRoomDescription(e.target.value)}
           ></DescriptionTextArea>
         </div>
         <div style={{ marginBottom: '25px' }}>
@@ -479,9 +390,9 @@ const RoomEdit = () => {
             id='room-amenities'
             padding='9px 5px'
             positionArrowY='0'
-            onChange={facilitiesHandler}
+            onChange={amenitiesHandler}
             multiple
-            value={roomData.facilities}
+            value={amenitiesSelect}
           >
             {roomAmenitiesOptionsSelect.map((option) => (
               <option
@@ -495,11 +406,11 @@ const RoomEdit = () => {
           </InputSelect>
           <p>
             <b>Selecteds</b>:{' '}
-            {roomData.facilities.length === 0
+            {amenitiesSelect.length === 0
               ? !Array.isArray(roomsListRedux)
                 ? roomsListRedux.facilities.join(', ')
                 : roomsListRedux[0].facilities.join(', ')
-              : roomData.facilities.join(', ')}
+              : amenitiesSelect.join(', ')}
           </p>
         </div>
         <div>

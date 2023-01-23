@@ -91,7 +91,7 @@ const RoomDetails = () => {
         </MainCard>
       ) : (
         <RoomContainer
-          type='string'
+          type='details'
           room={dataChecked}
           renderButtons={renderButtons}
         />
