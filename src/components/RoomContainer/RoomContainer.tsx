@@ -1,11 +1,27 @@
 import { FlexContainer, ImgHolder, MainCard, ButtonGreen } from '../Styles';
-import {
-  DoubleBed,
-  AirConditioner,
-  LedTV,
-  Coffee,
-} from '../../assets/icons/facilities';
+import { DoubleBed } from '../../assets/icons/facilities';
+import { IFacility, facilitiesArray } from '../../utils/facilitiesArray';
 import styled from 'styled-components';
+
+type IRoom = {
+  bedType: string;
+  facilities: string[];
+  id?: string;
+  offerPrice?: number | null;
+  photo: string;
+  ratePerNight: number;
+  roomDescription?: string;
+  roomFloor: string;
+  roomName: string;
+  roomNumber: number;
+  roomType: string;
+  status: string;
+};
+interface Props {
+  type: string;
+  room: IRoom;
+  renderButtons: () => JSX.Element;
+}
 
 const Container = styled.div`
   display: flex;
@@ -32,6 +48,14 @@ const Container = styled.div`
     }
     #room-description {
       font-weight: 400;
+    }
+    #price-modifier {
+      color: ${({ theme }) => theme.darkGreyToLightGrey};
+      font-size: 10px;
+    }
+    #price-offer {
+      font-size: 30px;
+      color: #04a004;
     }
   }
   .info {
@@ -63,10 +87,7 @@ const Container = styled.div`
         }
         &-price {
           #official-price {
-            span {
-              color: ${({ theme }) => theme.darkGreyToLightGrey};
-              font-size: 10px;
-            }
+            font-size: 25px;
           }
         }
       }
@@ -76,8 +97,9 @@ const Container = styled.div`
       &-facilities {
         &-container {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
           gap: 20px;
+          text-align: center;
           &-individuals {
             border-radius: 8px;
             display: inline-block;
@@ -97,28 +119,55 @@ const Container = styled.div`
   }
 `;
 
-const RedButton = styled(ButtonGreen)`
-  background-color: rgb(226, 52, 40);
-  margin-left: 10px;
-`;
+export const RoomContainer: React.FC<Props> = ({
+  type,
+  room,
+  renderButtons,
+}) => {
+  const renderFacilities = ({
+    facilities,
+    facilitiesObj,
+  }: {
+    facilities: string[];
+    facilitiesObj: IFacility[];
+  }): JSX.Element[] => {
+    return facilities.map((singleFacility) => {
+      const facilityInfo = facilitiesObj.find(
+        (facility) => facility.label === singleFacility
+      );
 
-export const RoomContainer: React.FC = () => {
+      if (!facilityInfo) return <DoubleBed />;
+
+      return (
+        <div className='info-room-facilities-container-individuals'>
+          <FlexContainer className='initial-mod'>
+            <facilityInfo.component width={22} height={22} />
+            <p>{singleFacility}</p>
+          </FlexContainer>
+        </div>
+      );
+    });
+  };
+
   return (
     <Container>
       <MainCard borderRadius='16px 0 0 16px' className='side-container info'>
         <div className='info-name'>
           <FlexContainer className='info-name-id'>
-            <p>Random Name details</p>
-            <p id='room-number'>ID: 981240</p>
+            <h1>
+              {room.roomName.toUpperCase()}{' '}
+              <span style={{ fontSize: '22px' }}>details</span>
+            </h1>
+            <p id='room-number'>ID: {room.roomNumber}</p>
           </FlexContainer>
           <FlexContainer className='info-name-type'>
             <div className='info-data-block'>
               <p>Room type</p>
-              <p>Random type</p>
+              <p>{room.roomType}</p>
             </div>
             <div className='info-data-block'>
               <p>Bed type</p>
-              <p>Random bed type</p>
+              <p>{room.bedType}</p>
             </div>
           </FlexContainer>
         </div>
@@ -128,81 +177,60 @@ export const RoomContainer: React.FC = () => {
             <div className='info-room-details-offer'>
               <div className='info-data-block'>
                 <p>Offer price</p>
-                <p>No offer available</p>
+                {room.offerPrice && room.offerPrice > 0 ? (
+                  <p id='price-offer'>
+                    ${room.offerPrice} <span id='price-modifier'>/night</span>
+                  </p>
+                ) : (
+                  <p>No offer available</p>
+                )}
               </div>
             </div>
             <div className='info-room-details-price'>
               <div className='info-data-block'>
                 <p>Price</p>
-                <p id='official-price'>
-                  $400 <span>/night</span>
-                </p>
+                {room.offerPrice && room.offerPrice > 0 ? (
+                  <>
+                    <p
+                      style={{
+                        display: 'inline-block',
+                        color: '#cf0303',
+                        fontSize: '30px',
+                        textDecoration: 'line-through',
+                      }}
+                      id='official-price'
+                    >
+                      ${room.ratePerNight}{' '}
+                    </p>
+                    <span id='price-modifier'>/night</span>
+                  </>
+                ) : (
+                  <p id='official-price'>
+                    ${room.ratePerNight} <span id='price-modifier'>/night</span>
+                  </p>
+                )}
               </div>
             </div>
           </FlexContainer>
           <div className='info-room-description'>
-            <p id='room-description'>
-              Random description that is a bit shortlined
-            </p>
+            <p id='room-description'>{room.roomDescription}</p>
           </div>
           <div className='info-data-block info-room-facilities'>
             <p>Facilities</p>
             <div className='info-room-facilities-container'>
-              <div className='info-room-facilities-container-individuals'>
-                <FlexContainer className='initial-mod'>
-                  <DoubleBed height={22} />
-                  <p>Beedroom</p>
-                </FlexContainer>
-              </div>
-              <div className='info-room-facilities-container-individuals'>
-                <FlexContainer className='initial-mod'>
-                  <DoubleBed height={22} />
-                  <p>Beedroom</p>
-                </FlexContainer>
-              </div>
-              <div className='info-room-facilities-container-individuals'>
-                <FlexContainer className='initial-mod'>
-                  <AirConditioner height={22} />
-                  <p>Air Conditioner</p>
-                </FlexContainer>
-              </div>
-              <div className='info-room-facilities-container-individuals'>
-                <FlexContainer className='initial-mod'>
-                  <LedTV height={22} />
-                  <p>Led TV</p>
-                </FlexContainer>
-              </div>
-              <div className='info-room-facilities-container-individuals'>
-                <FlexContainer className='initial-mod'>
-                  <DoubleBed height={22} />
-                  <p>Beedroom</p>
-                </FlexContainer>
-              </div>
-              <div className='info-room-facilities-container-individuals'>
-                <FlexContainer className='initial-mod'>
-                  <Coffee height={22} />
-                  <p>Coffee</p>
-                </FlexContainer>
-              </div>
+              {renderFacilities({
+                facilities: room.facilities,
+                facilitiesObj: facilitiesArray,
+              }).map((facility, i) => (
+                <div key={i}>{facility}</div>
+              ))}
             </div>
           </div>
         </div>
         <hr />
         <div className='info-data-block'>
           <p>Actions</p>
-          <FlexContainer>
-            <ButtonGreen
-              padding='10px 52px'
-              style={{ width: '100%' }}
-              // onClick={() => navigate(`/rooms/${id}/edit`)}
-            >
-              Edit room
-            </ButtonGreen>
-            {/* <RedButton padding='10px 52px' onClick={deleteRoomHandler}> */}
-            <RedButton padding='10px 52px' style={{ width: '100%' }}>
-              Delete room
-            </RedButton>
-          </FlexContainer>
+          {renderButtons()}
         </div>
       </MainCard>
       <div className='side-container'>
@@ -210,7 +238,9 @@ export const RoomContainer: React.FC = () => {
           style={{ borderRadius: '0 16px 16px 0' }}
           height='100%'
           width='auto'
-        ></ImgHolder>
+        >
+          <img src={room.photo} alt={room.roomName} />
+        </ImgHolder>
       </div>
     </Container>
   );

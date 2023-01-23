@@ -1,20 +1,50 @@
-export const facilitiesArray = [
+import {
+  DoubleBed,
+  LedTV,
+  Coffee,
+  AirConditioner,
+  WiFi,
+  Bath,
+  Shower,
+  Towel,
+} from '../assets/icons/facilities';
+
+export interface IFacility {
+  label: string;
+  component: (props: any) => JSX.Element;
+}
+
+export const facilitiesArray: IFacility[] = [
   {
     label: 'Double Bed',
+    component: DoubleBed,
   },
   {
     label: 'LED TV',
+    component: LedTV,
   },
   {
     label: 'Coffee Set',
+    component: Coffee,
   },
   {
-    label: 'Air Conditioner',
+    label: 'AC',
+    component: AirConditioner,
   },
   {
-    label: 'Free WiFi',
+    label: 'Wifi',
+    component: WiFi,
   },
   {
-    label: '2 Bathrooms',
+    label: 'Towel',
+    component: Towel,
+  },
+  {
+    label: 'Shower',
+    component: Shower,
+  },
+  {
+    label: 'Bath',
+    component: Bath,
   },
 ];

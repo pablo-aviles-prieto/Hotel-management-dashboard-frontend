@@ -5,12 +5,7 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleRoom, deleteRoom } from '../store/roomSlice';
 import styled from 'styled-components';
 import { PulseSpinner, RoomContainer } from '../components';
-import {
-  MainCard,
-  ButtonGreen,
-  ImgHolder,
-  FlexContainer,
-} from '../components/Styles';
+import { MainCard, ButtonGreen, FlexContainer } from '../components/Styles';
 
 const RedButton = styled(ButtonGreen)`
   background-color: rgb(226, 52, 40);
@@ -58,6 +53,27 @@ const RoomDetails = () => {
     [roomRedux]
   );
 
+  const renderButtons = () => {
+    return (
+      <FlexContainer>
+        <ButtonGreen
+          padding='10px 52px'
+          style={{ width: '100%' }}
+          onClick={() => navigate(`/rooms/${id}/edit`)}
+        >
+          Edit room
+        </ButtonGreen>
+        <RedButton
+          padding='10px 52px'
+          style={{ width: '100%' }}
+          onClick={deleteRoomHandler}
+        >
+          Delete room
+        </RedButton>
+      </FlexContainer>
+    );
+  };
+
   if (fetchStatusAPI === 'failed') {
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
@@ -74,7 +90,11 @@ const RoomDetails = () => {
           <PulseSpinner isLoading={true} />
         </MainCard>
       ) : (
-        <RoomContainer />
+        <RoomContainer
+          type='string'
+          room={dataChecked}
+          renderButtons={renderButtons}
+        />
       )}
     </>
   );
