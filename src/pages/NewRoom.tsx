@@ -11,6 +11,7 @@ import { useNavigate } from 'react-router-dom';
 import { createRoom } from '../store/roomSlice';
 import { PulseSpinner } from '../components';
 import styled from 'styled-components';
+import { facilitiesArray as roomAmenitiesOptionsSelect } from '../utils';
 
 const StyledForm = styled.form`
   div {
@@ -74,27 +75,6 @@ const roomTypeOptionsSelect = [
   },
   {
     label: 'Suite',
-  },
-];
-
-const roomAmenitiesOptionsSelect = [
-  {
-    label: 'Double Bed',
-  },
-  {
-    label: 'LED TV',
-  },
-  {
-    label: 'Coffee Set',
-  },
-  {
-    label: 'Air Conditioner',
-  },
-  {
-    label: 'Free WiFi',
-  },
-  {
-    label: '2 Bathrooms',
   },
 ];
 

@@ -22,10 +22,10 @@ import {
   numberOfPages,
   paginationButtonsHandler,
   dateHandler,
+  reorderHandler,
 } from '../utils';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { reorderHandler } from '../utils';
 
 const PAGINATION_OFFSET = 5;
 
@@ -80,6 +80,7 @@ const SliderSection = styled.section`
   .slider-container {
     &-content {
       color: ${({ theme }) => theme.greyToWhite};
+      min-height: 71px;
     }
     &-author {
       display: flex;
@@ -211,6 +212,7 @@ const Contact = () => {
       toast.success('Contact archived correctly', {
         hideProgressBar: true,
       });
+      navigate(`/contacts/${id}`);
     } else {
       toast.error('There was an error archiving the contact, try again later!');
     }
@@ -223,169 +225,112 @@ const Contact = () => {
 
   return (
     <>
-      <SliderSection id='bottom-container'>
-        <div className='reviews'>
-          <div className='reviews--flex'>
-            <Swiper
-              navigation={true}
-              modules={[Navigation]}
-              className='mySwiper'
-              spaceBetween={30}
-              slidesPerView={1}
-              breakpoints={{
-                900: {
-                  slidesPerView: 2,
-                },
-                1200: {
-                  slidesPerView: 3,
-                },
-              }}
-            >
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-            </Swiper>
-          </div>
-        </div>
-      </SliderSection>
-      <MenuContainer
-        style={{ margin: '30px', marginTop: '40px', marginBottom: '50px' }}
-      >
-        <div id='pages-container'>
-          <p
-            className={pageFilteredBy === 'id' ? 'active-page' : ''}
-            onClick={() => {
-              setPageFilteredBy('id');
-              setPage(1);
-            }}
-          >
-            All Contacts
-          </p>
-          <p
-            className={pageFilteredBy === 'Archived' ? 'active-page' : ''}
-            onClick={() => {
-              setPageFilteredBy('Archived');
-              setPage(1);
-            }}
-          >
-            Archived
-          </p>
-        </div>
-        <div id='buttons-container'>
-          <InputSelect
-            padding='13px 25px'
-            positionArrowY='5px'
-            onChange={inputSelectHandler}
-          >
-            {optionsSelect.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </InputSelect>
-        </div>
-      </MenuContainer>
       {fetchStatusAPI === 'loading' ? (
         <PulseSpinner isLoading={true} />
       ) : (
         <>
+          <SliderSection id='bottom-container'>
+            <div className='reviews'>
+              <div className='reviews--flex'>
+                <Swiper
+                  navigation={true}
+                  modules={[Navigation]}
+                  className='mySwiper'
+                  spaceBetween={30}
+                  slidesPerView={1}
+                  breakpoints={{
+                    900: {
+                      slidesPerView: 2,
+                    },
+                    1200: {
+                      slidesPerView: 3,
+                    },
+                  }}
+                >
+                  {Array.isArray(contactListRedux) &&
+                    contactListRedux
+                      .slice(
+                        contactListRedux.length - 5,
+                        contactListRedux.length
+                      )
+                      .map((contact) => (
+                        <SwiperSlide key={contact.id}>
+                          <AlternativeCard
+                            className='slider-container'
+                            borderRadius='16px'
+                          >
+                            <p className='slider-container-content'>
+                              {contact.message.body}
+                            </p>
+                            <div className='slider-container-author'>
+                              <div className='slider-container-author-info'>
+                                <ImgHolder
+                                  width='56px'
+                                  height='56px'
+                                ></ImgHolder>
+                                <div className='slider-container-author-info--flex'>
+                                  <p id='author-name'>{contact.user.name}</p>
+                                  <p id='publish-date'>{contact.date}</p>
+                                </div>
+                              </div>
+                              <div className='slider-container-author-btns'>
+                                <Check
+                                  stroke='#5AD07A'
+                                  width='30px'
+                                  height='30px'
+                                />
+                                <XCircle
+                                  stroke='#E23428'
+                                  width='30px'
+                                  height='30px'
+                                />
+                              </div>
+                            </div>
+                          </AlternativeCard>
+                        </SwiperSlide>
+                      ))}
+                </Swiper>
+              </div>
+            </div>
+          </SliderSection>
+          <MenuContainer
+            style={{ margin: '30px', marginTop: '40px', marginBottom: '50px' }}
+          >
+            <div id='pages-container'>
+              <p
+                className={pageFilteredBy === 'id' ? 'active-page' : ''}
+                onClick={() => {
+                  setPageFilteredBy('id');
+                  setPage(1);
+                }}
+              >
+                All Contacts
+              </p>
+              <p
+                className={pageFilteredBy === 'Archived' ? 'active-page' : ''}
+                onClick={() => {
+                  setPageFilteredBy('Archived');
+                  setPage(1);
+                }}
+              >
+                Archived
+              </p>
+            </div>
+            <div id='buttons-container'>
+              <InputSelect
+                padding='13px 25px'
+                positionArrowY='5px'
+                onChange={inputSelectHandler}
+              >
+                {optionsSelect.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </InputSelect>
+            </div>
+          </MenuContainer>
+
           <MainCard
             borderRadius='20px'
             style={{ padding: '0', margin: '0 30px' }}

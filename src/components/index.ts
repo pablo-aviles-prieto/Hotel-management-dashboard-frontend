@@ -6,3 +6,4 @@ export { Modal } from './Modal/Modal';
 export { BarChart } from './BarChart/BarChart';
 export { Calendar } from './Calendar/Calendar';
 export { PulseSpinner } from './PulseSpinner/PulseSpinner';
+export { RoomContainer } from './RoomContainer/RoomContainer';

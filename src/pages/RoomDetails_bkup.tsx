@@ -4,8 +4,8 @@ import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleRoom, deleteRoom } from '../store/roomSlice';
 import styled from 'styled-components';
-import { PulseSpinner, RoomContainer } from '../components';
-import { MainCard, ButtonGreen, FlexContainer } from '../components/Styles';
+import { PulseSpinner } from '../components';
+import { MainCard, ButtonGreen } from '../components/Styles';
 
 const RedButton = styled(ButtonGreen)`
   background-color: rgb(226, 52, 40);
@@ -53,50 +53,50 @@ const RoomDetails = () => {
     [roomRedux]
   );
 
-  const renderButtons = () => {
-    return (
-      <FlexContainer>
-        <ButtonGreen
-          padding='10px 52px'
-          style={{ width: '100%' }}
-          onClick={() => navigate(`/rooms/${id}/edit`)}
-        >
-          Edit room
-        </ButtonGreen>
-        <RedButton
-          padding='10px 52px'
-          style={{ width: '100%' }}
-          onClick={deleteRoomHandler}
-        >
-          Delete room
-        </RedButton>
-      </FlexContainer>
-    );
-  };
-
-  if (fetchStatusAPI === 'failed') {
+  if (fetchStatusAPI === 'failed')
     return (
       <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
         We couldn't find the room selected. Please check the ID and if it's
         correct try again later!
       </h1>
     );
-  }
 
   return (
-    <>
+    <MainCard borderRadius='16px'>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
-        <MainCard borderRadius='16px'>
-          <PulseSpinner isLoading={true} />
-        </MainCard>
+        <PulseSpinner isLoading={true} />
       ) : (
-        <RoomContainer
-          type='details'
-          room={dataChecked}
-          renderButtons={renderButtons}
-        />
+        <>
+          <h1>Room details for {id}</h1>
+          <ul>
+            <li>Bed type: {dataChecked.bedType}</li>
+            <li>Room number: {dataChecked.roomNumber}</li>
+            <li>Room name: {dataChecked.roomName}</li>
+            <li>Room floor: {dataChecked.roomFloor}</li>
+            <li>Rate: {dataChecked.ratePerNight}$/Night</li>
+            <li>
+              Discount to apply:{' '}
+              {dataChecked.offerPrice
+                ? `${dataChecked.offerPrice}%`
+                : 'There is no discount for this room'}
+            </li>
+            <li>Facilities: {dataChecked.facilities.join(', ')}</li>
+            <li>Status: {dataChecked.status}</li>
+          </ul>
+          <div style={{ marginTop: '50px' }}>
+            <ButtonGreen
+              padding='10px 52px'
+              onClick={() => navigate(`/rooms/${id}/edit`)}
+            >
+              Edit room
+            </ButtonGreen>
+            <RedButton padding='10px 52px' onClick={deleteRoomHandler}>
+              Delete room
+            </RedButton>
+          </div>
+        </>
       )}
-    </>
+    </MainCard>
   );
 };
 

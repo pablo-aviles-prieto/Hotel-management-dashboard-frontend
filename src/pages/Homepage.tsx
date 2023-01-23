@@ -1,7 +1,7 @@
 import 'swiper/css';
 import 'swiper/css/navigation';
 
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Navigation } from 'swiper';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -15,7 +15,9 @@ import {
   Logout,
   XCircle,
 } from '../assets/icons';
-import { BarChart, Calendar } from '../components';
+import { fetchContacts } from '../store/contactSlice';
+import { BarChart, Calendar, PulseSpinner } from '../components';
+import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import {
   AlternativeCard,
   ImgHolder,
@@ -23,7 +25,7 @@ import {
   MenuContainer,
 } from '../components/Styles';
 import { useContainerDimensions } from '../utils';
-import { listAllEventListeners } from '../utils/getListeners';
+import { useNavigate } from 'react-router-dom';
 
 const TopSection = styled.section`
   display: flex;
@@ -88,6 +90,33 @@ const MidSection = styled.section`
 const BottomSection = styled.section`
   .reserve-info {
     margin-top: 20px;
+    /* &-bookings {
+      gap: 100px;
+      &-data {
+        gap: 30px;
+        &-title {
+          font-weight: 700;
+          margin-bottom: 10px;
+        }
+        &-user {
+          &-pic {
+            border-radius: 50%;
+          }
+          &-details {
+            font-size: 14px;
+            font-weight: 700;
+            span {
+              margin-left: 10px;
+              font-weight: 400;
+              color: #929292
+            }
+          }
+        }
+      }
+      &-dates {
+        background-color: red;
+      }
+    } */
   }
   .reviews {
     margin: 20px 0;
@@ -175,6 +204,16 @@ const Homepage = () => {
   const [statsToShow, setStatsToShow] = useState('weekly');
   const divStatsRef = useRef<HTMLDivElement>(null);
   const { width: statsContainerWidth } = useContainerDimensions(divStatsRef);
+  const dispatch = useAppDispatch();
+  const contactListRedux = useAppSelector(
+    (state) => state.contacts.contactList
+  );
+  const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
     <>
@@ -305,128 +344,108 @@ const Homepage = () => {
         </div>
       </MidSection>
       <BottomSection id='bottom-container'>
-        <MainCard className='reserve-info' height='450px' borderRadius='16px'>
+        {/* <MainCard className='reserve-info' height='450px' borderRadius='16px'>
           <h1>Reserve info</h1>
-        </MainCard>
+          <FlexContainer className='reserve-info-bookings'>
+            <FlexContainer className='reserve-info-bookings-data'>
+              <ImgHolder width='125px' height='80px'>
+                <img
+                  src='https://www.interstatedevelopment.com/wp-content/uploads/2019/04/generic-avatar-1.jpg'
+                  alt='hotel room'
+                />
+              </ImgHolder>
+              <div className='reserve-info-bookings-data--flex'>
+                <p className='reserve-info-bookings-data-title'>
+                  Room name random
+                </p>
+                <FlexContainer className='reserve-info-bookings-data-user'>
+                  <ImgHolder
+                    className='reserve-info-bookings-data-user-pic'
+                    width='35px'
+                    height='35px'
+                  >
+                    <img
+                      src='https://www.interstatedevelopment.com/wp-content/uploads/2019/04/generic-avatar-1.jpg'
+                      alt='user profile pic'
+                    />
+                  </ImgHolder>
+                  <p className='reserve-info-bookings-data-user-details'>
+                    user info <span>date published</span>
+                  </p>
+                </FlexContainer>
+              </div>
+            </FlexContainer>
+            <div className='reserve-info-bookings-dates'>10, 12</div>
+          </FlexContainer>
+        </MainCard> */}
         <MainCard className='reviews' borderRadius='16px'>
           <p className='reviews-title'>Latest Review by Customers</p>
           <div className='reviews--flex'>
-            <Swiper
-              navigation={true}
-              modules={[Navigation]}
-              className='mySwiper'
-              spaceBetween={30}
-              slidesPerView={1}
-              breakpoints={{
-                900: {
-                  slidesPerView: 2,
-                },
-                1200: {
-                  slidesPerView: 3,
-                },
-              }}
-            >
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-              <SwiperSlide>
-                <AlternativeCard
-                  className='slider-container'
-                  borderRadius='16px'
-                >
-                  <p className='slider-container-content'>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                    do eiusmod tempor incididunt ut labore et dolore magna
-                    aliqua. Ut enim ad minim veniam
-                  </p>
-                  <div className='slider-container-author'>
-                    <div className='slider-container-author-info'>
-                      <ImgHolder width='56px' height='56px'></ImgHolder>
-                      <div className='slider-container-author-info--flex'>
-                        <p id='author-name'>Manolito Garcia</p>
-                        <p id='publish-date'>4m ago</p>
-                      </div>
-                    </div>
-                    <div className='slider-container-author-btns'>
-                      <Check stroke='#5AD07A' width='30px' height='30px' />
-                      <XCircle stroke='#E23428' width='30px' height='30px' />
-                    </div>
-                  </div>
-                </AlternativeCard>
-              </SwiperSlide>
-            </Swiper>
+            {fetchStatusAPI === 'loading' ? (
+              <PulseSpinner isLoading={true} />
+            ) : (
+              <Swiper
+                navigation={true}
+                modules={[Navigation]}
+                className='mySwiper'
+                spaceBetween={30}
+                slidesPerView={1}
+                breakpoints={{
+                  900: {
+                    slidesPerView: 2,
+                  },
+                  1200: {
+                    slidesPerView: 3,
+                  },
+                }}
+              >
+                {Array.isArray(contactListRedux) &&
+                  contactListRedux.slice(0, 5).map((contact) => (
+                    <SwiperSlide key={contact.id}>
+                      <AlternativeCard
+                        className='slider-container'
+                        borderRadius='16px'
+                      >
+                        <p className='slider-container-content'>
+                          {contact.message.subject}
+                        </p>
+                        <div className='slider-container-author'>
+                          <div className='slider-container-author-info'>
+                            <ImgHolder width='56px' height='56px'>
+                              <img
+                                src='https://www.interstatedevelopment.com/wp-content/uploads/2019/04/generic-avatar-1.jpg'
+                                alt={`${contact.user.name} profile pic`}
+                              />
+                            </ImgHolder>
+                            <div className='slider-container-author-info--flex'>
+                              <p id='author-name'>{contact.user.name}</p>
+                              <p id='publish-date'>{contact.date}</p>
+                            </div>
+                          </div>
+                          <div className='slider-container-author-btns'>
+                            <Check
+                              onClick={() =>
+                                navigate(`/contacts/${contact.id}`)
+                              }
+                              stroke='#5AD07A'
+                              width='30px'
+                              height='30px'
+                            />
+                            <XCircle
+                              onClick={() =>
+                                navigate(`/contacts/${contact.id}`)
+                              }
+                              stroke='#E23428'
+                              width='30px'
+                              height='30px'
+                            />
+                          </div>
+                        </div>
+                      </AlternativeCard>
+                    </SwiperSlide>
+                  ))}
+              </Swiper>
+            )}
           </div>
         </MainCard>
       </BottomSection>
