@@ -1,100 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  MainCard,
-  InputSelect,
-  InputText,
-  ButtonGreen,
-} from '../components/Styles';
+import { MainCard } from '../components/Styles';
 import { toast } from 'react-toastify';
 import { PulseSpinner } from '../components';
+import { RoomForm } from '../components/Forms';
 import { updateRoom, fetchSingleRoom } from '../store/roomSlice';
-import { facilitiesArray } from '../utils';
-import styled from 'styled-components';
-
-const roomAmenitiesOptionsSelect = facilitiesArray;
-
-const StyledForm = styled.form`
-  div {
-    margin-bottom: 10px;
-  }
-  label {
-    display: block;
-  }
-`;
-
-const StyledLabel = styled.label`
-  color: ${({ theme }) => theme.darkGreyToLightGrey};
-`;
-
-const DescriptionTextArea = styled.textarea`
-  padding: 5px;
-  border-radius: 4px;
-  background: transparent;
-  color: ${({ theme }) => theme.mainColor};
-  border: 1px solid ${({ theme }) => theme.buttonGreenBground};
-  min-width: 175px;
-`;
-
-const CheckBoxContainer = styled.div`
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  input {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    border: 1px solid #135846;
-    outline: none;
-    cursor: pointer;
-    &:checked {
-      background-color: #135846;
-      position: relative;
-      &::before {
-        font-size: 19px;
-        color: #fff;
-        content: '✔';
-        position: absolute;
-        right: 1px;
-        top: -5px;
-      }
-    }
-  }
-`;
-
-const roomTypeOptionsSelect = [
-  {
-    label: 'Single Bed',
-  },
-  {
-    label: 'Double Bed',
-  },
-  {
-    label: 'Double Superior',
-  },
-  {
-    label: 'Suite',
-  },
-];
-
-interface IRoomData {
-  photo: string | FileList | FileList[] | null;
-  roomName: string;
-  roomNumber: number;
-  roomType: string;
-  roomFloor: string;
-  bedType: string;
-  roomDiscount: number;
-  ratePerNight: number;
-  roomDescription?: string;
-  facilities: string[];
-  status: string;
-  checkOffer: boolean;
-  [key: string]: any;
-}
+import { IRoomData } from '../interfaces';
 
 const roomDataSkeleton = {
   photo: '',
@@ -121,8 +33,6 @@ const RoomEdit = () => {
   const navigate = useNavigate();
   const params = useParams();
   const { id } = params;
-
-  console.log('roomData', roomData);
 
   useEffect(() => {
     dispatch(fetchSingleRoom({ id }));
@@ -206,10 +116,11 @@ const RoomEdit = () => {
       roomData.facilities.length === 0
       // imagesUploadArray.length < 3
     ) {
-      return toast.warn('Fill all the required inputs', {
+      toast.warn('Fill all the required inputs', {
         autoClose: 3000,
         hideProgressBar: true,
       });
+      return;
     }
     const result = await dispatch(updateRoom({ id, objToUpdate }));
 
@@ -251,263 +162,13 @@ const RoomEdit = () => {
   return (
     <MainCard borderRadius='16px'>
       <h1>Editing room {id}</h1>
-      <StyledForm onSubmit={submitHandler}>
-        <div>
-          <StyledLabel htmlFor='room-name'>
-            Name<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='room-name'
-            placeholder='name...'
-            value={roomData.roomName}
-            id='room-name'
-            type='text'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomName',
-                newValue: e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='room-images'>
-            Upload images<span style={{ color: 'red' }}>*</span>{' '}
-            <span style={{ fontSize: '12px' }}>
-              (Hold down the Ctrl (windows) or Command (Mac) button to select
-              multiple images to upload)
-            </span>
-          </StyledLabel>
-          <input
-            type='file'
-            id='room-images'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'photo',
-                newValue: e.target.files,
-              })
-            }
-            multiple={true}
-            accept='image/jpg,image/png'
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='room-type'>
-            Bed Type<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputSelect
-            style={{
-              borderRadius: '4px',
-              paddingRight: '62px',
-              fontWeight: '400',
-            }}
-            id='room-type'
-            padding='8px 5px'
-            positionArrowY='0'
-            value={roomData.bedType}
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'bedType',
-                newValue: e.target.value,
-              })
-            }
-          >
-            {roomTypeOptionsSelect.map((option) => (
-              <option key={option.label} value={option.label}>
-                {option.label}
-              </option>
-            ))}
-          </InputSelect>
-        </div>
-        <div>
-          <StyledLabel htmlFor='room-type'>
-            Room Type<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='room-type'
-            placeholder='room type...'
-            value={roomData.roomType}
-            id='room-type'
-            type='text'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomType',
-                newValue: e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='room-number'>
-            Number<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='room-number'
-            placeholder='number...'
-            value={roomData.roomNumber}
-            id='room-number'
-            type='number'
-            min='1'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomNumber',
-                newValue: +e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='room-floor'>
-            Floor<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='room-floor'
-            placeholder='floor...'
-            value={roomData.roomFloor}
-            id='room-floor'
-            type='text'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomFloor',
-                newValue: e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='room-price'>
-            Price<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='room-price'
-            placeholder='price...'
-            value={roomData.ratePerNight}
-            id='room-price'
-            type='number'
-            min='1'
-            step='0.01'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'ratePerNight',
-                newValue: +e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='room-discount'>Discount</StyledLabel>
-          <InputText
-            style={{ minWidth: '175px' }}
-            borderRadius='4px'
-            padding='5px'
-            name='room-discount'
-            value={roomData.roomDiscount}
-            id='room-discount'
-            type='number'
-            min='0'
-            step='0.01'
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomDiscount',
-                newValue: +e.target.value,
-              })
-            }
-          />
-        </div>
-        <CheckBoxContainer>
-          <input
-            id='room-offer'
-            type='checkbox'
-            checked={roomData.checkOffer}
-            onChange={() => {
-              const newOfferValue = !roomData.checkOffer;
-              stateInputsHandler({
-                roomProp: 'checkOffer',
-                newValue: newOfferValue,
-              });
-            }}
-          />
-          <StyledLabel htmlFor='room-offer'>
-            Offer{' '}
-            <span style={{ fontSize: '12px' }}>
-              (need to check it in order to add a discount)
-            </span>
-          </StyledLabel>
-        </CheckBoxContainer>
-        <div>
-          <StyledLabel htmlFor='room-description'>Description</StyledLabel>
-          <DescriptionTextArea
-            placeholder='Enter description...'
-            id='room-description'
-            rows={5}
-            value={roomData.roomDescription}
-            onChange={(e) =>
-              stateInputsHandler({
-                roomProp: 'roomDescription',
-                newValue: e.target.value,
-              })
-            }
-          ></DescriptionTextArea>
-        </div>
-        <div style={{ marginBottom: '25px' }}>
-          <StyledLabel htmlFor='room-amenities'>
-            Amenities<span style={{ color: 'red' }}>*</span>{' '}
-            <span style={{ fontSize: '12px' }}>
-              (Hold down the Ctrl (windows) or Command (Mac) button to select
-              multiple options)
-            </span>
-          </StyledLabel>
-          <InputSelect
-            style={{
-              borderRadius: '4px',
-              paddingRight: '62px',
-              fontWeight: '400',
-              backgroundImage: 'none',
-              width: '175px',
-              minHeight: '140px',
-            }}
-            id='room-amenities'
-            padding='9px 5px'
-            positionArrowY='0'
-            onChange={facilitiesHandler}
-            multiple
-            value={roomData.facilities}
-          >
-            {roomAmenitiesOptionsSelect.map((option) => (
-              <option
-                style={{ background: 'transparent' }}
-                key={option.label}
-                value={option.label}
-              >
-                {option.label}
-              </option>
-            ))}
-          </InputSelect>
-          <p>
-            <b>Selecteds</b>:{' '}
-            {roomData.facilities.length === 0
-              ? !Array.isArray(roomsListRedux)
-                ? roomsListRedux.facilities.join(', ')
-                : roomsListRedux[0].facilities.join(', ')
-              : roomData.facilities.join(', ')}
-          </p>
-        </div>
-        <div>
-          <ButtonGreen padding='10px 52px' type='submit'>
-            Save room
-          </ButtonGreen>
-        </div>
-      </StyledForm>
+      <RoomForm
+        stateInputsHandler={stateInputsHandler}
+        submitHandler={submitHandler}
+        facilitiesHandler={facilitiesHandler}
+        roomData={roomData}
+        roomsList={roomsListRedux}
+      />
     </MainCard>
   );
 };

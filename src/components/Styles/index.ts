@@ -9,3 +9,6 @@ export { Table } from './Table';
 export { PaginationButtons } from './PaginationButtons';
 export { MenuContainer } from './MenuContainer';
 export { FlexContainer } from './FlexContainer';
+export { StyledLabel } from './StyledLabel';
+export { CheckBoxContainer } from './CheckBoxContainer';
+export { TextArea } from './TextArea';

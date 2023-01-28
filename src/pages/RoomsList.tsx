@@ -17,11 +17,11 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { DndProvider } from 'react-dnd';
 import { useNavigate } from 'react-router-dom';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { reorderHandler } from '../utils';
 import {
   paginationDataHandler,
   numberOfPages,
   paginationButtonsHandler,
+  reorderHandler,
 } from '../utils';
 
 const PAGINATION_OFFSET = 10;
