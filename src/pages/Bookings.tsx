@@ -245,11 +245,7 @@ const Bookings = () => {
               </thead>
               <tbody style={{ fontSize: '15px' }}>
                 {bookingsListSliced.map((bookings) => (
-                  <tr
-                    style={{ cursor: 'pointer' }}
-                    key={bookings.id}
-                    onClick={() => singleBookingHandler(bookings.id)}
-                  >
+                  <tr key={bookings.id}>
                     <td>
                       <FlexContainer>
                         <ImgHolder width='80px' height='80px'>

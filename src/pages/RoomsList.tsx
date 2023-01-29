@@ -231,6 +231,7 @@ const RoomsList = () => {
         <>
           <DndProvider backend={HTML5Backend}>
             <TableCard
+              cursor='pointer'
               borderRadius='20px'
               style={{ marginTop: '50px', marginBottom: '30px' }}
             >
