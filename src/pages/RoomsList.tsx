@@ -158,7 +158,7 @@ const RoomsList = () => {
       </td>
       <td>
         <p style={{ fontWeight: '700' }}>
-          ${room.ratePerNight}
+          ${room.offerPrice ? room.offerPrice : room.ratePerNight}
           <span
             style={{
               marginLeft: '5px',

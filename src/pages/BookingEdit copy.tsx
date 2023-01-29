@@ -7,16 +7,25 @@ import {
   InputSelect,
   InputText,
   ButtonGreen,
-  StyledForm,
-  StyledLabel,
-  TextArea,
 } from '../components/Styles';
 import { toast } from 'react-toastify';
 import { PulseSpinner } from '../components';
 import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
 import { IRoomObj } from '../store/roomSlice';
-import { IBookingData } from '../interfaces';
+
+const StyledForm = styled.form`
+  div {
+    margin-bottom: 10px;
+  }
+  label {
+    display: block;
+  }
+`;
+
+const StyledLabel = styled.label`
+  color: ${({ theme }) => theme.darkGreyToLightGrey};
+`;
 
 const DateInput = styled(InputText)`
   min-width: 175px;
@@ -30,6 +39,15 @@ const DateInput = styled(InputText)`
     border-width: thin;
     filter: ${({ theme }) => theme.calendarPicker};
   }
+`;
+
+const DescriptionTextArea = styled.textarea`
+  padding: 5px;
+  border-radius: 4px;
+  background: transparent;
+  color: ${({ theme }) => theme.mainColor};
+  border: 1px solid ${({ theme }) => theme.buttonGreenBground};
+  min-width: 175px;
 `;
 
 const bookingStatusOptions = [
@@ -46,18 +64,14 @@ const bookingStatusOptions = [
 
 const API_URI = process.env.REACT_APP_API_URI;
 
-const bookingDataSkeleton = {
-  bookingNumber: 0,
-  userName: '',
-  checkIn: '',
-  checkOut: '',
-  specialRequest: '',
-  status: '',
-};
-
 const BookingEdit = () => {
-  const [bookingData, setBookingData] =
-    useState<IBookingData>(bookingDataSkeleton);
+  const [bookingNumberInput, setBookingNumberInput] = useState(0);
+  const [bookingCheckInInput, setBookingCheckInInput] = useState('');
+  const [bookingCheckOutInput, setBookingCheckOutInput] = useState('');
+  const [bookingSpecialRequestInput, setBookingSpecialRequestInput] =
+    useState('');
+  const [bookingStatusSelect, setBookingStatusSelect] = useState('');
+  const [bookingUserInput, setBookingUserInput] = useState('');
   const [bookedRoom, setBookedRoom] = useState('');
   const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
@@ -67,7 +81,8 @@ const BookingEdit = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { authStatus } = useContext(AuthContext);
-  const { id } = useParams();
+  const params = useParams();
+  const { id } = params;
 
   useEffect(() => {
     const fetchAllRooms = async () => {
@@ -109,43 +124,25 @@ const BookingEdit = () => {
     const parsedBookings = Array.isArray(bookingRedux)
       ? bookingRedux[0]
       : bookingRedux;
-
-    const newState = {
-      bookingNumber: parsedBookings.bookingNumber,
-      userName: parsedBookings.userName,
-      checkIn: parsedBookings.checkIn,
-      checkOut: parsedBookings.checkOut,
-      specialRequest: parsedBookings?.specialRequest
-        ? parsedBookings.specialRequest
-        : '',
-      status: parsedBookings.status,
-    };
-    setBookingData(newState);
+    setBookingNumberInput(parsedBookings.bookingNumber);
+    setBookingCheckInInput(parsedBookings.checkIn);
+    setBookingCheckOutInput(parsedBookings.checkOut);
+    setBookingSpecialRequestInput(
+      parsedBookings?.specialRequest ? parsedBookings.specialRequest : ''
+    );
+    setBookingStatusSelect(parsedBookings.status);
+    setBookingUserInput(parsedBookings.userName);
     setBookedRoom(parsedBookings.roomId.id);
   }, [bookingRedux, fetchStatusAPI]);
-
-  const stateInputsHandler = ({
-    bookingProp,
-    newValue,
-  }: {
-    bookingProp: keyof IBookingData;
-    newValue: IBookingData[keyof IBookingData];
-  }) => {
-    setBookingData((prevState) => {
-      const newState: IBookingData = { ...prevState };
-      newState[bookingProp] = newValue;
-      return newState;
-    });
-  };
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (
-      !bookingData.bookingNumber ||
-      !bookingData.checkIn ||
-      !bookingData.checkOut ||
-      !bookingData.status
+      !bookingNumberInput ||
+      !bookingCheckInInput ||
+      !bookingCheckOutInput ||
+      !bookingStatusSelect
     ) {
       return toast.warn('Fill all the required inputs', {
         autoClose: 3000,
@@ -154,12 +151,12 @@ const BookingEdit = () => {
     }
 
     const objToUpdate = {
-      bookingNumber: bookingData.bookingNumber,
-      checkIn: bookingData.checkIn,
-      checkOut: bookingData.checkOut,
-      specialRequest: bookingData.specialRequest,
-      status: bookingData.status,
-      userName: bookingData.userName,
+      bookingNumber: bookingNumberInput,
+      checkIn: bookingCheckInInput,
+      checkOut: bookingCheckOutInput,
+      specialRequest: bookingSpecialRequestInput,
+      status: bookingStatusSelect,
+      userName: bookingUserInput,
       roomId: bookedRoom,
     };
 
@@ -201,16 +198,11 @@ const BookingEdit = () => {
             padding='5px'
             name='booking-number'
             placeholder='number...'
-            value={bookingData.bookingNumber}
+            value={bookingNumberInput}
             id='booking-number'
             min={1}
             type='number'
-            onChange={(e) =>
-              stateInputsHandler({
-                bookingProp: 'bookingNumber',
-                newValue: +e.target.value,
-              })
-            }
+            onChange={(e) => setBookingNumberInput(+e.target.value)}
           />
         </div>
         <div>
@@ -221,15 +213,10 @@ const BookingEdit = () => {
             borderRadius='4px'
             padding='5px'
             name='booking-checkin'
-            value={bookingData.checkIn}
+            value={bookingCheckInInput}
             id='booking-checkin'
             type='date'
-            onChange={(e) =>
-              stateInputsHandler({
-                bookingProp: 'checkIn',
-                newValue: e.target.value,
-              })
-            }
+            onChange={(e) => setBookingCheckInInput(e.target.value)}
           />
         </div>
         <div>
@@ -240,15 +227,10 @@ const BookingEdit = () => {
             borderRadius='4px'
             padding='5px'
             name='booking-checkout'
-            value={bookingData.checkOut}
+            value={bookingCheckOutInput}
             id='booking-checkout'
             type='date'
-            onChange={(e) =>
-              stateInputsHandler({
-                bookingProp: 'checkOut',
-                newValue: e.target.value,
-              })
-            }
+            onChange={(e) => setBookingCheckOutInput(e.target.value)}
           />
         </div>
         <div>
@@ -259,32 +241,22 @@ const BookingEdit = () => {
             borderRadius='4px'
             padding='5px'
             name='booking-userName'
-            placeholder='booked by...'
-            value={bookingData.userName}
+            placeholder='room type...'
+            value={bookingUserInput}
             id='booking-userName'
             type='text'
-            onChange={(e) =>
-              stateInputsHandler({
-                bookingProp: 'userName',
-                newValue: e.target.value,
-              })
-            }
+            onChange={(e) => setBookingUserInput(e.target.value)}
           />
         </div>
         <div>
           <StyledLabel htmlFor='special-request'>Special request</StyledLabel>
-          <TextArea
+          <DescriptionTextArea
             placeholder='Special request...'
             id='special-request'
             rows={5}
-            value={bookingData.specialRequest}
-            onChange={(e) =>
-              stateInputsHandler({
-                bookingProp: 'specialRequest',
-                newValue: e.target.value,
-              })
-            }
-          ></TextArea>
+            value={bookingSpecialRequestInput}
+            onChange={(e) => setBookingSpecialRequestInput(e.target.value)}
+          ></DescriptionTextArea>
         </div>
         <div>
           <StyledLabel htmlFor='booking-status'>Status</StyledLabel>
@@ -298,13 +270,8 @@ const BookingEdit = () => {
             id='booking-status'
             padding='8px 5px'
             positionArrowY='0'
-            value={bookingData.status}
-            onChange={(e) =>
-              stateInputsHandler({
-                bookingProp: 'status',
-                newValue: e.target.value,
-              })
-            }
+            value={bookingStatusSelect}
+            onChange={(e) => setBookingStatusSelect(e.target.value)}
           >
             {bookingStatusOptions.map((option) => (
               <option key={option.label} value={option.label}>
