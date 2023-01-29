@@ -10,27 +10,13 @@ import {
   StyledForm,
   StyledLabel,
   TextArea,
+  InputDate,
 } from '../components/Styles';
 import { toast } from 'react-toastify';
 import { PulseSpinner } from '../components';
 import { AuthContext } from '../store/authContext';
-import styled from 'styled-components';
 import { IRoomObj } from '../store/roomSlice';
 import { IBookingData } from '../interfaces';
-
-const DateInput = styled(InputText)`
-  min-width: 175px;
-  color-scheme: ${({ theme }) => theme.calendarColor};
-  &::-webkit-calendar-picker-indicator {
-    opacity: 1;
-    display: block;
-    background-repeat: no-repeat;
-    width: 20px;
-    height: 20px;
-    border-width: thin;
-    filter: ${({ theme }) => theme.calendarPicker};
-  }
-`;
 
 const bookingStatusOptions = [
   {
@@ -217,7 +203,7 @@ const BookingEdit = () => {
           <StyledLabel htmlFor='booking-checkin'>
             Check in<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
-          <DateInput
+          <InputDate
             borderRadius='4px'
             padding='5px'
             name='booking-checkin'
@@ -236,7 +222,7 @@ const BookingEdit = () => {
           <StyledLabel htmlFor='booking-checkout'>
             Check out<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
-          <DateInput
+          <InputDate
             borderRadius='4px'
             padding='5px'
             name='booking-checkout'

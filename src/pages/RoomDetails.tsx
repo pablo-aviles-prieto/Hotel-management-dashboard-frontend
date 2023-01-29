@@ -19,8 +19,7 @@ const RoomDetails = () => {
   const errorMessageAPI = useAppSelector((state) => state.rooms.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const params = useParams();
-  const { id } = params;
+  const { id } = useParams();
 
   useEffect(() => {
     dispatch(fetchSingleRoom({ id }));

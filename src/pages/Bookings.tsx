@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import {
   MenuContainer,
-  MainCard,
   InputSelect,
   Table,
   ImgHolder,
@@ -248,7 +247,12 @@ const Bookings = () => {
                   <tr key={bookings.id}>
                     <td>
                       <FlexContainer>
-                        <ImgHolder width='80px' height='80px'>
+                        <ImgHolder
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => singleBookingHandler(bookings.id)}
+                          width='80px'
+                          height='80px'
+                        >
                           <img
                             src={bookings.roomId.photo}
                             alt={`Room ${bookings.roomId.roomName}`}

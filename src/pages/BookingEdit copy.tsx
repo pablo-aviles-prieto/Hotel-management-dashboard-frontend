@@ -13,7 +13,7 @@ import { PulseSpinner } from '../components';
 import { AuthContext } from '../store/authContext';
 import styled from 'styled-components';
 import { IRoomObj } from '../store/roomSlice';
-
+ 
 const StyledForm = styled.form`
   div {
     margin-bottom: 10px;
@@ -81,8 +81,7 @@ const BookingEdit = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { authStatus } = useContext(AuthContext);
-  const params = useParams();
-  const { id } = params;
+  const { id } = useParams();
 
   useEffect(() => {
     const fetchAllRooms = async () => {

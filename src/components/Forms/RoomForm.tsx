@@ -258,8 +258,8 @@ export const RoomForm: React.FC<IProps> = ({
           <StyledLabel htmlFor='room-amenities'>
             Amenities<span style={{ color: 'red' }}>*</span>{' '}
             <span style={{ fontSize: '12px' }}>
-              (Hold down the Ctrl (windows) or Command (Mac) button to select
-              multiple options)
+              (Hold down Ctrl (windows) or Command (Mac) to select multiple
+              options)
             </span>
           </StyledLabel>
           <InputSelect
@@ -288,7 +288,7 @@ export const RoomForm: React.FC<IProps> = ({
             ))}
           </InputSelect>
           <p>
-            <b>Selecteds</b>:{' '}
+            <strong>Selecteds</strong>:{' '}
             {roomData.facilities.length === 0
               ? !Array.isArray(roomsList)
                 ? roomsList?.facilities.join(', ')

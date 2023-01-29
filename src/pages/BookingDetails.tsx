@@ -19,8 +19,7 @@ const BookingDetails = () => {
   const errorMessageAPI = useAppSelector((state) => state.bookings.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const params = useParams();
-  const { id } = params;
+  const { id } = useParams();
 
   useEffect(() => {
     dispatch(fetchSingleBooking({ id }));

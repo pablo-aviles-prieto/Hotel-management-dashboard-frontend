@@ -16,3 +16,4 @@ export { StyledForm } from './StyledForm';
 export { InputContainer } from './InputContainer';
 export { InputFileContainer } from './InputFile';
 export { TableCard } from './TableCard';
+export { InputDate } from './InputDate';
