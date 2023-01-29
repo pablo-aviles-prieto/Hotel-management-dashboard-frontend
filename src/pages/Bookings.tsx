@@ -207,6 +207,7 @@ const Bookings = () => {
         </div>
         <div id='buttons-container'>
           <InputSelectInverted
+            width='auto'
             padding='13px 25px'
             positionArrowY='7px'
             onChange={inputDateSelectHandler}

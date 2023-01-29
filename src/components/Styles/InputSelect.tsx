@@ -3,9 +3,10 @@ import styled from 'styled-components';
 export const InputSelect = styled.select<{
   padding: string;
   positionArrowY: string;
+  width?: string;
 }>`
   cursor: pointer;
-  width: 100%;
+  width: ${({ width }) => width || 'auto'};
   padding: ${({ padding }) => padding};
   border: 1px solid ${({ theme }) => theme.buttonGreenBground};
   border-radius: 12px;

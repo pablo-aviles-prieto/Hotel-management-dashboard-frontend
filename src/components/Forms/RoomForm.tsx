@@ -64,6 +64,7 @@ export const RoomForm: React.FC<IProps> = ({
             value={roomData.roomName}
             id='room-name'
             type='text'
+            width='100%'
             onChange={(e) =>
               stateInputsHandler({
                 roomProp: 'roomName',
@@ -82,8 +83,9 @@ export const RoomForm: React.FC<IProps> = ({
               paddingRight: '62px',
               fontWeight: '400',
             }}
+            width='100%'
             id='room-type'
-            padding='8px 5px'
+            padding='6px 5px'
             positionArrowY='0'
             value={roomData.bedType}
             onChange={(e) =>
@@ -114,6 +116,7 @@ export const RoomForm: React.FC<IProps> = ({
             value={roomData.roomType}
             id='room-type'
             type='text'
+            width='100%'
             onChange={(e) =>
               stateInputsHandler({
                 roomProp: 'roomType',
@@ -135,6 +138,7 @@ export const RoomForm: React.FC<IProps> = ({
             id='room-number'
             type='number'
             min='1'
+            width='100%'
             onChange={(e) =>
               stateInputsHandler({
                 roomProp: 'roomNumber',
@@ -157,6 +161,7 @@ export const RoomForm: React.FC<IProps> = ({
             value={roomData.roomFloor}
             id='room-floor'
             type='text'
+            width='100%'
             onChange={(e) =>
               stateInputsHandler({
                 roomProp: 'roomFloor',
@@ -179,6 +184,7 @@ export const RoomForm: React.FC<IProps> = ({
             type='number'
             min='1'
             step='0.01'
+            width='100%'
             onChange={(e) =>
               stateInputsHandler({
                 roomProp: 'ratePerNight',
@@ -201,6 +207,7 @@ export const RoomForm: React.FC<IProps> = ({
             type='number'
             min='0'
             step='0.01'
+            width='100%'
             onChange={(e) =>
               stateInputsHandler({
                 roomProp: 'roomDiscount',
@@ -236,7 +243,8 @@ export const RoomForm: React.FC<IProps> = ({
           <TextArea
             placeholder='Enter description...'
             id='room-description'
-            rows={5}
+            rows={9}
+            width='100%'
             value={roomData.roomDescription}
             onChange={(e) =>
               stateInputsHandler({
@@ -257,11 +265,10 @@ export const RoomForm: React.FC<IProps> = ({
           <InputSelect
             style={{
               borderRadius: '4px',
-              paddingRight: '62px',
               fontWeight: '400',
               backgroundImage: 'none',
-              width: '175px',
-              minHeight: '140px',
+              width: '200px',
+              minHeight: '193px',
             }}
             id='room-amenities'
             padding='9px 5px'
