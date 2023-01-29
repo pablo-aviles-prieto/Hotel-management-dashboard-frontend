@@ -12,3 +12,6 @@ export { FlexContainer } from './FlexContainer';
 export { StyledLabel } from './StyledLabel';
 export { CheckBoxContainer } from './CheckBoxContainer';
 export { TextArea } from './TextArea';
+export { StyledForm } from './StyledForm';
+export { InputContainer } from './InputContainer';
+export { InputFileContainer } from './InputFile';

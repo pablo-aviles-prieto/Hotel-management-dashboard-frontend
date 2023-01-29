@@ -9,6 +9,7 @@ import {
   ImgHolder,
   PaginationButtons,
   MenuContainer,
+  FlexContainer
 } from '../components/Styles';
 import { fetchRooms, IRoomObj } from '../store/roomSlice';
 import { DotMenu } from '../assets/icons';
@@ -25,12 +26,6 @@ import {
 } from '../utils';
 
 const PAGINATION_OFFSET = 10;
-
-const FlexContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
 
 const TableCard = styled(MainCard)`
   padding: 0;
@@ -144,14 +139,15 @@ const RoomsList = () => {
     dragOpacity: 0 | 1,
     handlerId: any
   ) => (
-    <tr ref={ref} style={{ opacity: dragOpacity }} data-handler-id={handlerId}>
+    <tr
+      onClick={() => navigate(`/rooms/${room.id}`)}
+      ref={ref}
+      style={{ opacity: dragOpacity }}
+      data-handler-id={handlerId}
+    >
       <td>
         <FlexContainer>
-          <ImgHolder
-            width='150px'
-            height='77px'
-            onClick={() => navigate(`/rooms/${room.id}`)}
-          >
+          <ImgHolder width='150px' height='77px'>
             <img src={room.photo} alt='View of the Hotel' />
           </ImgHolder>
           <div style={{ width: '73%' }}>

@@ -5,6 +5,7 @@ export const InputSelect = styled.select<{
   positionArrowY: string;
 }>`
   cursor: pointer;
+  width: 100%;
   padding: ${({ padding }) => padding};
   border: 1px solid ${({ theme }) => theme.buttonGreenBground};
   border-radius: 12px;

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
-import { MainCard } from '../components/Styles';
 import { toast } from 'react-toastify';
+import { MainCard } from '../components/Styles';
 import { PulseSpinner } from '../components';
 import { RoomForm } from '../components/Forms';
 import { updateRoom, fetchSingleRoom } from '../store/roomSlice';
@@ -61,13 +61,7 @@ const RoomEdit = () => {
       roomType: parsedRoom.roomType,
       roomFloor: parsedRoom.roomFloor,
       bedType: parsedRoom.bedType,
-      roomDiscount: parsedRoom?.offerPrice
-        ? Number(
-            ((parsedRoom?.offerPrice * 100) / parsedRoom.ratePerNight).toFixed(
-              2
-            )
-          )
-        : 0,
+      roomDiscount: parsedRoom.offerPrice || 0,
       ratePerNight: parsedRoom.ratePerNight,
       roomDescription: parsedRoom?.roomDescription,
       facilities:
@@ -96,6 +90,7 @@ const RoomEdit = () => {
     e.preventDefault();
 
     const objToUpdate = {
+      // images: roomData.photo,
       roomName: roomData.roomName,
       bedType: roomData.bedType,
       roomNumber: roomData.roomNumber,
@@ -105,7 +100,6 @@ const RoomEdit = () => {
       ratePerNight: roomData.ratePerNight,
       discount: roomData.checkOffer ? roomData.roomDiscount : 0,
       facilities: roomData.facilities,
-      // images: roomData.photo,
     };
 
     if (
@@ -161,7 +155,7 @@ const RoomEdit = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      <h1>Editing room {id}</h1>
+      <h1>Editing room {roomData.roomName}</h1>
       <RoomForm
         stateInputsHandler={stateInputsHandler}
         submitHandler={submitHandler}

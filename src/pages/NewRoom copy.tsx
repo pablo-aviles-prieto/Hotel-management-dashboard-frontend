@@ -1,67 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../store/typedHooks';
-import { useNavigate, useParams } from 'react-router-dom';
 import {
-  MainCard,
-  InputSelect,
   InputText,
   ButtonGreen,
+  InputSelect,
+  MainCard,
+  StyledForm,
+  StyledLabel,
+  TextArea,
+  CheckBoxContainer,
 } from '../components/Styles';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import { useAppDispatch, useAppSelector } from '../store/typedHooks';
+import { useNavigate } from 'react-router-dom';
+import { createRoom } from '../store/roomSlice';
 import { PulseSpinner } from '../components';
-import { updateRoom, fetchSingleRoom } from '../store/roomSlice';
+import { RoomForm } from '../components/Forms';
 import { facilitiesArray as roomAmenitiesOptionsSelect } from '../utils';
-import styled from 'styled-components';
-
-const StyledForm = styled.form`
-  div {
-    margin-bottom: 10px;
-  }
-  label {
-    display: block;
-  }
-`;
-
-const StyledLabel = styled.label`
-  color: ${({ theme }) => theme.darkGreyToLightGrey};
-`;
-
-const DescriptionTextArea = styled.textarea`
-  padding: 5px;
-  border-radius: 4px;
-  background: transparent;
-  color: ${({ theme }) => theme.mainColor};
-  border: 1px solid ${({ theme }) => theme.buttonGreenBground};
-  min-width: 175px;
-`;
-
-const CheckBoxContainer = styled.div`
-  display: flex;
-  gap: 15px;
-  align-items: center;
-  input {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 20px;
-    height: 20px;
-    border-radius: 4px;
-    border: 1px solid #135846;
-    outline: none;
-    cursor: pointer;
-    &:checked {
-      background-color: #135846;
-      position: relative;
-      &::before {
-        font-size: 19px;
-        color: #fff;
-        content: '✔';
-        position: absolute;
-        right: 1px;
-        top: -5px;
-      }
-    }
-  }
-`;
 
 const roomTypeOptionsSelect = [
   {
@@ -78,95 +32,61 @@ const roomTypeOptionsSelect = [
   },
 ];
 
-const RoomEdit = () => {
+const NewRoom = () => {
   const [roomNameInput, setRoomNameInput] = useState('');
-  const [roomBedTypeSelect, setRoomBedTypeSelect] = useState('Single Bed');
-  const [roomNumberInput, setRoomNumberInput] = useState<number | undefined>(
-    undefined
-  );
+  const [roomBedTypeSelect, setBedRoomTypeSelect] = useState('Single Bed');
+  const [roomNumberInput, setRoomNumberInput] = useState('');
   const [roomFloorInput, setRoomFloorInput] = useState('');
-  const [roomDescription, setRoomDescription] = useState<string | undefined>(
-    ''
-  );
+  const [roomDescription, setRoomDescription] = useState('');
   const [roomType, setRoomType] = useState('');
   const [checkOffer, setCheckOffer] = useState(false);
   const [roomPriceInput, setRoomPriceInput] = useState(0);
   const [roomDiscountInput, setRoomDiscountInput] = useState(0);
   const [amenitiesSelect, setAmenitiesSelect] = useState<string[]>([]);
   const [imagesInput, setImagesInput] = useState<FileList | FileList[] | null>(
-    []
+    null
   );
-  const roomsListRedux = useAppSelector((state) => state.rooms.roomList);
-  const fetchStatusAPI = useAppSelector((state) => state.rooms.fetchStatus);
   const statusAPI = useAppSelector((state) => state.rooms.status);
   const errorMessageAPI = useAppSelector((state) => state.rooms.error);
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const params = useParams();
-  const { id } = params;
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(fetchSingleRoom({ id }));
-  }, [dispatch, id]);
-
-  useEffect(() => {
-    if (
-      errorMessageAPI &&
-      (fetchStatusAPI === 'failed' || statusAPI === 'failed')
-    ) {
+    if (errorMessageAPI && statusAPI === 'failed') {
       toast.error(errorMessageAPI);
     }
-  }, [errorMessageAPI, fetchStatusAPI, statusAPI]);
-
-  useEffect(() => {
-    if (fetchStatusAPI !== 'idle') return;
-
-    const parsedRoom = Array.isArray(roomsListRedux)
-      ? roomsListRedux[0]
-      : roomsListRedux;
-
-    setRoomNameInput(parsedRoom.roomName);
-    setRoomBedTypeSelect(parsedRoom.bedType);
-    setRoomNumberInput(parsedRoom.roomNumber);
-    setRoomFloorInput(parsedRoom.roomFloor);
-    setRoomType(parsedRoom.roomType);
-    setRoomPriceInput(parsedRoom.ratePerNight);
-    setRoomDiscountInput(
-      parsedRoom?.offerPrice
-        ? Number(
-            ((parsedRoom?.offerPrice * 100) / parsedRoom.ratePerNight).toFixed(
-              2
-            )
-          )
-        : 0
-    );
-    setCheckOffer(parsedRoom?.offerPrice ? true : false);
-    setRoomDescription(parsedRoom?.roomDescription);
-    setAmenitiesSelect(
-      parsedRoom.facilities?.length > 0 ? parsedRoom.facilities : []
-    );
-  }, [roomsListRedux, fetchStatusAPI]);
+  }, [errorMessageAPI, statusAPI]);
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const objToUpdate = {
+    const imagesUploadArray = [];
+    if (imagesInput) {
+      for (let i = 0; i < imagesInput.length; i++) {
+        imagesUploadArray.push(imagesInput[i]);
+      }
+    }
+    const objToSave = {
+      // images: imagesUploadArray,
+      images:
+        'https://pablo-aviles-prieto.github.io/hotel-management-app/assets/hotel-rooms/room1.jpg',
       roomName: roomNameInput,
       bedType: roomBedTypeSelect,
-      roomNumber: roomNumberInput,
+      roomNumber: +roomNumberInput,
       roomFloor: roomFloorInput,
       roomDescription,
       roomType,
       ratePerNight: +roomPriceInput,
       discount: checkOffer ? +roomDiscountInput : 0,
       facilities: amenitiesSelect,
-      // images: imagesUploadArray,
+      status: 'Available',
     };
 
     if (
       !roomNameInput.trim() ||
       !roomNumberInput ||
       !roomFloorInput.trim() ||
+      !roomDescription.trim() ||
       !roomPriceInput ||
       amenitiesSelect.length === 0
       // imagesUploadArray.length < 3
@@ -176,13 +96,14 @@ const RoomEdit = () => {
         hideProgressBar: true,
       });
     }
-    const result = await dispatch(updateRoom({ id, objToUpdate }));
+
+    const result = await dispatch(createRoom({ objToSave }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
 
-    toast.success('Room edited successfully');
-    navigate(`/rooms/${id}`, { replace: true });
+    toast.success('Room created successfully');
+    navigate('/rooms', { replace: true });
   };
 
   const amenitiesHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -193,25 +114,11 @@ const RoomEdit = () => {
     setAmenitiesSelect(value);
   };
 
-  if (fetchStatusAPI === 'failed') {
-    return (
-      <h1 style={{ textAlign: 'center', margin: '100px 0', fontSize: '40px' }}>
-        Problem fetching the room. Check the ID!
-      </h1>
-    );
-  }
-
-  if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
-    return (
-      <MainCard borderRadius='16px'>
-        <PulseSpinner isLoading={true} />
-      </MainCard>
-    );
-  }
+  if (statusAPI === 'loading') return <PulseSpinner isLoading={true} />;
 
   return (
     <MainCard borderRadius='16px'>
-      <h1>Editing room {id}</h1>
+      <h1>Create new room</h1>
       <StyledForm onSubmit={submitHandler}>
         <div>
           <StyledLabel htmlFor='room-name'>
@@ -245,7 +152,7 @@ const RoomEdit = () => {
           />
         </div>
         <div>
-          <StyledLabel htmlFor='room-type'>
+          <StyledLabel htmlFor='room-bed-type'>
             Bed Type<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
           <InputSelect
@@ -254,11 +161,11 @@ const RoomEdit = () => {
               paddingRight: '62px',
               fontWeight: '400',
             }}
-            id='room-type'
+            id='room-bed-type'
             padding='8px 5px'
             positionArrowY='0'
             value={roomBedTypeSelect}
-            onChange={(e) => setRoomBedTypeSelect(e.target.value)}
+            onChange={(e) => setBedRoomTypeSelect(e.target.value)}
           >
             {roomTypeOptionsSelect.map((option) => (
               <option key={option.label} value={option.label}>
@@ -295,7 +202,7 @@ const RoomEdit = () => {
             id='room-number'
             type='number'
             min='1'
-            onChange={(e) => setRoomNumberInput(+e.target.value)}
+            onChange={(e) => setRoomNumberInput(e.target.value)}
           />
         </div>
         <div>
@@ -342,7 +249,6 @@ const RoomEdit = () => {
             type='number'
             min='0'
             max='100'
-            step='0.01'
             onChange={(e) => setRoomDiscountInput(+e.target.value)}
           />
         </div>
@@ -362,13 +268,13 @@ const RoomEdit = () => {
         </CheckBoxContainer>
         <div>
           <StyledLabel htmlFor='room-description'>Description</StyledLabel>
-          <DescriptionTextArea
+          <TextArea
             placeholder='Enter description...'
             id='room-description'
             rows={5}
             value={roomDescription}
             onChange={(e) => setRoomDescription(e.target.value)}
-          ></DescriptionTextArea>
+          ></TextArea>
         </div>
         <div style={{ marginBottom: '25px' }}>
           <StyledLabel htmlFor='room-amenities'>
@@ -405,12 +311,7 @@ const RoomEdit = () => {
             ))}
           </InputSelect>
           <p>
-            <b>Selecteds</b>:{' '}
-            {amenitiesSelect.length === 0
-              ? !Array.isArray(roomsListRedux)
-                ? roomsListRedux.facilities.join(', ')
-                : roomsListRedux[0].facilities.join(', ')
-              : amenitiesSelect.join(', ')}
+            <b>Selecteds</b>: {amenitiesSelect.join(', ')}
           </p>
         </div>
         <div>
@@ -423,4 +324,4 @@ const RoomEdit = () => {
   );
 };
 
-export default RoomEdit;
+export default NewRoom;
