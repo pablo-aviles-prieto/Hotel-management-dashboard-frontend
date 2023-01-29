@@ -18,7 +18,8 @@ import {
   dateHandler,
   reorderHandler,
 } from '../utils';
-import { fetchBookings, IBookingObj } from '../store/bookingSlice';
+import { fetchBookings } from '../store/bookingSlice';
+import { IBookingObj } from '../interfaces';
 import styled from 'styled-components';
 import { Modal, PulseSpinner } from '../components';
 

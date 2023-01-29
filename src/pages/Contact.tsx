@@ -14,8 +14,9 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
-import { fetchContacts, IContactObj } from '../store/contactSlice';
+import { fetchContacts } from '../store/contactSlice';
 import React, { useState, useEffect, useMemo, useContext } from 'react';
+import { IContactObj } from '../interfaces';
 import { PulseSpinner } from '../components';
 import {
   paginationDataHandler,

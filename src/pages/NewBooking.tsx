@@ -1,14 +1,5 @@
 import { useState, useContext, useEffect } from 'react';
-import {
-  InputText,
-  ButtonGreen,
-  InputSelect,
-  MainCard,
-  InputDate,
-  StyledForm,
-  StyledLabel,
-  TextArea,
-} from '../components/Styles';
+import { MainCard } from '../components/Styles';
 import { BookingForm } from '../components/Forms';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';

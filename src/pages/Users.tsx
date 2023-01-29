@@ -13,7 +13,8 @@ import {
   Table,
 } from '../components/Styles';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
-import { fetchUsers, IUserObj } from '../store/userSlice';
+import { fetchUsers } from '../store/userSlice';
+import { IUserObj } from '../interfaces';
 import { PulseSpinner } from '../components';
 import {
   numberOfPages,
