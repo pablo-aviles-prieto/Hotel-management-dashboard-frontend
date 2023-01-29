@@ -10,8 +10,7 @@ import {
   InputContainer,
   InputFileContainer,
 } from '../Styles';
-import { IRoomData } from '../../interfaces';
-import { IRoomObj } from '../../store/roomSlice';
+import { IRoomData, IRoomObj } from '../../interfaces';
 import { facilitiesArray as roomAmenitiesOptionsSelect } from '../../utils';
 
 type IStateInputsHandlerPops = {

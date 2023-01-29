@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
-import { IRoomObj } from './roomSlice';
+import { IRoomObj } from '../interfaces';
 import { getLocalStorage } from '../utils';
 
 export interface IBookingObj {

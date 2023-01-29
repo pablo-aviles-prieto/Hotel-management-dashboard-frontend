@@ -12,11 +12,12 @@ import {
   FlexContainer,
   TableCard,
 } from '../components/Styles';
-import { fetchRooms, IRoomObj } from '../store/roomSlice';
+import { fetchRooms } from '../store/roomSlice';
 import { DotMenu } from '../assets/icons';
 import { CardDnd, PulseSpinner } from '../components';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { DndProvider } from 'react-dnd';
+import { IRoomObj } from '../interfaces';
 import { useNavigate } from 'react-router-dom';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {

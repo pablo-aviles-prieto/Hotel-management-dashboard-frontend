@@ -1,10 +1,11 @@
+import { useState, useContext, useEffect } from 'react';
 import {
   InputText,
   ButtonGreen,
   InputSelect,
   MainCard,
+  InputDate,
 } from '../components/Styles';
-import { useState, useContext, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -12,7 +13,7 @@ import { createBooking } from '../store/bookingSlice';
 import styled from 'styled-components';
 import { AuthContext } from '../store/authContext';
 import { PulseSpinner } from '../components';
-import { IRoomObj } from '../store/roomSlice';
+import { IRoomObj } from '../interfaces';
 
 const StyledForm = styled.form`
   div {
@@ -25,20 +26,6 @@ const StyledForm = styled.form`
 
 const StyledLabel = styled.label`
   color: ${({ theme }) => theme.darkGreyToLightGrey};
-`;
-
-const DateInput = styled(InputText)`
-  min-width: 175px;
-  color-scheme: ${({ theme }) => theme.calendarColor};
-  &::-webkit-calendar-picker-indicator {
-    opacity: 1;
-    display: block;
-    background-repeat: no-repeat;
-    width: 20px;
-    height: 20px;
-    border-width: thin;
-    filter: ${({ theme }) => theme.calendarPicker};
-  }
 `;
 
 const DescriptionTextArea = styled.textarea`
@@ -181,7 +168,7 @@ const NewBooking = () => {
           <StyledLabel htmlFor='booking-checkin'>
             Check in<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
-          <DateInput
+          <InputDate
             borderRadius='4px'
             padding='5px'
             name='booking-checkin'
@@ -195,7 +182,7 @@ const NewBooking = () => {
           <StyledLabel htmlFor='booking-checkout'>
             Check out<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
-          <DateInput
+          <InputDate
             borderRadius='4px'
             padding='5px'
             name='booking-checkout'
