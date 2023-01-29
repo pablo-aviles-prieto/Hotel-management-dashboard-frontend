@@ -109,7 +109,7 @@ const BookingEdit = () => {
     if (
       !bookingData.bookingNumber ||
       !bookingData.checkIn ||
-      !bookingData.userName ||
+      !bookingData.userName.trim() ||
       !bookingData.checkOut ||
       !bookingData.status
     ) {

@@ -5,37 +5,18 @@ import {
   InputSelect,
   MainCard,
   InputDate,
+  StyledForm,
+  StyledLabel,
+  TextArea,
 } from '../components/Styles';
+import { BookingForm } from '../components/Forms';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { createBooking } from '../store/bookingSlice';
-import styled from 'styled-components';
 import { AuthContext } from '../store/authContext';
 import { PulseSpinner } from '../components';
-import { IRoomObj } from '../interfaces';
-
-const StyledForm = styled.form`
-  div {
-    margin-bottom: 10px;
-  }
-  label {
-    display: block;
-  }
-`;
-
-const StyledLabel = styled.label`
-  color: ${({ theme }) => theme.darkGreyToLightGrey};
-`;
-
-const DescriptionTextArea = styled.textarea`
-  padding: 5px;
-  border-radius: 4px;
-  background: transparent;
-  color: ${({ theme }) => theme.mainColor};
-  border: 1px solid ${({ theme }) => theme.buttonGreenBground};
-  min-width: 175px;
-`;
+import { IRoomObj, IBookingData } from '../interfaces';
 
 const bookingStatusOptions = [
   {
@@ -51,14 +32,19 @@ const bookingStatusOptions = [
 
 const API_URI = process.env.REACT_APP_API_URI;
 
+const bookingDataSkeleton = {
+  bookingNumber: 0,
+  userName: '',
+  checkIn: '',
+  checkOut: '',
+  specialRequest: '',
+  status: '',
+};
+
 const NewBooking = () => {
-  const [bookingNumberInput, setBookingNumberInput] = useState('');
-  const [bookingCheckInInput, setBookingCheckInInput] = useState('');
-  const [bookingCheckOutInput, setBookingCheckOutInput] = useState('');
-  const [bookingSpecialRequestInput, setBookingSpecialRequestInput] =
-    useState('');
-  const [bookingStatusSelect, setBookingStatusSelect] = useState('check in');
-  const [bookingUserInput, setBookingUserInput] = useState('');
+  const [bookingData, setBookingData] =
+    useState<IBookingData>(bookingDataSkeleton);
+  // const [bookingStatusSelect, setBookingStatusSelect] = useState('check in');
   const [bookedRoom, setBookedRoom] = useState('');
   const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const statusAPI = useAppSelector((state) => state.bookings.status);
@@ -92,30 +78,45 @@ const NewBooking = () => {
     }
   }, [errorMessageAPI, statusAPI]);
 
+  const stateInputsHandler = ({
+    bookingProp,
+    newValue,
+  }: {
+    bookingProp: keyof IBookingData;
+    newValue: IBookingData[keyof IBookingData];
+  }) => {
+    setBookingData((prevState) => {
+      const newState: IBookingData = { ...prevState };
+      newState[bookingProp] = newValue;
+      return newState;
+    });
+  };
+
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToSave = {
-      bookingNumber: +bookingNumberInput,
-      checkIn: bookingCheckInInput,
-      checkOut: bookingCheckOutInput,
-      specialRequest: bookingSpecialRequestInput,
-      status: bookingStatusSelect,
-      userName: bookingUserInput,
+      bookingNumber: bookingData.bookingNumber,
+      checkIn: bookingData.checkIn,
+      checkOut: bookingData.checkOut,
+      specialRequest: bookingData.specialRequest,
+      status: bookingData.status,
+      userName: bookingData.userName,
       roomId: bookedRoom,
     };
 
     if (
-      !bookingUserInput.trim() ||
-      !bookingNumberInput ||
-      !bookingCheckInInput ||
-      !bookingCheckOutInput ||
-      !bookingStatusSelect
+      !bookingData.bookingNumber ||
+      !bookingData.checkIn ||
+      !bookingData.userName.trim() ||
+      !bookingData.checkOut ||
+      !bookingData.status
     ) {
-      return toast.warn('Fill all the required inputs', {
+      toast.warn('Fill all the required inputs', {
         autoClose: 3000,
         hideProgressBar: true,
       });
+      return;
     }
 
     const result = await dispatch(createBooking({ objToSave }));
@@ -132,126 +133,14 @@ const NewBooking = () => {
   return (
     <MainCard borderRadius='16px'>
       <h1>Create new booking</h1>
-      <StyledForm onSubmit={submitHandler}>
-        <div>
-          <StyledLabel htmlFor='booking-user'>
-            User booking<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='booking-user'
-            placeholder='Full name...'
-            value={bookingUserInput}
-            id='booking-user'
-            type='text'
-            onChange={(e) => setBookingUserInput(e.target.value)}
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='booking-number'>
-            Number<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='booking-number'
-            placeholder='number...'
-            value={bookingNumberInput}
-            id='booking-number'
-            min={1}
-            type='number'
-            onChange={(e) => setBookingNumberInput(e.target.value)}
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='booking-checkin'>
-            Check in<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputDate
-            borderRadius='4px'
-            padding='5px'
-            name='booking-checkin'
-            value={bookingCheckInInput}
-            id='booking-checkin'
-            type='date'
-            onChange={(e) => setBookingCheckInInput(e.target.value)}
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='booking-checkout'>
-            Check out<span style={{ color: 'red' }}>*</span>
-          </StyledLabel>
-          <InputDate
-            borderRadius='4px'
-            padding='5px'
-            name='booking-checkout'
-            value={bookingCheckOutInput}
-            id='booking-checkout'
-            type='date'
-            onChange={(e) => setBookingCheckOutInput(e.target.value)}
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='special-request'>Special request</StyledLabel>
-          <DescriptionTextArea
-            placeholder='Special request...'
-            id='special-request'
-            rows={5}
-            value={bookingSpecialRequestInput}
-            onChange={(e) => setBookingSpecialRequestInput(e.target.value)}
-          ></DescriptionTextArea>
-        </div>
-        <div>
-          <StyledLabel htmlFor='booking-status'>Status</StyledLabel>
-          <InputSelect
-            style={{
-              borderRadius: '4px',
-              paddingRight: '62px',
-              fontWeight: '400',
-              minWidth: '175px',
-            }}
-            id='booking-status'
-            padding='8px 5px'
-            positionArrowY='0'
-            value={bookingStatusSelect}
-            onChange={(e) => setBookingStatusSelect(e.target.value)}
-          >
-            {bookingStatusOptions.map((option) => (
-              <option key={option.label} value={option.label}>
-                {option.label}
-              </option>
-            ))}
-          </InputSelect>
-        </div>
-        <div>
-          <StyledLabel htmlFor='booking-roomId'>Booked room</StyledLabel>
-          <InputSelect
-            style={{
-              borderRadius: '4px',
-              paddingRight: '62px',
-              fontWeight: '400',
-              minWidth: '175px',
-            }}
-            id='booking-roomId'
-            padding='8px 5px'
-            positionArrowY='0'
-            value={bookedRoom}
-            onChange={(e) => setBookedRoom(e.target.value)}
-          >
-            {roomsArray.map((room) => (
-              <option key={room.id} value={room.id}>
-                ID {room.id}: {room.roomName}
-              </option>
-            ))}
-          </InputSelect>
-        </div>
-        <div style={{ marginTop: '25px' }}>
-          <ButtonGreen padding='10px 52px' type='submit'>
-            Save booking
-          </ButtonGreen>
-        </div>
-      </StyledForm>
+      <BookingForm
+        stateInputsHandler={stateInputsHandler}
+        submitHandler={submitHandler}
+        setBookedRoom={setBookedRoom}
+        bookingData={bookingData}
+        bookedRoom={bookedRoom}
+        roomsArray={roomsArray}
+      />
     </MainCard>
   );
 };
