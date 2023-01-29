@@ -15,3 +15,4 @@ export { TextArea } from './TextArea';
 export { StyledForm } from './StyledForm';
 export { InputContainer } from './InputContainer';
 export { InputFileContainer } from './InputFile';
+export { TableCard } from './TableCard';

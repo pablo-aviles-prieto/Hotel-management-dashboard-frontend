@@ -9,7 +9,8 @@ import {
   ImgHolder,
   PaginationButtons,
   MenuContainer,
-  FlexContainer
+  FlexContainer,
+  TableCard,
 } from '../components/Styles';
 import { fetchRooms, IRoomObj } from '../store/roomSlice';
 import { DotMenu } from '../assets/icons';
@@ -26,18 +27,6 @@ import {
 } from '../utils';
 
 const PAGINATION_OFFSET = 10;
-
-const TableCard = styled(MainCard)`
-  padding: 0;
-  tbody {
-    tr {
-      &:hover {
-        cursor: pointer;
-        background-color: ${({ theme }) => theme.secondBground};
-      }
-    }
-  }
-`;
 
 const ButtonListRooms = styled(ButtonGreen)<{
   padding?: string;

@@ -10,6 +10,7 @@ import {
   ButtonSidebar,
   PaginationButtons,
   FlexContainer,
+  TableCard,
 } from '../components/Styles';
 import {
   paginationDataHandler,
@@ -38,11 +39,11 @@ const InputSelectInverted = styled(InputSelect)`
   background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='30' viewBox='0 0 24 24' width='30' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
 `;
 
-const TableCard = styled(MainCard)`
-  padding: 0;
-  margin: 30px 0;
-  margin-top: 50px;
-`;
+// const TableCard = styled(MainCard)`
+//   padding: 0;
+//   margin: 30px 0;
+//   margin-top: 50px;
+// `;
 
 const ButtonForRequest = styled(ButtonSidebar)`
   color: ${({ theme }) => theme.blackToWhite};
@@ -235,7 +236,7 @@ const Bookings = () => {
         <PulseSpinner isLoading={true} />
       ) : (
         <>
-          <TableCard borderRadius='20px'>
+          <TableCard style={{ margin: '50px 0 30px 0' }} borderRadius='20px'>
             <Table>
               <thead id='card-header'>
                 <tr>
@@ -250,7 +251,11 @@ const Bookings = () => {
               </thead>
               <tbody style={{ fontSize: '15px' }}>
                 {bookingsListSliced.map((bookings) => (
-                  <tr key={bookings.id}>
+                  <tr
+                    style={{ cursor: 'pointer' }}
+                    key={bookings.id}
+                    onClick={() => singleBookingHandler(bookings.id)}
+                  >
                     <td>
                       <FlexContainer>
                         <ImgHolder width='80px' height='80px'>
