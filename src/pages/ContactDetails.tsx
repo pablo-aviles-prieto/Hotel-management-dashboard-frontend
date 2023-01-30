@@ -19,8 +19,7 @@ const ContactDetails = () => {
   const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const params = useParams();
-  const { id } = params;
+  const { id } = useParams();
 
   useEffect(() => {
     dispatch(fetchSingleContact({ id }));

@@ -65,8 +65,7 @@ const UserEdit = () => {
   const errorMessageAPI = useAppSelector((state) => state.users.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const params = useParams();
-  const { id } = params;
+  const { id } = useParams();
 
   useEffect(() => {
     dispatch(fetchSingleUser({ id }));

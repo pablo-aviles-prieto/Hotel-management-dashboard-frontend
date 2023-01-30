@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { ItemTypes } from './ItemTypes';
-import { IRoomObj } from '../../store/roomSlice';
+import { IRoomObj } from '../../interfaces'; 
 
 interface ICardDnd {
   id: string;

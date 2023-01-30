@@ -1,15 +1,7 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
 import { getLocalStorage } from '../utils';
-
-export interface IContactObj {
-  id: string;
-  date: string;
-  user: { name: string; email: string; phone: string };
-  message: { subject: string; body: string };
-  rate?: number;
-  archived?: boolean;
-}
+import { IContactObj } from '../interfaces';
 
 interface IContactState {
   contactList: IContactObj[] | IContactObj;

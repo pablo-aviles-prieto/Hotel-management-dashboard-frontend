@@ -1,21 +1,7 @@
 import { createAsyncThunk, createSlice, isAnyOf } from '@reduxjs/toolkit';
 import { APICall } from './APICall';
 import { getLocalStorage } from '../utils';
-
-export interface IRoomObj {
-  id: string;
-  photo: string;
-  roomNumber: number;
-  roomName: string;
-  bedType: string;
-  roomFloor: string;
-  facilities: Array<string>;
-  ratePerNight: number;
-  roomDescription?: string;
-  roomType: string;
-  status: string;
-  offerPrice: number | null;
-}
+import { IRoomObj } from '../interfaces';
 
 interface IRoomState {
   roomList: IRoomObj[] | IRoomObj;

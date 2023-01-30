@@ -9,12 +9,15 @@ import {
   ImgHolder,
   PaginationButtons,
   MenuContainer,
+  FlexContainer,
+  TableCard,
 } from '../components/Styles';
-import { fetchRooms, IRoomObj } from '../store/roomSlice';
+import { fetchRooms } from '../store/roomSlice';
 import { DotMenu } from '../assets/icons';
 import { CardDnd, PulseSpinner } from '../components';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { DndProvider } from 'react-dnd';
+import { IRoomObj } from '../interfaces';
 import { useNavigate } from 'react-router-dom';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import {
@@ -25,24 +28,6 @@ import {
 } from '../utils';
 
 const PAGINATION_OFFSET = 10;
-
-const FlexContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 10px;
-`;
-
-const TableCard = styled(MainCard)`
-  padding: 0;
-  tbody {
-    tr {
-      &:hover {
-        cursor: pointer;
-        background-color: ${({ theme }) => theme.secondBground};
-      }
-    }
-  }
-`;
 
 const ButtonListRooms = styled(ButtonGreen)<{
   padding?: string;
@@ -144,14 +129,15 @@ const RoomsList = () => {
     dragOpacity: 0 | 1,
     handlerId: any
   ) => (
-    <tr ref={ref} style={{ opacity: dragOpacity }} data-handler-id={handlerId}>
+    <tr
+      onClick={() => navigate(`/rooms/${room.id}`)}
+      ref={ref}
+      style={{ opacity: dragOpacity }}
+      data-handler-id={handlerId}
+    >
       <td>
         <FlexContainer>
-          <ImgHolder
-            width='150px'
-            height='77px'
-            onClick={() => navigate(`/rooms/${room.id}`)}
-          >
+          <ImgHolder width='150px' height='77px'>
             <img src={room.photo} alt='View of the Hotel' />
           </ImgHolder>
           <div style={{ width: '73%' }}>
@@ -173,7 +159,7 @@ const RoomsList = () => {
       </td>
       <td>
         <p style={{ fontWeight: '700' }}>
-          ${room.ratePerNight}
+          ${room.offerPrice ? room.offerPrice : room.ratePerNight}
           <span
             style={{
               marginLeft: '5px',
@@ -246,6 +232,7 @@ const RoomsList = () => {
         <>
           <DndProvider backend={HTML5Backend}>
             <TableCard
+              cursor='pointer'
               borderRadius='20px'
               style={{ marginTop: '50px', marginBottom: '30px' }}
             >

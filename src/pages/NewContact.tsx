@@ -3,6 +3,9 @@ import {
   ButtonGreen,
   InputSelect,
   MainCard,
+  StyledForm,
+  StyledLabel,
+  TextArea,
 } from '../components/Styles';
 import { toast } from 'react-toastify';
 import React, { useState, useEffect } from 'react';
@@ -10,29 +13,6 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { PulseSpinner } from '../components';
 import { createContact } from '../store/contactSlice';
-import styled from 'styled-components';
-
-const StyledForm = styled.form`
-  div {
-    margin-bottom: 10px;
-  }
-  label {
-    display: block;
-  }
-`;
-
-const StyledLabel = styled.label`
-  color: ${({ theme }) => theme.darkGreyToLightGrey};
-`;
-
-const MessageTextArea = styled.textarea`
-  padding: 5px;
-  border-radius: 4px;
-  background: transparent;
-  color: ${({ theme }) => theme.mainColor};
-  border: 1px solid ${({ theme }) => theme.buttonGreenBground};
-  min-width: 175px;
-`;
 
 const contactArchivedSelect = [
   {
@@ -166,13 +146,13 @@ const NewContact = () => {
           <StyledLabel htmlFor='contact-message'>
             Message<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
-          <MessageTextArea
+          <TextArea
             placeholder='message...'
             id='contact-message'
             rows={5}
             value={contactMessage}
             onChange={(e) => setContactMessage(e.target.value)}
-          ></MessageTextArea>
+          ></TextArea>
         </div>
         <div>
           <StyledLabel htmlFor='user-job-position'>

@@ -60,8 +60,7 @@ const ContactEdit = () => {
   const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const params = useParams();
-  const { id } = params;
+  const { id } = useParams();
 
   useEffect(() => {
     dispatch(fetchSingleContact({ id }));

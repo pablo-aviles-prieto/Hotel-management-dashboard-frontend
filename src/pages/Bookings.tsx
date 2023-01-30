@@ -3,13 +3,13 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import {
   MenuContainer,
-  MainCard,
   InputSelect,
   Table,
   ImgHolder,
   ButtonSidebar,
   PaginationButtons,
   FlexContainer,
+  TableCard,
 } from '../components/Styles';
 import {
   paginationDataHandler,
@@ -18,7 +18,8 @@ import {
   dateHandler,
   reorderHandler,
 } from '../utils';
-import { fetchBookings, IBookingObj } from '../store/bookingSlice';
+import { fetchBookings } from '../store/bookingSlice';
+import { IBookingObj } from '../interfaces';
 import styled from 'styled-components';
 import { Modal, PulseSpinner } from '../components';
 
@@ -36,12 +37,6 @@ const InputSelectInverted = styled(InputSelect)`
   font-weight: 400;
   margin-right: 25px;
   background-image: url("data:image/svg+xml;utf8,<svg fill='white' height='30' viewBox='0 0 24 24' width='30' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/><path d='M0 0h24v24H0z' fill='none'/></svg>");
-`;
-
-const TableCard = styled(MainCard)`
-  padding: 0;
-  margin: 30px 0;
-  margin-top: 50px;
 `;
 
 const ButtonForRequest = styled(ButtonSidebar)`
@@ -207,6 +202,7 @@ const Bookings = () => {
         </div>
         <div id='buttons-container'>
           <InputSelectInverted
+            width='auto'
             padding='13px 25px'
             positionArrowY='7px'
             onChange={inputDateSelectHandler}
@@ -234,7 +230,7 @@ const Bookings = () => {
         <PulseSpinner isLoading={true} />
       ) : (
         <>
-          <TableCard borderRadius='20px'>
+          <TableCard style={{ margin: '50px 0 30px 0' }} borderRadius='20px'>
             <Table>
               <thead id='card-header'>
                 <tr>
@@ -252,7 +248,12 @@ const Bookings = () => {
                   <tr key={bookings.id}>
                     <td>
                       <FlexContainer>
-                        <ImgHolder width='80px' height='80px'>
+                        <ImgHolder
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => singleBookingHandler(bookings.id)}
+                          width='80px'
+                          height='80px'
+                        >
                           <img
                             src={bookings.roomId.photo}
                             alt={`Room ${bookings.roomId.roomName}`}
