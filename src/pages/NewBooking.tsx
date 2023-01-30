@@ -9,18 +9,6 @@ import { AuthContext } from '../store/authContext';
 import { PulseSpinner } from '../components';
 import { IRoomObj, IBookingData } from '../interfaces';
 
-const bookingStatusOptions = [
-  {
-    label: 'in progress',
-  },
-  {
-    label: 'check out',
-  },
-  {
-    label: 'check in',
-  },
-];
-
 const API_URI = process.env.REACT_APP_API_URI;
 
 const bookingDataSkeleton = {
@@ -29,13 +17,12 @@ const bookingDataSkeleton = {
   checkIn: '',
   checkOut: '',
   specialRequest: '',
-  status: '',
+  status: 'in progress',
 };
 
 const NewBooking = () => {
   const [bookingData, setBookingData] =
     useState<IBookingData>(bookingDataSkeleton);
-  // const [bookingStatusSelect, setBookingStatusSelect] = useState('check in');
   const [bookedRoom, setBookedRoom] = useState('');
   const [roomsArray, setRoomsArray] = useState<IRoomObj[]>([]);
   const statusAPI = useAppSelector((state) => state.bookings.status);

@@ -3,14 +3,13 @@ import { useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleRoom, deleteRoom } from '../store/roomSlice';
-import styled from 'styled-components';
 import { PulseSpinner, RoomContainer } from '../components';
-import { MainCard, ButtonGreen, FlexContainer } from '../components/Styles';
-
-const RedButton = styled(ButtonGreen)`
-  background-color: rgb(226, 52, 40);
-  margin-left: 10px;
-`;
+import {
+  MainCard,
+  ButtonGreen,
+  FlexContainer,
+  RedButton,
+} from '../components/Styles';
 
 const RoomDetails = () => {
   const roomRedux = useAppSelector((state) => state.rooms.roomList);
@@ -89,10 +88,7 @@ const RoomDetails = () => {
           <PulseSpinner isLoading={true} />
         </MainCard>
       ) : (
-        <RoomContainer
-          room={dataChecked}
-          renderButtons={renderButtons}
-        />
+        <RoomContainer room={dataChecked} renderButtons={renderButtons} />
       )}
     </>
   );

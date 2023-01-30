@@ -3,14 +3,8 @@ import { useEffect, useMemo } from 'react';
 import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleBooking, deleteBooking } from '../store/bookingSlice';
-import { MainCard, ButtonGreen } from '../components/Styles';
-import { PulseSpinner } from '../components';
-import styled from 'styled-components';
-
-const RedButton = styled(ButtonGreen)`
-  background-color: rgb(226, 52, 40);
-  margin-left: 10px;
-`;
+import { MainCard } from '../components/Styles';
+import { PulseSpinner, BookingContainer } from '../components';
 
 const BookingDetails = () => {
   const bookingRedux = useAppSelector((state) => state.bookings.bookingsList);
@@ -50,6 +44,10 @@ const BookingDetails = () => {
     navigate('/bookings/', { replace: true });
   };
 
+  const editBookingHandler = (id: string) => {
+    navigate(`/bookings/${id}/edit`);
+  };
+
   const parsedBookings = useMemo(
     () => (Array.isArray(bookingRedux) ? bookingRedux[0] : bookingRedux),
     [bookingRedux]
@@ -65,52 +63,21 @@ const BookingDetails = () => {
   }
 
   return (
-    <MainCard borderRadius='16px'>
+    <>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
-        <PulseSpinner isLoading={true} />
+        <MainCard borderRadius='16px'>
+          <PulseSpinner isLoading={true} />
+        </MainCard>
       ) : (
         <>
-          <h1>Booking details for {id}</h1>
-          <ul>
-            <li>Booked by: {parsedBookings.userName}</li>
-            <li>Booking number: #{parsedBookings.bookingNumber}</li>
-            <li>
-              Room type:{' '}
-              {typeof parsedBookings.roomId === 'object'
-                ? parsedBookings.roomId.roomType
-                : ''}
-            </li>
-            <li>
-              Room name:{' '}
-              {typeof parsedBookings.roomId === 'object'
-                ? parsedBookings.roomId.roomName
-                : ''}
-            </li>
-            <li>Order date: {parsedBookings.orderDate}</li>
-            <li>Check-in: {parsedBookings.checkIn}</li>
-            <li>Check-out: {parsedBookings.checkOut}</li>
-            <li>
-              Special request:{' '}
-              {parsedBookings.specialRequest
-                ? parsedBookings.specialRequest
-                : 'There is not a special request for this booking.'}
-            </li>
-            <li>Status: {parsedBookings.status}</li>
-          </ul>
-          <div style={{ marginTop: '50px' }}>
-            <ButtonGreen
-              padding='10px 52px'
-              onClick={() => navigate(`/bookings/${id}/edit`)}
-            >
-              Edit booking
-            </ButtonGreen>
-            <RedButton padding='10px 52px' onClick={deleteBookingHandler}>
-              Delete booking
-            </RedButton>
-          </div>
+          <BookingContainer
+            booking={parsedBookings}
+            deleteHandler={deleteBookingHandler}
+            editHandler={editBookingHandler}
+          />
         </>
       )}
-    </MainCard>
+    </>
   );
 };
 

@@ -1,24 +1,10 @@
 import { FlexContainer, ImgHolder, MainCard } from '../Styles';
-import { DoubleBed } from '../../assets/icons/facilities';
-import { IFacility, facilitiesArray } from '../../utils/facilitiesArray';
 import styled from 'styled-components';
+import { facilitiesArray, renderFacilities } from '../../utils/facilitiesArray';
+import { IRoomFetchObj } from '../../interfaces';
 
-type IRoom = {
-  bedType: string;
-  facilities: string[];
-  id?: string;
-  offerPrice?: number | null;
-  photo: string;
-  ratePerNight: number;
-  roomDescription?: string;
-  roomFloor: string;
-  roomName: string;
-  roomNumber: number;
-  roomType: string;
-  status: string;
-};
 interface IProps {
-  room: IRoom;
+  room: IRoomFetchObj;
   renderButtons: () => JSX.Element;
 }
 
@@ -48,7 +34,7 @@ const Container = styled.div`
     #room-description {
       font-weight: 400;
     }
-    #price-modifier {
+    .price-modifier {
       color: ${({ theme }) => theme.darkGreyToLightGrey};
       font-size: 10px;
     }
@@ -119,31 +105,6 @@ const Container = styled.div`
 `;
 
 export const RoomContainer: React.FC<IProps> = ({ room, renderButtons }) => {
-  const renderFacilities = ({
-    facilities,
-    facilitiesObj,
-  }: {
-    facilities: string[];
-    facilitiesObj: IFacility[];
-  }): JSX.Element[] => {
-    return facilities.map((singleFacility) => {
-      const facilityInfo = facilitiesObj.find(
-        (facility) => facility.label === singleFacility
-      );
-
-      if (!facilityInfo) return <DoubleBed />;
-
-      return (
-        <div className='info-room-facilities-container-individuals'>
-          <FlexContainer className='initial-mod'>
-            <facilityInfo.component width={22} height={22} />
-            <p>{singleFacility}</p>
-          </FlexContainer>
-        </div>
-      );
-    });
-  };
-
   return (
     <Container>
       <MainCard borderRadius='16px 0 0 16px' className='side-container info'>
@@ -174,7 +135,8 @@ export const RoomContainer: React.FC<IProps> = ({ room, renderButtons }) => {
                 <p>Offer price</p>
                 {room.offerPrice && room.offerPrice > 0 ? (
                   <p id='price-offer'>
-                    ${room.offerPrice} <span id='price-modifier'>/night</span>
+                    ${room.offerPrice}{' '}
+                    <span className='price-modifier'>/night</span>
                   </p>
                 ) : (
                   <p>No offer available</p>
@@ -195,13 +157,14 @@ export const RoomContainer: React.FC<IProps> = ({ room, renderButtons }) => {
                       }}
                       id='official-price'
                     >
-                      ${room.ratePerNight}{' '}
+                      ${room.ratePerNight}
                     </p>
-                    <span id='price-modifier'>/night</span>
+                    <span className='price-modifier'> /night</span>
                   </>
                 ) : (
                   <p id='official-price'>
-                    ${room.ratePerNight} <span id='price-modifier'>/night</span>
+                    ${room.ratePerNight}{' '}
+                    <span className='price-modifier'>/night</span>
                   </p>
                 )}
               </div>
