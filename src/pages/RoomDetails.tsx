@@ -90,7 +90,6 @@ const RoomDetails = () => {
         </MainCard>
       ) : (
         <RoomContainer
-          type='details'
           room={dataChecked}
           renderButtons={renderButtons}
         />

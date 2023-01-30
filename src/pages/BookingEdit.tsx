@@ -157,7 +157,7 @@ const BookingEdit = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      <h1>Editing Booking {id}</h1>
+      <h1>Editing Booking #{bookingData.bookingNumber}</h1>
       <BookingForm
         stateInputsHandler={stateInputsHandler}
         submitHandler={submitHandler}
