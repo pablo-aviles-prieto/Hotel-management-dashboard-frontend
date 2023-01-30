@@ -265,10 +265,12 @@ const Contact = () => {
                             </p>
                             <div className='slider-container-author'>
                               <div className='slider-container-author-info'>
-                                <ImgHolder
-                                  width='56px'
-                                  height='56px'
-                                ></ImgHolder>
+                                <ImgHolder width='56px' height='56px'>
+                                  <img
+                                    src='https://www.interstatedevelopment.com/wp-content/uploads/2019/04/generic-avatar-1.jpg'
+                                    alt='user'
+                                  />
+                                </ImgHolder>
                                 <div className='slider-container-author-info--flex'>
                                   <p id='author-name'>{contact.user.name}</p>
                                   <p id='publish-date'>{contact.date}</p>
