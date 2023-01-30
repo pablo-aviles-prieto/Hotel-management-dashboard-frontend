@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { PulseSpinner } from '../components';
-import { IContactData } from '../interfaces';
 import { fetchSingleContact, updateContact } from '../store/contactSlice';
+import { IContactMessage, IContactUser } from '../interfaces';
 import {
   InputText,
   ButtonGreen,
@@ -14,19 +14,6 @@ import {
   StyledLabel,
   TextArea,
 } from '../components/Styles';
-
-type IContactMessage = {
-  body: string;
-  subject: string;
-  [key: string]: any;
-};
-
-type IContactUser = {
-  email: string;
-  name: string;
-  phone: string;
-  [key: string]: any;
-};
 
 const contactArchivedSelect = [
   {
@@ -304,7 +291,7 @@ const ContactEdit = () => {
         </div>
         <div style={{ marginTop: '25px' }}>
           <ButtonGreen padding='10px 52px' type='submit'>
-            Save contact
+            Update contact
           </ButtonGreen>
         </div>
       </StyledForm>

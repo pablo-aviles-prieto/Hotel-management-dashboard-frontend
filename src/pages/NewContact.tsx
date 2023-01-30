@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate } from 'react-router-dom';
 import { PulseSpinner } from '../components';
 import { createContact } from '../store/contactSlice';
+import { IContactMessage, IContactUser } from '../interfaces';
 
 const contactArchivedSelect = [
   {
@@ -26,12 +27,16 @@ const contactArchivedSelect = [
 ];
 
 const NewContact = () => {
-  const [contactUserName, setContactUserName] = useState('');
-  const [contactUserEmail, setContactUserEmail] = useState('');
-  const [contactUserPhone, setContactUserPhone] = useState('');
-  const [contactSubject, setContactSubject] = useState('');
-  const [contactMessage, setContactMessage] = useState('');
-  const [contactArchived, setContactArchived] = useState('false');
+  const [contactArchived, setContactArchived] = useState<string>('false');
+  const [contactMessage, setContactMessage] = useState<IContactMessage>({
+    body: '',
+    subject: '',
+  });
+  const [contactUser, setContactUser] = useState<IContactUser>({
+    email: '',
+    name: '',
+    phone: '',
+  });
   const statusAPI = useAppSelector((state) => state.contacts.status);
   const errorMessageAPI = useAppSelector((state) => state.contacts.error);
   const navigate = useNavigate();
@@ -43,30 +48,59 @@ const NewContact = () => {
     }
   }, [errorMessageAPI, statusAPI]);
 
+  const contactUserHandler = ({
+    contactUserProp,
+    newValue,
+  }: {
+    contactUserProp: keyof IContactUser;
+    newValue: IContactUser[keyof IContactUser];
+  }) => {
+    setContactUser((prevState) => {
+      const newState: IContactUser = { ...prevState };
+      newState[contactUserProp] = newValue;
+      return newState;
+    });
+  };
+
+  const contactMessageHandler = ({
+    contactMessageProp,
+    newValue,
+  }: {
+    contactMessageProp: keyof IContactMessage;
+    newValue: IContactMessage[keyof IContactMessage];
+  }) => {
+    setContactMessage((prevState) => {
+      const newState: IContactMessage = { ...prevState };
+      newState[contactMessageProp] = newValue;
+      return newState;
+    });
+  };
+
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const objToSave = {
       date: new Date().toISOString().substring(0, 10),
       user: {
-        name: contactUserName,
-        email: contactUserEmail,
-        phone: contactUserPhone,
+        name: contactUser.name,
+        email: contactUser.email,
+        phone: contactUser.phone,
       },
-      message: { subject: contactSubject, body: contactMessage },
+      message: { subject: contactMessage.subject, body: contactMessage.body },
       archived: contactArchived === 'true' ? true : false,
     };
 
     if (
-      !contactUserName.trim() ||
-      !contactUserEmail.trim() ||
-      !contactSubject.trim() ||
-      !contactMessage.trim()
+      !contactUser.name.trim() ||
+      !contactUser.email.trim() ||
+      !contactMessage.subject.trim() ||
+      !contactMessage.body.trim()
     ) {
-      return toast.warn('Fill all the required inputs', {
+      toast.warn('Fill all the required inputs', {
         autoClose: 3000,
         hideProgressBar: true,
       });
+      return;
     }
 
     const result = await dispatch(createContact({ objToSave }));
@@ -93,10 +127,15 @@ const NewContact = () => {
             padding='5px'
             name='contact-name'
             placeholder='name...'
-            value={contactUserName}
+            value={contactUser.name}
             id='contact-name'
             type='text'
-            onChange={(e) => setContactUserName(e.target.value)}
+            onChange={(e) =>
+              contactUserHandler({
+                contactUserProp: 'name',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -108,10 +147,15 @@ const NewContact = () => {
             padding='5px'
             name='contact-email'
             placeholder='email...'
-            value={contactUserEmail}
+            value={contactUser.email}
             id='contact-email'
             type='email'
-            onChange={(e) => setContactUserEmail(e.target.value)}
+            onChange={(e) =>
+              contactUserHandler({
+                contactUserProp: 'email',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -121,10 +165,15 @@ const NewContact = () => {
             padding='5px'
             name='contact-phone'
             placeholder='contact phone...'
-            value={contactUserPhone}
+            value={contactUser.phone}
             id='contact-phone'
             type='text'
-            onChange={(e) => setContactUserPhone(e.target.value)}
+            onChange={(e) =>
+              contactUserHandler({
+                contactUserProp: 'phone',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -136,10 +185,15 @@ const NewContact = () => {
             padding='5px'
             name='contact-subject'
             placeholder='subject...'
-            value={contactSubject}
+            value={contactMessage.subject}
             id='contact-subject'
             type='text'
-            onChange={(e) => setContactSubject(e.target.value)}
+            onChange={(e) =>
+              contactMessageHandler({
+                contactMessageProp: 'subject',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -150,8 +204,13 @@ const NewContact = () => {
             placeholder='message...'
             id='contact-message'
             rows={5}
-            value={contactMessage}
-            onChange={(e) => setContactMessage(e.target.value)}
+            value={contactMessage.body}
+            onChange={(e) =>
+              contactMessageHandler({
+                contactMessageProp: 'body',
+                newValue: e.target.value,
+              })
+            }
           ></TextArea>
         </div>
         <div>

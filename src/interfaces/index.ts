@@ -7,4 +7,5 @@ export type { IContactObj } from './IContactObj';
 export type { IUserObj } from './IUserObj';
 export type { IRoomFetchObj } from './IRoomFetchObj';
 export type { IFacility } from './IFacility';
-export type { IContactData } from './IContactData';
+export type { IContactMessage } from './IContactData';
+export type { IContactUser } from './IContactData';
