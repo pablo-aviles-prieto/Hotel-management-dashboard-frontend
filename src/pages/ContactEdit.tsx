@@ -1,38 +1,32 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { useAppDispatch, useAppSelector } from '../store/typedHooks';
+import { PulseSpinner } from '../components';
+import { IContactData } from '../interfaces';
+import { fetchSingleContact, updateContact } from '../store/contactSlice';
 import {
   InputText,
   ButtonGreen,
   InputSelect,
   MainCard,
+  StyledForm,
+  StyledLabel,
+  TextArea,
 } from '../components/Styles';
-import { toast } from 'react-toastify';
-import React, { useState, useEffect } from 'react';
-import { useAppDispatch, useAppSelector } from '../store/typedHooks';
-import { useNavigate, useParams } from 'react-router-dom';
-import { PulseSpinner } from '../components';
-import { fetchSingleContact, updateContact } from '../store/contactSlice';
-import styled from 'styled-components';
 
-const StyledForm = styled.form`
-  div {
-    margin-bottom: 10px;
-  }
-  label {
-    display: block;
-  }
-`;
+type IContactMessage = {
+  body: string;
+  subject: string;
+  [key: string]: any;
+};
 
-const StyledLabel = styled.label`
-  color: ${({ theme }) => theme.darkGreyToLightGrey};
-`;
-
-const MessageTextArea = styled.textarea`
-  padding: 5px;
-  border-radius: 4px;
-  background: transparent;
-  color: ${({ theme }) => theme.mainColor};
-  border: 1px solid ${({ theme }) => theme.buttonGreenBground};
-  min-width: 175px;
-`;
+type IContactUser = {
+  email: string;
+  name: string;
+  phone: string;
+  [key: string]: any;
+};
 
 const contactArchivedSelect = [
   {
@@ -46,12 +40,16 @@ const contactArchivedSelect = [
 ];
 
 const ContactEdit = () => {
-  const [contactUserName, setContactUserName] = useState('');
-  const [contactUserEmail, setContactUserEmail] = useState('');
-  const [contactUserPhone, setContactUserPhone] = useState('');
-  const [contactSubject, setContactSubject] = useState('');
-  const [contactMessage, setContactMessage] = useState('');
-  const [contactArchived, setContactArchived] = useState('false');
+  const [contactArchived, setContactArchived] = useState<string>('false');
+  const [contactMessage, setContactMessage] = useState<IContactMessage>({
+    body: '',
+    subject: '',
+  });
+  const [contactUser, setContactUser] = useState<IContactUser>({
+    email: '',
+    name: '',
+    phone: '',
+  });
   const contactListRedux = useAppSelector(
     (state) => state.contacts.contactList
   );
@@ -82,37 +80,77 @@ const ContactEdit = () => {
       ? contactListRedux[0]
       : contactListRedux;
 
-    setContactUserName(dataChecked.user.name);
-    setContactUserEmail(dataChecked.user.email);
-    setContactUserPhone(dataChecked.user?.phone);
-    setContactSubject(dataChecked.message.subject);
-    setContactMessage(dataChecked.message.body);
-    setContactArchived(dataChecked?.archived ? 'true' : 'false');
+    const archivedContact = dataChecked?.archived ? 'true' : 'false';
+    const messageContact = {
+      body: dataChecked.message.body,
+      subject: dataChecked.message.subject,
+    };
+    const userContact = {
+      email: dataChecked.user.email,
+      name: dataChecked.user.name,
+      phone: dataChecked.user?.phone,
+    };
+
+    setContactArchived(archivedContact);
+    setContactMessage(messageContact);
+    setContactUser(userContact);
   }, [contactListRedux, fetchStatusAPI]);
+
+  const contactUserHandler = ({
+    contactUserProp,
+    newValue,
+  }: {
+    contactUserProp: keyof IContactUser;
+    newValue: IContactUser[keyof IContactUser];
+  }) => {
+    setContactUser((prevState) => {
+      const newState: IContactUser = { ...prevState };
+      newState[contactUserProp] = newValue;
+      return newState;
+    });
+  };
+
+  const contactMessageHandler = ({
+    contactMessageProp,
+    newValue,
+  }: {
+    contactMessageProp: keyof IContactMessage;
+    newValue: IContactMessage[keyof IContactMessage];
+  }) => {
+    setContactMessage((prevState) => {
+      const newState: IContactMessage = { ...prevState };
+      newState[contactMessageProp] = newValue;
+      return newState;
+    });
+  };
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (
-      !contactUserName.trim() ||
-      !contactUserEmail.trim() ||
-      !contactSubject.trim() ||
-      !contactMessage.trim()
+      !contactUser.name.trim() ||
+      !contactUser.email.trim() ||
+      !contactMessage.subject.trim() ||
+      !contactMessage.body.trim()
     ) {
-      return toast.warn('Fill all the required inputs', {
+      toast.warn('Fill all the required inputs', {
         autoClose: 3000,
         hideProgressBar: true,
       });
+      return;
     }
 
     const objToUpdate = {
       id: +id!,
       user: {
-        name: contactUserName,
-        email: contactUserEmail,
-        phone: contactUserPhone,
+        name: contactUser.name,
+        email: contactUser.email,
+        phone: contactUser.phone,
       },
-      message: { subject: contactSubject, body: contactMessage },
+      message: {
+        subject: contactMessage.subject,
+        body: contactMessage.body,
+      },
       archived: contactArchived === 'true' ? true : false,
     };
 
@@ -154,10 +192,15 @@ const ContactEdit = () => {
             padding='5px'
             name='contact-name'
             placeholder='name...'
-            value={contactUserName}
+            value={contactUser.name}
             id='contact-name'
             type='text'
-            onChange={(e) => setContactUserName(e.target.value)}
+            onChange={(e) =>
+              contactUserHandler({
+                contactUserProp: 'name',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -169,10 +212,15 @@ const ContactEdit = () => {
             padding='5px'
             name='contact-email'
             placeholder='email...'
-            value={contactUserEmail}
+            value={contactUser.email}
             id='contact-email'
             type='email'
-            onChange={(e) => setContactUserEmail(e.target.value)}
+            onChange={(e) =>
+              contactUserHandler({
+                contactUserProp: 'email',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -182,10 +230,15 @@ const ContactEdit = () => {
             padding='5px'
             name='contact-phone'
             placeholder='contact phone...'
-            value={contactUserPhone}
+            value={contactUser.phone}
             id='contact-phone'
             type='text'
-            onChange={(e) => setContactUserPhone(e.target.value)}
+            onChange={(e) =>
+              contactUserHandler({
+                contactUserProp: 'phone',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -197,23 +250,33 @@ const ContactEdit = () => {
             padding='5px'
             name='contact-subject'
             placeholder='subject...'
-            value={contactSubject}
+            value={contactMessage.subject}
             id='contact-subject'
             type='text'
-            onChange={(e) => setContactSubject(e.target.value)}
+            onChange={(e) =>
+              contactMessageHandler({
+                contactMessageProp: 'subject',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
           <StyledLabel htmlFor='contact-message'>
             Message<span style={{ color: 'red' }}>*</span>
           </StyledLabel>
-          <MessageTextArea
+          <TextArea
             placeholder='message...'
             id='contact-message'
             rows={5}
-            value={contactMessage}
-            onChange={(e) => setContactMessage(e.target.value)}
-          ></MessageTextArea>
+            value={contactMessage.body}
+            onChange={(e) =>
+              contactMessageHandler({
+                contactMessageProp: 'body',
+                newValue: e.target.value,
+              })
+            }
+          ></TextArea>
         </div>
         <div>
           <StyledLabel htmlFor='user-job-position'>
