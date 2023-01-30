@@ -110,7 +110,6 @@ const ContactEdit = () => {
     }
 
     const objToUpdate = {
-      id: +id!,
       user: {
         name: contactUser.name,
         email: contactUser.email,
@@ -143,7 +142,7 @@ const ContactEdit = () => {
   if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
     return (
       <MainCard borderRadius='16px'>
-        <PulseSpinner isLoading={true} />
+        <PulseSpinner isLoading />
       </MainCard>
     );
   }

@@ -15,6 +15,12 @@ import { PulseSpinner } from '../components';
 import { IUserData } from '../interfaces/IUserData';
 import { updateUser, fetchSingleUser } from '../store/userSlice';
 
+interface IUserJobData {
+  position?: string;
+  description?: string;
+  schedule?: string;
+}
+
 const userJobPositionOptions = [
   {
     label: 'Manager',
@@ -35,12 +41,6 @@ const userStatusOptions = [
     label: 'Inactive',
   },
 ];
-
-interface IUserJobData {
-  position?: string;
-  description?: string;
-  schedule?: string;
-}
 
 const userDataSkeleton = {
   contact: '',
@@ -213,7 +213,7 @@ const UserEdit = () => {
             onChange={(e) =>
               userDataHandler({
                 userDataProp: 'photo',
-                newValue: e.target.value,
+                newValue: e.target.files,
               })
             }
           />
