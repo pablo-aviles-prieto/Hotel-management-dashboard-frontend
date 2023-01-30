@@ -1,6 +1,6 @@
 import { FlexContainer, ImgHolder, MainCard } from '../Styles';
 import styled from 'styled-components';
-import { facilitiesArray, renderFacilities } from '../../utils/facilitiesArray';
+import { facilitiesArray, renderFacilities } from '../../utils';
 import { IRoomFetchObj } from '../../interfaces';
 
 interface IProps {

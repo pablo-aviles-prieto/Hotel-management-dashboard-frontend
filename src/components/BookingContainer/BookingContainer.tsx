@@ -7,7 +7,7 @@ import {
   RedButton,
 } from '../Styles';
 import { IRoomFetchObj } from '../../interfaces';
-import { renderFacilities, facilitiesArray } from '../../utils/facilitiesArray';
+import { renderFacilities, facilitiesArray } from '../../utils';
 
 type IBooking = {
   bookingNumber: number;

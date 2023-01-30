@@ -11,30 +11,30 @@ import {
 import { FlexContainer } from '../components/Styles';
 import { IFacility } from '../interfaces';
 
-export const renderFacilities = ({
-  facilities,
-  facilitiesObj,
-}: {
-  facilities: string[];
-  facilitiesObj: IFacility[];
-}): JSX.Element[] => {
-  return facilities.map((singleFacility) => {
-    const facilityInfo = facilitiesObj.find(
-      (facility) => facility.label === singleFacility
-    );
+// export const renderFacilities = ({
+//   facilities,
+//   facilitiesObj,
+// }: {
+//   facilities: string[];
+//   facilitiesObj: IFacility[];
+// }): JSX.Element[] => {
+//   return facilities.map((singleFacility) => {
+//     const facilityInfo = facilitiesObj.find(
+//       (facility) => facility.label === singleFacility
+//     );
 
-    if (!facilityInfo) return <DoubleBed />;
+//     if (!facilityInfo) return <DoubleBed />;
 
-    return (
-      <div className='info-room-facilities-container-individuals'>
-        <FlexContainer className='initial-mod'>
-          <facilityInfo.component width={22} height={22} />
-          <p>{singleFacility}</p>
-        </FlexContainer>
-      </div>
-    );
-  });
-};
+//     return (
+//       <div className='info-room-facilities-container-individuals'>
+//         <FlexContainer className='initial-mod'>
+//           <facilityInfo.component width={22} height={22} />
+//           <p>{singleFacility}</p>
+//         </FlexContainer>
+//       </div>
+//     );
+//   });
+// };
 
 export const facilitiesArray: IFacility[] = [
   {
