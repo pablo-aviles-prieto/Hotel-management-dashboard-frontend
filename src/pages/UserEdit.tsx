@@ -67,6 +67,8 @@ const UserEdit = () => {
   const dispatch = useAppDispatch();
   const { id } = useParams();
 
+  console.log('usersListRedux', usersListRedux);
+
   useEffect(() => {
     dispatch(fetchSingleUser({ id }));
   }, [dispatch, id]);
@@ -298,7 +300,7 @@ const UserEdit = () => {
               paddingRight: '62px',
               fontWeight: '400',
             }}
-            id='user-job-position'
+            id='user-job-status'
             padding='8px 5px'
             positionArrowY='0'
             value={userStatusSelect}

@@ -5,6 +5,8 @@ import {
   TextArea,
   InputSelect,
   ButtonGreen,
+  FlexContainer,
+  InputContainer,
 } from '../Styles';
 import { IContactUser, IContactMessage } from '../../interfaces';
 
@@ -56,65 +58,96 @@ export const ContactForm: React.FC<IProps> = ({
 }) => {
   return (
     <StyledForm onSubmit={submitHandler}>
-      <div>
-        <StyledLabel htmlFor='contact-name'>
-          Name<span style={{ color: 'red' }}>*</span>
-        </StyledLabel>
-        <InputText
-          borderRadius='4px'
-          padding='5px'
-          name='contact-name'
-          placeholder='name...'
-          value={contactUser.name}
-          id='contact-name'
-          type='text'
-          onChange={(e) =>
-            contactUserHandler({
-              contactUserProp: 'name',
-              newValue: e.target.value,
-            })
-          }
-        />
-      </div>
-      <div>
-        <StyledLabel htmlFor='contact-email'>
-          Email<span style={{ color: 'red' }}>*</span>
-        </StyledLabel>
-        <InputText
-          borderRadius='4px'
-          padding='5px'
-          name='contact-email'
-          placeholder='email...'
-          value={contactUser.email}
-          id='contact-email'
-          type='email'
-          onChange={(e) =>
-            contactUserHandler({
-              contactUserProp: 'email',
-              newValue: e.target.value,
-            })
-          }
-        />
-      </div>
-      <div>
-        <StyledLabel htmlFor='contact-phone'>Contact phone</StyledLabel>
-        <InputText
-          borderRadius='4px'
-          padding='5px'
-          name='contact-phone'
-          placeholder='contact phone...'
-          value={contactUser.phone}
-          id='contact-phone'
-          type='text'
-          onChange={(e) =>
-            contactUserHandler({
-              contactUserProp: 'phone',
-              newValue: e.target.value,
-            })
-          }
-        />
-      </div>
-      <div>
+      <FlexContainer>
+        <InputContainer>
+          <StyledLabel htmlFor='contact-name'>
+            Name<span style={{ color: 'red' }}>*</span>
+          </StyledLabel>
+          <InputText
+            borderRadius='4px'
+            padding='5px'
+            name='contact-name'
+            placeholder='name...'
+            value={contactUser.name}
+            id='contact-name'
+            type='text'
+            width='100%'
+            onChange={(e) =>
+              contactUserHandler({
+                contactUserProp: 'name',
+                newValue: e.target.value,
+              })
+            }
+          />
+        </InputContainer>
+        <InputContainer>
+          <StyledLabel htmlFor='contact-email'>
+            Email<span style={{ color: 'red' }}>*</span>
+          </StyledLabel>
+          <InputText
+            borderRadius='4px'
+            padding='5px'
+            name='contact-email'
+            placeholder='email...'
+            value={contactUser.email}
+            id='contact-email'
+            type='email'
+            width='100%'
+            onChange={(e) =>
+              contactUserHandler({
+                contactUserProp: 'email',
+                newValue: e.target.value,
+              })
+            }
+          />
+        </InputContainer>
+      </FlexContainer>
+      <FlexContainer>
+        <InputContainer>
+          <StyledLabel htmlFor='contact-phone'>Contact phone</StyledLabel>
+          <InputText
+            borderRadius='4px'
+            padding='5px'
+            name='contact-phone'
+            placeholder='contact phone...'
+            value={contactUser.phone}
+            id='contact-phone'
+            type='text'
+            width='100%'
+            onChange={(e) =>
+              contactUserHandler({
+                contactUserProp: 'phone',
+                newValue: e.target.value,
+              })
+            }
+          />
+        </InputContainer>
+        <InputContainer>
+          <StyledLabel htmlFor='user-job-position'>
+            Archived<span style={{ color: 'red' }}>*</span>
+          </StyledLabel>
+          <InputSelect
+            style={{
+              borderRadius: '4px',
+              fontWeight: '400',
+              minWidth: '175px',
+            }}
+            id='user-job-position'
+            padding='7px 5px'
+            width='100%'
+            positionArrowY='0'
+            value={contactArchived}
+            onChange={(e) => setContactArchived(e.target.value)}
+          >
+            {contactArchivedSelect.map((option) => (
+              <option key={option.label} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </InputSelect>
+        </InputContainer>
+      </FlexContainer>
+      <InputContainer>
         <StyledLabel htmlFor='contact-subject'>
           Subject<span style={{ color: 'red' }}>*</span>
         </StyledLabel>
@@ -126,6 +159,7 @@ export const ContactForm: React.FC<IProps> = ({
           value={contactMessage.subject}
           id='contact-subject'
           type='text'
+          width='100%'
           onChange={(e) =>
             contactMessageHandler({
               contactMessageProp: 'subject',
@@ -133,14 +167,15 @@ export const ContactForm: React.FC<IProps> = ({
             })
           }
         />
-      </div>
-      <div>
+      </InputContainer>
+      <InputContainer>
         <StyledLabel htmlFor='contact-message'>
           Message<span style={{ color: 'red' }}>*</span>
         </StyledLabel>
         <TextArea
           placeholder='message...'
           id='contact-message'
+          width='100%'
           rows={5}
           value={contactMessage.body}
           onChange={(e) =>
@@ -150,34 +185,10 @@ export const ContactForm: React.FC<IProps> = ({
             })
           }
         ></TextArea>
-      </div>
-      <div>
-        <StyledLabel htmlFor='user-job-position'>
-          Archived<span style={{ color: 'red' }}>*</span>
-        </StyledLabel>
-        <InputSelect
-          style={{
-            borderRadius: '4px',
-            paddingRight: '62px',
-            fontWeight: '400',
-            minWidth: '175px',
-          }}
-          id='user-job-position'
-          padding='8px 5px'
-          positionArrowY='0'
-          value={contactArchived}
-          onChange={(e) => setContactArchived(e.target.value)}
-        >
-          {contactArchivedSelect.map((option) => (
-            <option key={option.label} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </InputSelect>
-      </div>
+      </InputContainer>
       <div style={{ marginTop: '25px' }}>
         <ButtonGreen padding='10px 52px' type='submit'>
-          Update contact
+          Save contact
         </ButtonGreen>
       </div>
     </StyledForm>
