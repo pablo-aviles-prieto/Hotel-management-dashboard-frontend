@@ -7,24 +7,13 @@ import {
   InputText,
   ButtonGreen,
   ImgHolder,
+  StyledForm,
+  StyledLabel,
 } from '../components/Styles';
 import { toast } from 'react-toastify';
 import { PulseSpinner } from '../components';
+import { IUserData } from '../interfaces/IUserData';
 import { updateUser, fetchSingleUser } from '../store/userSlice';
-import styled from 'styled-components';
-
-const StyledForm = styled.form`
-  div {
-    margin-bottom: 10px;
-  }
-  label {
-    display: block;
-  }
-`;
-
-const StyledLabel = styled.label`
-  color: ${({ theme }) => theme.darkGreyToLightGrey};
-`;
 
 const userJobPositionOptions = [
   {
@@ -47,18 +36,31 @@ const userStatusOptions = [
   },
 ];
 
+interface IUserJobData {
+  position?: string;
+  description?: string;
+  schedule?: string;
+}
+
+const userDataSkeleton = {
+  contact: '',
+  email: '',
+  name: '',
+  password: '',
+  photo: '',
+  status: '',
+};
+
+const userJobDataSkeleton = {
+  position: '',
+  description: '',
+  schedule: '',
+};
+
 const UserEdit = () => {
-  const [userPhotoInput, setUserPhotoInput] = useState<
-    FileList | FileList[] | null
-  >([]);
-  const [userNameInput, setUserNameInput] = useState('');
-  const [jobPosition, setJobPosition] = useState('Manager');
-  const [jobDescription, setJobDescription] = useState('');
-  const [jobSchedule, setJobSchedule] = useState('');
-  const [userEmailInput, setUserEmailInput] = useState('');
-  const [userPasswordInput, setUserPasswordInput] = useState('');
-  const [userPhoneInput, setUserPhoneInput] = useState('');
-  const [userStatusSelect, setUserStatusSelect] = useState('Active');
+  const [userData, setUserData] = useState<IUserData>(userDataSkeleton);
+  const [userJobData, setUserJobData] =
+    useState<IUserJobData>(userJobDataSkeleton);
   const usersListRedux = useAppSelector((state) => state.users.usersList);
   const fetchStatusAPI = useAppSelector((state) => state.users.fetchStatus);
   const statusAPI = useAppSelector((state) => state.users.status);
@@ -66,8 +68,6 @@ const UserEdit = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { id } = useParams();
-
-  console.log('usersListRedux', usersListRedux);
 
   useEffect(() => {
     dispatch(fetchSingleUser({ id }));
@@ -100,43 +100,79 @@ const UserEdit = () => {
       return navigate(`/users/`, { replace: true });
     }
 
-    setUserNameInput(parsedUsers.name);
-    setJobPosition(parsedUsers.job.position ? parsedUsers.job.position : '');
-    setJobDescription(
-      parsedUsers.job.description ? parsedUsers.job.description : ''
-    );
-    setJobSchedule(parsedUsers.job.schedule ? parsedUsers.job.schedule : '');
-    setUserEmailInput(parsedUsers.email);
-    setUserPhoneInput(parsedUsers.contact);
-    setUserStatusSelect(parsedUsers.status);
+    const userDataObj = {
+      contact: parsedUsers.contact,
+      email: parsedUsers.email,
+      name: parsedUsers.name,
+      password: '',
+      photo: parsedUsers.photo,
+      status: parsedUsers.status,
+    };
+    const userJobObj = {
+      position: parsedUsers.job.position,
+      description: parsedUsers.job.description,
+      schedule: parsedUsers.job.schedule,
+    };
+
+    setUserData(userDataObj);
+    setUserJobData(userJobObj);
   }, [usersListRedux, fetchStatusAPI]);
+
+  const userDataHandler = ({
+    userDataProp,
+    newValue,
+  }: {
+    userDataProp: keyof IUserData;
+    newValue: IUserData[keyof IUserData];
+  }) => {
+    setUserData((prevState) => {
+      const newState: IUserData = { ...prevState };
+      newState[userDataProp] = newValue;
+      return newState;
+    });
+  };
+
+  const userJobHandler = ({
+    userJobProp,
+    newValue,
+  }: {
+    userJobProp: keyof IUserJobData;
+    newValue: IUserJobData[keyof IUserJobData];
+  }) => {
+    setUserJobData((prevState) => {
+      const newState: IUserJobData = { ...prevState };
+      newState[userJobProp] = newValue;
+      return newState;
+    });
+  };
 
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (
-      !userNameInput.trim() ||
-      !userEmailInput.trim() ||
-      !userPhoneInput.trim()
+      !userData.name.trim() ||
+      !userData.email.trim() ||
+      !userData.contact.trim()
     ) {
-      return toast.warn('Fill all the required inputs', {
+      toast.warn('Fill all the required inputs', {
         autoClose: 3000,
         hideProgressBar: true,
       });
+      return;
     }
 
     const objToUpdate = {
       //   photo: userPhotoInput,
-      name: userNameInput,
+      name: userData.name,
       job: {
-        position: jobPosition,
-        description: jobDescription,
-        schedule: jobSchedule,
+        position: userJobData.position,
+        description: userJobData.description,
+        schedule: userJobData.schedule,
       },
-      email: userEmailInput,
-      password: userPasswordInput ? userPasswordInput : null,
-      contact: userPhoneInput,
-      status: userStatusSelect,
+      email: userData.email,
+      password: userData.password ? userData.password : null,
+      contact: userData.contact,
+      status: userData.status,
     };
 
     const result = await dispatch(updateUser({ id, objToUpdate }));
@@ -166,29 +202,20 @@ const UserEdit = () => {
 
   return (
     <MainCard borderRadius='16px'>
-      <h1>Editing user {id}</h1>
+      <h1>Editing user {userData.name}</h1>
       <StyledForm onSubmit={submitHandler}>
-        <ImgHolder width='200px' height='200px' style={{ margin: '50px 0' }}>
-          <img
-            src={
-              !Array.isArray(usersListRedux)
-                ? usersListRedux.photo
-                : usersListRedux[0].photo
-            }
-            alt={`Pic of ${
-              !Array.isArray(usersListRedux)
-                ? usersListRedux.name
-                : usersListRedux[0].name
-            }`}
-          />
-        </ImgHolder>
         <div>
           <StyledLabel htmlFor='user-images'>Upload images</StyledLabel>
           <input
             type='file'
             id='user-images'
-            onChange={(e) => setUserPhotoInput(e.target.files)}
-            accept='image/jpg,image/png'
+            accept='image/*'
+            onChange={(e) =>
+              userDataHandler({
+                userDataProp: 'photo',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -198,10 +225,15 @@ const UserEdit = () => {
             padding='5px'
             name='user-name'
             placeholder='name...'
-            value={userNameInput}
+            value={userData.name}
             id='user-name'
             type='text'
-            onChange={(e) => setUserNameInput(e.target.value)}
+            onChange={(e) =>
+              userDataHandler({
+                userDataProp: 'name',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -211,10 +243,15 @@ const UserEdit = () => {
             padding='5px'
             name='user-email'
             placeholder='email...'
-            value={userEmailInput}
+            value={userData.email}
             id='user-email'
             type='email'
-            onChange={(e) => setUserEmailInput(e.target.value)}
+            onChange={(e) =>
+              userDataHandler({
+                userDataProp: 'email',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -224,10 +261,15 @@ const UserEdit = () => {
             padding='5px'
             name='user-password'
             placeholder='password...'
-            value={userPasswordInput}
+            value={userData.password}
             id='user-password'
             type='password'
-            onChange={(e) => setUserPasswordInput(e.target.value)}
+            onChange={(e) =>
+              userDataHandler({
+                userDataProp: 'password',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -237,10 +279,15 @@ const UserEdit = () => {
             padding='5px'
             name='user-phone'
             placeholder='contact number...'
-            value={userPhoneInput}
+            value={userData.contact}
             id='user-phone'
             type='text'
-            onChange={(e) => setUserPhoneInput(e.target.value)}
+            onChange={(e) =>
+              userDataHandler({
+                userDataProp: 'contact',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -254,8 +301,13 @@ const UserEdit = () => {
             id='user-job-position'
             padding='8px 5px'
             positionArrowY='0'
-            value={jobPosition}
-            onChange={(e) => setJobPosition(e.target.value)}
+            value={userJobData.position}
+            onChange={(e) =>
+              userJobHandler({
+                userJobProp: 'position',
+                newValue: e.target.value,
+              })
+            }
           >
             {userJobPositionOptions.map((option) => (
               <option key={option.label} value={option.label}>
@@ -273,10 +325,15 @@ const UserEdit = () => {
             padding='5px'
             name='user-job-description'
             placeholder='job description...'
-            value={jobDescription}
+            value={userJobData.description}
             id='user-job-description'
             type='text'
-            onChange={(e) => setJobDescription(e.target.value)}
+            onChange={(e) =>
+              userJobHandler({
+                userJobProp: 'description',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -286,10 +343,15 @@ const UserEdit = () => {
             padding='5px'
             name='user-job-schedule'
             placeholder='job schedule...'
-            value={jobSchedule}
+            value={userJobData.schedule}
             id='user-job-schedule'
             type='text'
-            onChange={(e) => setJobSchedule(e.target.value)}
+            onChange={(e) =>
+              userJobHandler({
+                userJobProp: 'schedule',
+                newValue: e.target.value,
+              })
+            }
           />
         </div>
         <div>
@@ -303,8 +365,13 @@ const UserEdit = () => {
             id='user-job-status'
             padding='8px 5px'
             positionArrowY='0'
-            value={userStatusSelect}
-            onChange={(e) => setUserStatusSelect(e.target.value)}
+            value={userData.status}
+            onChange={(e) =>
+              userDataHandler({
+                userDataProp: 'status',
+                newValue: e.target.value,
+              })
+            }
           >
             {userStatusOptions.map((option) => (
               <option key={option.label} value={option.label}>

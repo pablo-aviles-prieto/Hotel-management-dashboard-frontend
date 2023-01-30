@@ -95,10 +95,11 @@ const NewUser = () => {
       !userPasswordInput.trim() ||
       !userPhoneInput.trim()
     ) {
-      return toast.warn('Fill all the required inputs', {
+      toast.warn('Fill all the required inputs', {
         autoClose: 3000,
         hideProgressBar: true,
       });
+      return;
     }
     const result = await dispatch(createUser({ objToSave }));
 
