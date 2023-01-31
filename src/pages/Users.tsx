@@ -7,7 +7,6 @@ import {
   ImgHolder,
   InputSelect,
   InputText,
-  MainCard,
   MenuContainer,
   PaginationButtons,
   Table,
