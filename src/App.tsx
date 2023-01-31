@@ -25,9 +25,9 @@ import { AuthContext } from './store/authContext';
 import { getLocalStorage } from './utils';
 
 const App = () => {
-  // If we don't find in localStorage a theme prop set as dark, we set the lightTheme to true as default
+  // If we don't find in localStorage a theme prop set as light, we set the lightTheme to false as default and initialize with dark theme
   const [lightTheme, setLightTheme] = useState<boolean>(
-    getLocalStorage()?.theme !== 'dark'
+    getLocalStorage()?.theme === 'light'
   );
   const { authStatus, setLayoutTheme } = useContext(AuthContext);
 
