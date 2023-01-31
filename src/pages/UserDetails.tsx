@@ -2,14 +2,26 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchSingleUser, deleteUser } from '../store/userSlice';
+import { Phone } from '../assets/icons';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { PulseSpinner } from '../components';
-import { MainCard, ButtonGreen, ImgHolder } from '../components/Styles';
+import {
+  MainCard,
+  ButtonGreen,
+  ImgHolder,
+  FlexContainer,
+} from '../components/Styles';
 
 const RedButton = styled(ButtonGreen)`
-  background-color: rgb(226, 52, 40);
+  background-color: #e23428;
   margin-left: 10px;
+`;
+
+const ColorContainer = styled.div`
+  strong {
+    color: ${({ theme }) => '#135846'};
+  }
 `;
 
 const UserDetails = () => {
@@ -80,18 +92,51 @@ const UserDetails = () => {
       ) : (
         <>
           <h1>User details of {parsedUsers.name}</h1>
-          <ImgHolder width='200px' height='200px' style={{ margin: '50px 0' }}>
-            <img src={parsedUsers.photo} alt={`Pic of ${parsedUsers.name}`} />
-          </ImgHolder>
-          <ul>
-            <li>Full name: {parsedUsers.name}</li>
-            <li>Job position: {parsedUsers.job.position}</li>
-            <li>Job description: {parsedUsers.job.description}</li>
-            <li>Email: {parsedUsers.email}</li>
-            <li>Phone: {parsedUsers.contact}</li>
-            <li>Start date: {parsedUsers.startDate}</li>
-            <li>Status: {parsedUsers.status}</li>
-          </ul>
+          <FlexContainer gap='40px'>
+            <ImgHolder
+              width='200px'
+              height='200px'
+              style={{ margin: '50px 0' }}
+            >
+              <img src={parsedUsers.photo} alt={`Pic of ${parsedUsers.name}`} />
+            </ImgHolder>
+            <ColorContainer>
+              <ul>
+                <li>
+                  <strong>Full name:</strong> {parsedUsers.name}
+                </li>
+                <li>
+                  <strong>Job position:</strong> {parsedUsers.job.position}
+                </li>
+                <li>
+                  <strong>Job description:</strong>{' '}
+                  {parsedUsers.job.description}
+                </li>
+                <li>
+                  <strong>Email:</strong> {parsedUsers.email}
+                </li>
+                <li style={{ display: 'flex', gap: '10px' }}>
+                  <strong>Phone:</strong>{' '}
+                  <span
+                    style={{
+                      display: 'flex',
+                      gap: '5px',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Phone width='20px' height='20px' />
+                    {parsedUsers.contact}
+                  </span>
+                </li>
+                <li>
+                  <strong>Start date:</strong> {parsedUsers.startDate}
+                </li>
+                <li>
+                  <strong>Status:</strong> {parsedUsers.status}
+                </li>
+              </ul>
+            </ColorContainer>
+          </FlexContainer>
           <div style={{ marginTop: '50px' }}>
             <ButtonGreen
               padding='10px 52px'
