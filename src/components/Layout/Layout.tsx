@@ -146,6 +146,7 @@ const BodyDiv = styled.div<{ sideBarState: ISideBarState }>`
   }
   @media (max-width: 1400px) {
     width: 100%;
+    min-height: 98vh;
   }
 `;
 

@@ -1,6 +1,14 @@
 import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { InputText, ButtonGreen } from '../components/Styles';
+import {
+  MainCard,
+  ButtonGreen,
+  ImgHolder,
+  StyledForm,
+  StyledLabel,
+  InputText,
+  InputContainer,
+} from '../components/Styles';
 import { AuthContext } from '../store/authContext';
 import { toast } from 'react-toastify';
 import styled from 'styled-components';
@@ -10,17 +18,24 @@ interface IDataFetch {
   password: string;
 }
 
-const StyledForm = styled.form`
-  div {
-    margin-bottom: 10px;
+const Container = styled.div`
+  display: flex;
+  h1 {
+    text-align: center;
   }
-  label {
-    display: block;
+  .side-container {
+    width: 50%;
+    min-height: 550px;
+    max-height: 650px;
   }
-`;
-
-const StyledLabel = styled.label`
-  color: ${({ theme }) => theme.darkGreyToLightGrey};
+  .left-container {
+    display: flex;
+    align-items: center;
+  }
+  .form-container {
+    margin: 0 auto;
+    width: 295px;
+  }
 `;
 
 const API_URI = process.env.REACT_APP_API_URI;
@@ -30,7 +45,7 @@ const Login: React.FC<{ lightTheme: boolean }> = ({ lightTheme }) => {
   const [passwordInput, setPasswordInput] = useState('');
   const { authStatus, loginHandler, logoutHandler } = useContext(AuthContext);
   const navigate = useNavigate();
-  
+
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -77,44 +92,69 @@ const Login: React.FC<{ lightTheme: boolean }> = ({ lightTheme }) => {
   return (
     <div>
       {!authStatus.authed ? (
-        <>
-          <h1 id='login-title'>Login page</h1>
-          <StyledForm onSubmit={submitHandler}>
-            <div>
-              <StyledLabel htmlFor='username'>Username</StyledLabel>
-              <InputText
-                borderRadius='4px'
-                padding='5px'
-                name='username'
-                placeholder='hotel@miranda.com'
-                value={emailInput}
-                id='username'
-                type='text'
-                onChange={(e) => setEmailInput(e.target.value)}
-                autoComplete='username'
+        <Container>
+          <MainCard
+            borderRadius='16px 0 0 16px'
+            className='side-container left-container'
+          >
+            <div className='form-container'>
+              <h1>Login</h1>
+              <StyledForm onSubmit={submitHandler}>
+                <InputContainer>
+                  <StyledLabel htmlFor='username'>Username</StyledLabel>
+                  <InputText
+                    borderRadius='4px'
+                    padding='5px'
+                    name='username'
+                    placeholder='hotel@miranda.com'
+                    value={emailInput}
+                    id='username'
+                    type='text'
+                    width='100%'
+                    onChange={(e) => setEmailInput(e.target.value)}
+                    autoComplete='username'
+                  />
+                </InputContainer>
+                <InputContainer style={{ marginBottom: '25px' }}>
+                  <StyledLabel htmlFor='password'>Password</StyledLabel>
+                  <InputText
+                    borderRadius='4px'
+                    padding='5px'
+                    name='password'
+                    placeholder='test123'
+                    value={passwordInput}
+                    id='password'
+                    type='password'
+                    width='100%'
+                    onChange={(e) => setPasswordInput(e.target.value)}
+                    autoComplete='current-password'
+                  />
+                </InputContainer>
+                <InputContainer>
+                  <ButtonGreen
+                    style={{ width: '100%' }}
+                    padding='10px 68px'
+                    type='submit'
+                  >
+                    Log in
+                  </ButtonGreen>
+                </InputContainer>
+              </StyledForm>
+            </div>
+          </MainCard>
+          <div className='side-container'>
+            <ImgHolder
+              style={{ borderRadius: '0 16px 16px 0' }}
+              height='100%'
+              width='auto'
+            >
+              <img
+                src='https://dynamic-media-cdn.tripadvisor.com/media/photo-o/26/d8/e7/35/facade.jpg?w=700'
+                alt='Hotel view'
               />
-            </div>
-            <div style={{ marginBottom: '25px' }}>
-              <StyledLabel htmlFor='password'>Password</StyledLabel>
-              <InputText
-                borderRadius='4px'
-                padding='5px'
-                name='password'
-                placeholder='test123'
-                value={passwordInput}
-                id='password'
-                type='password'
-                onChange={(e) => setPasswordInput(e.target.value)}
-                autoComplete='current-password'
-              />
-            </div>
-            <div>
-              <ButtonGreen padding='10px 68px' type='submit'>
-                Log in
-              </ButtonGreen>
-            </div>
-          </StyledForm>
-        </>
+            </ImgHolder>
+          </div>
+        </Container>
       ) : (
         <>
           <h1>Welcome again!</h1>
