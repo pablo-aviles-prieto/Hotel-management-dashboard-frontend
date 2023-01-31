@@ -88,7 +88,7 @@ const UserEdit = () => {
 
     setUserData(userDataObj);
     setUserJobData(userJobObj);
-  }, [usersListRedux, fetchStatusAPI]);
+  }, [usersListRedux, fetchStatusAPI, navigate]);
 
   const userDataHandler = ({
     userDataProp,

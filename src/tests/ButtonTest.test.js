@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { ButtonTest } from '../components/Styles/ButtonTest';
 import { LIGHT_THEME, DARK_THEME } from '../themes';
 import { ThemeProvider } from 'styled-components';

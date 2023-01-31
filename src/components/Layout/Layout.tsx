@@ -348,10 +348,7 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
                 marginTop: '-55px',
               }}
             >
-              <img
-                src={authStatus.photo}
-                alt={`Photo from user ${authStatus.name}`}
-              />
+              <img src={authStatus.photo} alt={authStatus.name} />
             </ImgHolder>
             <h3
               style={{

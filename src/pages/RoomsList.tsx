@@ -4,7 +4,6 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import {
   ButtonGreen,
   InputSelect,
-  MainCard,
   Table,
   ImgHolder,
   PaginationButtons,
