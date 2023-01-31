@@ -20,7 +20,7 @@ const RedButton = styled(ButtonGreen)`
 
 const ColorContainer = styled.div`
   strong {
-    color: ${({ theme }) => '#135846'};
+    color: '#135846';
   }
 `;
 
