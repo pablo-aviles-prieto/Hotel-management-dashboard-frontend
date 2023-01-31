@@ -139,6 +139,7 @@ const BodyDiv = styled.div<{ sideBarState: ISideBarState }>`
   padding-top: 105px;
   margin-left: ${({ sideBarState }) => (!sideBarState ? '0' : '300px')};
   transition: margin-left 0.4s ease-out;
+  min-height: 100vh;
   @media (min-width: 800px) {
     padding: 1.5%;
     padding-top: calc(1.5% + 90px);
