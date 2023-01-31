@@ -66,7 +66,7 @@ const BookingDetails = () => {
     <>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
         <MainCard borderRadius='16px'>
-          <PulseSpinner isLoading={true} />
+          <PulseSpinner isLoading />
         </MainCard>
       ) : (
         <>

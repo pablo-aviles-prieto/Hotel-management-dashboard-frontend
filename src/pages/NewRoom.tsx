@@ -111,7 +111,7 @@ const NewRoom = () => {
     });
   };
 
-  if (statusAPI === 'loading') return <PulseSpinner isLoading={true} />;
+  if (statusAPI === 'loading') return <PulseSpinner isLoading />;
 
   return (
     <MainCard borderRadius='16px'>

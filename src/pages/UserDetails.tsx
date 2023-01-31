@@ -88,7 +88,7 @@ const UserDetails = () => {
   return (
     <MainCard borderRadius='16px'>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
-        <PulseSpinner isLoading={true} />
+        <PulseSpinner isLoading />
       ) : (
         <>
           <h1>User details of {parsedUsers.name}</h1>

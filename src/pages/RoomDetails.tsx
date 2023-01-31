@@ -85,7 +85,7 @@ const RoomDetails = () => {
     <>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
         <MainCard borderRadius='16px'>
-          <PulseSpinner isLoading={true} />
+          <PulseSpinner isLoading />
         </MainCard>
       ) : (
         <RoomContainer room={dataChecked} renderButtons={renderButtons} />

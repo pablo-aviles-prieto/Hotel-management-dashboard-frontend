@@ -226,7 +226,7 @@ const RoomsList = () => {
         </div>
       </MenuContainer>
       {fetchStatusAPI === 'loading' ? (
-        <PulseSpinner isLoading={true} />
+        <PulseSpinner isLoading />
       ) : (
         <>
           <DndProvider backend={HTML5Backend}>

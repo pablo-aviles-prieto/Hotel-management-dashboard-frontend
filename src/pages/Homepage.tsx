@@ -382,7 +382,7 @@ const Homepage = () => {
           <p className='reviews-title'>Latest Review by Customers</p>
           <div className='reviews--flex'>
             {fetchStatusAPI === 'loading' ? (
-              <PulseSpinner isLoading={true} />
+              <PulseSpinner isLoading />
             ) : (
               <Swiper
                 navigation={true}

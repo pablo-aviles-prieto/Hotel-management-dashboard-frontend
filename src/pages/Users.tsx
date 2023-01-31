@@ -165,7 +165,7 @@ const Users = () => {
         </div>
       </MenuContainer>
       {fetchStatusAPI === 'loading' ? (
-        <PulseSpinner isLoading={true} />
+        <PulseSpinner isLoading />
       ) : (
         <>
           <TableCard borderRadius='20px' style={{ padding: '0' }}>

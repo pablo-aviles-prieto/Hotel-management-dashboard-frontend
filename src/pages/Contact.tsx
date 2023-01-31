@@ -228,7 +228,7 @@ const Contact = () => {
   return (
     <>
       {fetchStatusAPI === 'loading' ? (
-        <PulseSpinner isLoading={true} />
+        <PulseSpinner isLoading />
       ) : (
         <>
           <SliderSection id='bottom-container'>

@@ -71,7 +71,7 @@ const ContactDetails = () => {
   return (
     <MainCard borderRadius='16px'>
       {fetchStatusAPI === 'loading' || statusAPI === 'loading' ? (
-        <PulseSpinner isLoading={true} />
+        <PulseSpinner isLoading />
       ) : (
         <>
           <h1>

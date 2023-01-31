@@ -147,7 +147,7 @@ const RoomEdit = () => {
   if (fetchStatusAPI === 'loading' || statusAPI === 'loading') {
     return (
       <MainCard borderRadius='16px'>
-        <PulseSpinner isLoading={true} />
+        <PulseSpinner isLoading />
       </MainCard>
     );
   }

@@ -227,7 +227,7 @@ const Bookings = () => {
         </div>
       </MenuContainer>
       {fetchStatusAPI === 'loading' ? (
-        <PulseSpinner isLoading={true} />
+        <PulseSpinner isLoading />
       ) : (
         <>
           <TableCard style={{ margin: '50px 0 30px 0' }} borderRadius='20px'>
