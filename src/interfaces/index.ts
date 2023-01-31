@@ -5,6 +5,7 @@ export type { IRoomObj } from './IRoomObj';
 export type { IBookingObj } from './IBookingObj';
 export type { IContactObj } from './IContactObj';
 export type { IUserObj } from './IUserObj';
+export type { IUserData } from './IUserData';
 export type { IRoomFetchObj } from './IRoomFetchObj';
 export type { IFacility } from './IFacility';
 export type { IContactMessage } from './IContactData';

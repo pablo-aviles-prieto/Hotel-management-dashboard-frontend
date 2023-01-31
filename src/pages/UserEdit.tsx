@@ -1,18 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { useNavigate, useParams } from 'react-router-dom';
-import {
-  MainCard,
-  InputSelect,
-  InputText,
-  ButtonGreen,
-  ImgHolder,
-  StyledForm,
-  StyledLabel,
-} from '../components/Styles';
+import { MainCard } from '../components/Styles';
 import { toast } from 'react-toastify';
 import { PulseSpinner } from '../components';
-import { IUserData } from '../interfaces/IUserData';
+import { UserForm } from '../components/Forms/UserForm';
+import { IUserData } from '../interfaces';
 import { updateUser, fetchSingleUser } from '../store/userSlice';
 
 interface IUserJobData {
@@ -20,27 +13,6 @@ interface IUserJobData {
   description?: string;
   schedule?: string;
 }
-
-const userJobPositionOptions = [
-  {
-    label: 'Manager',
-  },
-  {
-    label: 'Receptionist',
-  },
-  {
-    label: 'Room service',
-  },
-];
-
-const userStatusOptions = [
-  {
-    label: 'Active',
-  },
-  {
-    label: 'Inactive',
-  },
-];
 
 const userDataSkeleton = {
   contact: '',
@@ -203,189 +175,13 @@ const UserEdit = () => {
   return (
     <MainCard borderRadius='16px'>
       <h1>Editing user {userData.name}</h1>
-      <StyledForm onSubmit={submitHandler}>
-        <div>
-          <StyledLabel htmlFor='user-images'>Upload images</StyledLabel>
-          <input
-            type='file'
-            id='user-images'
-            accept='image/*'
-            onChange={(e) =>
-              userDataHandler({
-                userDataProp: 'photo',
-                newValue: e.target.files,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='user-name'>Name</StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='user-name'
-            placeholder='name...'
-            value={userData.name}
-            id='user-name'
-            type='text'
-            onChange={(e) =>
-              userDataHandler({
-                userDataProp: 'name',
-                newValue: e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='user-email'>Email</StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='user-email'
-            placeholder='email...'
-            value={userData.email}
-            id='user-email'
-            type='email'
-            onChange={(e) =>
-              userDataHandler({
-                userDataProp: 'email',
-                newValue: e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='user-password'>Password</StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='user-password'
-            placeholder='password...'
-            value={userData.password}
-            id='user-password'
-            type='password'
-            onChange={(e) =>
-              userDataHandler({
-                userDataProp: 'password',
-                newValue: e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='user-phone'>Contact number</StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='user-phone'
-            placeholder='contact number...'
-            value={userData.contact}
-            id='user-phone'
-            type='text'
-            onChange={(e) =>
-              userDataHandler({
-                userDataProp: 'contact',
-                newValue: e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='user-job-position'>Job position</StyledLabel>
-          <InputSelect
-            style={{
-              borderRadius: '4px',
-              paddingRight: '62px',
-              fontWeight: '400',
-            }}
-            id='user-job-position'
-            padding='8px 5px'
-            positionArrowY='0'
-            value={userJobData.position}
-            onChange={(e) =>
-              userJobHandler({
-                userJobProp: 'position',
-                newValue: e.target.value,
-              })
-            }
-          >
-            {userJobPositionOptions.map((option) => (
-              <option key={option.label} value={option.label}>
-                {option.label}
-              </option>
-            ))}
-          </InputSelect>
-        </div>
-        <div>
-          <StyledLabel htmlFor='user-job-description'>
-            Job Description
-          </StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='user-job-description'
-            placeholder='job description...'
-            value={userJobData.description}
-            id='user-job-description'
-            type='text'
-            onChange={(e) =>
-              userJobHandler({
-                userJobProp: 'description',
-                newValue: e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='user-job-schedule'>Job Schedule</StyledLabel>
-          <InputText
-            borderRadius='4px'
-            padding='5px'
-            name='user-job-schedule'
-            placeholder='job schedule...'
-            value={userJobData.schedule}
-            id='user-job-schedule'
-            type='text'
-            onChange={(e) =>
-              userJobHandler({
-                userJobProp: 'schedule',
-                newValue: e.target.value,
-              })
-            }
-          />
-        </div>
-        <div>
-          <StyledLabel htmlFor='user-job-position'>Status</StyledLabel>
-          <InputSelect
-            style={{
-              borderRadius: '4px',
-              paddingRight: '62px',
-              fontWeight: '400',
-            }}
-            id='user-job-status'
-            padding='8px 5px'
-            positionArrowY='0'
-            value={userData.status}
-            onChange={(e) =>
-              userDataHandler({
-                userDataProp: 'status',
-                newValue: e.target.value,
-              })
-            }
-          >
-            {userStatusOptions.map((option) => (
-              <option key={option.label} value={option.label}>
-                {option.label}
-              </option>
-            ))}
-          </InputSelect>
-        </div>
-        <div>
-          <ButtonGreen padding='10px 52px' type='submit'>
-            Save user
-          </ButtonGreen>
-        </div>
-      </StyledForm>
+      <UserForm
+        submitHandler={submitHandler}
+        userDataHandler={userDataHandler}
+        userJobHandler={userJobHandler}
+        userData={userData}
+        userJobData={userJobData}
+      />
     </MainCard>
   );
 };

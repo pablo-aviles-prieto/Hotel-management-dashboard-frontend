@@ -183,12 +183,16 @@ const Users = () => {
                   <tr key={user.id}>
                     <td>
                       <FlexContainer>
-                        <ImgHolder width=' 80px' height='80px'>
+                        <ImgHolder
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => navigate(`/users/${user.id}`)}
+                          width=' 80px'
+                          height='80px'
+                        >
                           <img src={user.photo} alt={user.name} />
                         </ImgHolder>
                         <div>
                           <p style={{ fontWeight: '700' }}>{user.name}</p>
-                          {/* <StyledParagraph>#{user.id}</StyledParagraph> */}
                           <StyledParagraph>
                             Joined on {dateHandler(user.startDate)}
                           </StyledParagraph>
