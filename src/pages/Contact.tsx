@@ -7,6 +7,7 @@ import {
   MainCard,
   PaginationButtons,
   ButtonGreen,
+  TableCard,
 } from '../components/Styles';
 import { AuthContext } from '../store/authContext';
 import { Check, XCircle } from '../assets/icons';
@@ -334,7 +335,7 @@ const Contact = () => {
             </div>
           </MenuContainer>
 
-          <MainCard
+          <TableCard
             borderRadius='20px'
             style={{ padding: '0', margin: '0 30px' }}
           >
@@ -379,7 +380,7 @@ const Contact = () => {
                 ))}
               </tbody>
             </Table>
-          </MainCard>
+          </TableCard>
           <PaginationButtons style={{ margin: '50px 30px' }}>
             <p>
               Showing {commentsListSliced.length} of{' '}

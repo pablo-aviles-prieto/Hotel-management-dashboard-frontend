@@ -11,6 +11,7 @@ import {
   MenuContainer,
   PaginationButtons,
   Table,
+  TableCard,
 } from '../components/Styles';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchUsers } from '../store/userSlice';
@@ -167,7 +168,7 @@ const Users = () => {
         <PulseSpinner isLoading={true} />
       ) : (
         <>
-          <MainCard borderRadius='20px' style={{ padding: '0' }}>
+          <TableCard borderRadius='20px' style={{ padding: '0' }}>
             <Table>
               <thead id='card-header'>
                 <tr>
@@ -229,7 +230,7 @@ const Users = () => {
                 ))}
               </tbody>
             </Table>
-          </MainCard>
+          </TableCard>
           <PaginationButtons style={{ margin: '50px 0' }}>
             <p>
               Showing {usersListSliced.length} of {filteredUsersList.length}{' '}

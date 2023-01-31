@@ -12,6 +12,12 @@ const RedButton = styled(ButtonGreen)`
   margin-left: 10px;
 `;
 
+const ColorContainer = styled.div`
+  strong {
+    color: #135846;
+  }
+`;
+
 const ContactDetails = () => {
   const contactRedux = useAppSelector((state) => state.contacts.contactList);
   const fetchStatusAPI = useAppSelector((state) => state.contacts.statusPost);
@@ -68,14 +74,26 @@ const ContactDetails = () => {
         <PulseSpinner isLoading={true} />
       ) : (
         <>
-          <h1>Contacts details for {id}</h1>
-          <ul>
-            <li>ID: {dataChecked.id}</li>
-            <li>Subject: {dataChecked.message.subject}</li>
-            <li>Message: {dataChecked.message.body}</li>
-            <li>Posted date: {dataChecked.date}</li>
-            <li>Posted by: {dataChecked.user.name}</li>
-          </ul>
+          <h1>
+            Contacts details of <span>{dataChecked.message.subject}</span>{' '}
+            message
+          </h1>
+          <ColorContainer>
+            <ul>
+              <li>
+                <strong>Subject:</strong> {dataChecked.message.subject}
+              </li>
+              <li>
+                <strong>Message:</strong> {dataChecked.message.body}
+              </li>
+              <li>
+                <strong>Posted date:</strong> {dataChecked.date}
+              </li>
+              <li>
+                <strong>Posted by:</strong> {dataChecked.user.name}
+              </li>
+            </ul>
+          </ColorContainer>
           <div style={{ marginTop: '50px' }}>
             <ButtonGreen
               padding='10px 52px'
