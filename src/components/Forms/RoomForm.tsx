@@ -256,9 +256,8 @@ export const RoomForm: React.FC<IProps> = ({
         <InputContainer>
           <StyledLabel htmlFor='room-amenities'>
             Amenities<span style={{ color: 'red' }}>*</span>{' '}
-            <span style={{ fontSize: '12px' }}>
-              (Hold down Ctrl (windows) or Command (Mac) to select multiple
-              options)
+            <span style={{ fontSize: '11px' }}>
+              (Hold down Ctrl (Windows) or Command (Mac) to select multiple)
             </span>
           </StyledLabel>
           <InputSelect

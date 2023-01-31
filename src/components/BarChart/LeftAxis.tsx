@@ -26,7 +26,7 @@ export const LeftAxis: React.FC<ILeftAxis> = ({ scale, width }) => {
         .style('color', '#196e58')
         .style('opacity', 0.2);
     }
-  }, [scale]);
+  }, [scale, width]);
 
   return <g ref={ref} />;
 };

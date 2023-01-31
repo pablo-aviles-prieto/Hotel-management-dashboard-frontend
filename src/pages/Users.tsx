@@ -11,6 +11,7 @@ import {
   MenuContainer,
   PaginationButtons,
   Table,
+  TableCard,
 } from '../components/Styles';
 import { useAppDispatch, useAppSelector } from '../store/typedHooks';
 import { fetchUsers } from '../store/userSlice';
@@ -167,7 +168,7 @@ const Users = () => {
         <PulseSpinner isLoading={true} />
       ) : (
         <>
-          <MainCard borderRadius='20px' style={{ padding: '0' }}>
+          <TableCard borderRadius='20px' style={{ padding: '0' }}>
             <Table>
               <thead id='card-header'>
                 <tr>
@@ -183,12 +184,16 @@ const Users = () => {
                   <tr key={user.id}>
                     <td>
                       <FlexContainer>
-                        <ImgHolder width=' 80px' height='80px'>
+                        <ImgHolder
+                          style={{ cursor: 'pointer' }}
+                          onClick={() => navigate(`/users/${user.id}`)}
+                          width=' 80px'
+                          height='80px'
+                        >
                           <img src={user.photo} alt={user.name} />
                         </ImgHolder>
                         <div>
                           <p style={{ fontWeight: '700' }}>{user.name}</p>
-                          {/* <StyledParagraph>#{user.id}</StyledParagraph> */}
                           <StyledParagraph>
                             Joined on {dateHandler(user.startDate)}
                           </StyledParagraph>
@@ -225,7 +230,7 @@ const Users = () => {
                 ))}
               </tbody>
             </Table>
-          </MainCard>
+          </TableCard>
           <PaginationButtons style={{ margin: '50px 0' }}>
             <p>
               Showing {usersListSliced.length} of {filteredUsersList.length}{' '}

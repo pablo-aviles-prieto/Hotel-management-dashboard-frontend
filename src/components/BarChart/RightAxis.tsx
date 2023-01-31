@@ -31,7 +31,7 @@ export const RightAxis: React.FC<IRightAxis> = ({
         .style('color', '#e23428')
         .style('opacity', 0.2);
     }
-  }, [scale]);
+  }, [scale, width]);
 
   return <g ref={ref} transform={transform} />;
 };

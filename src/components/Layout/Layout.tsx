@@ -139,12 +139,14 @@ const BodyDiv = styled.div<{ sideBarState: ISideBarState }>`
   padding-top: 105px;
   margin-left: ${({ sideBarState }) => (!sideBarState ? '0' : '300px')};
   transition: margin-left 0.4s ease-out;
+  min-height: 100vh;
   @media (min-width: 800px) {
     padding: 1.5%;
     padding-top: calc(1.5% + 90px);
   }
   @media (max-width: 1400px) {
     width: 100%;
+    min-height: 98vh;
   }
 `;
 
@@ -348,10 +350,7 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
                 marginTop: '-55px',
               }}
             >
-              <img
-                src={authStatus.photo}
-                alt={`Photo from user ${authStatus.name}`}
-              />
+              <img src={authStatus.photo} alt={authStatus.name} />
             </ImgHolder>
             <h3
               style={{

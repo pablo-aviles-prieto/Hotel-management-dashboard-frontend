@@ -7,6 +7,7 @@ import {
   MainCard,
   PaginationButtons,
   ButtonGreen,
+  TableCard,
 } from '../components/Styles';
 import { AuthContext } from '../store/authContext';
 import { Check, XCircle } from '../assets/icons';
@@ -265,10 +266,12 @@ const Contact = () => {
                             </p>
                             <div className='slider-container-author'>
                               <div className='slider-container-author-info'>
-                                <ImgHolder
-                                  width='56px'
-                                  height='56px'
-                                ></ImgHolder>
+                                <ImgHolder width='56px' height='56px'>
+                                  <img
+                                    src='https://www.interstatedevelopment.com/wp-content/uploads/2019/04/generic-avatar-1.jpg'
+                                    alt='user'
+                                  />
+                                </ImgHolder>
                                 <div className='slider-container-author-info--flex'>
                                   <p id='author-name'>{contact.user.name}</p>
                                   <p id='publish-date'>{contact.date}</p>
@@ -332,7 +335,7 @@ const Contact = () => {
             </div>
           </MenuContainer>
 
-          <MainCard
+          <TableCard
             borderRadius='20px'
             style={{ padding: '0', margin: '0 30px' }}
           >
@@ -377,7 +380,7 @@ const Contact = () => {
                 ))}
               </tbody>
             </Table>
-          </MainCard>
+          </TableCard>
           <PaginationButtons style={{ margin: '50px 30px' }}>
             <p>
               Showing {commentsListSliced.length} of{' '}

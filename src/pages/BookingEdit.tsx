@@ -57,7 +57,7 @@ const BookingEdit = () => {
       });
 
     dispatch(fetchSingleBooking({ id }));
-  }, [dispatch, id, authStatus.token]);
+  }, [dispatch, id, authStatus.token, navigate]);
 
   useEffect(() => {
     if (
