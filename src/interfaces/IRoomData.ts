@@ -1,5 +1,5 @@
 export interface IRoomData {
-  photo: string | FileList | FileList[] | null;
+  photo: File | string | null;
   roomName: string;
   roomNumber: number;
   roomType: string;

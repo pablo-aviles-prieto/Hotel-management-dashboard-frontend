@@ -144,9 +144,9 @@ const BodyDiv = styled.div<{ sideBarState: ISideBarState }>`
     padding: 1.5%;
     padding-top: calc(1.5% + 90px);
   }
-  @media (max-width: 1400px) {
+  @media (max-width: 1500px) {
     width: 100%;
-    min-height: 98vh;
+    min-height: ${({ sideBarState }) => (sideBarState ? '98vh' : '100vh;')};
   }
 `;
 

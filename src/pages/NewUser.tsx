@@ -19,7 +19,7 @@ const userDataSkeleton = {
   email: '',
   name: '',
   password: '',
-  photo: '',
+  photo: new File([], ''),
   status: 'Active',
 };
 
@@ -75,23 +75,6 @@ const NewUser = () => {
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const objToSave = {
-      photo:
-        'https://www.pngkey.com/png/detail/308-3081138_contact-avatar-generic.png',
-      //   photo: userPhotoInput,
-      name: userData.name,
-      job: {
-        position: userJobData.position,
-        description: userJobData.description,
-        schedule: userJobData.schedule,
-      },
-      email: userData.email,
-      password: userData.password,
-      contact: userData.contact,
-      startDate: new Date().toISOString().substring(0, 10),
-      status: userData.status,
-    };
-
     if (
       !userData.name.trim() ||
       !userData.email.trim() ||
@@ -104,7 +87,17 @@ const NewUser = () => {
       });
       return;
     }
-    const result = await dispatch(createUser({ objToSave }));
+    const formData = new FormData();
+    formData.append('photo', userData.photo as File);
+    formData.append('name', userData.name);
+    formData.append('job', JSON.stringify(userJobData));
+    formData.append('email', userData.email);
+    formData.append('password', userData.password || '');
+    formData.append('contact', userData.contact);
+    formData.append('startDate', new Date().toISOString().substring(0, 10));
+    formData.append('status', userData.status);
+
+    const result = await dispatch(createUser({ objToSave: formData }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;

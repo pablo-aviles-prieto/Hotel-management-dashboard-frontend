@@ -60,9 +60,9 @@ export const createRoom = createAsyncThunk(
         method: 'POST',
         headers: {
           Authorization: `Bearer ${getLocalStorage()?.token}`,
-          'Content-Type': 'application/json',
+          Accept: 'application/json, text/plain, /',
         },
-        body: JSON.stringify(objToSave),
+        body: objToSave,
       },
     });
     return response.json();
@@ -84,9 +84,9 @@ export const updateRoom = createAsyncThunk(
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${getLocalStorage()?.token}`,
-          'Content-Type': 'application/json',
+          Accept: 'application/json, text/plain, /',
         },
-        body: JSON.stringify(objToUpdate),
+        body: objToUpdate,
       },
     });
     return response.json();
@@ -114,6 +114,10 @@ export const roomSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(createRoom.fulfilled, (state) => {
+        state.status = 'idle';
+        state.error = null;
+      })
       .addMatcher(
         isAnyOf(fetchRooms.pending, fetchSingleRoom.pending),
         (state) => {
@@ -127,12 +131,12 @@ export const roomSlice = createSlice({
         }
       )
       .addMatcher(
-        isAnyOf(
-          updateRoom.fulfilled,
-          deleteRoom.fulfilled,
-          createRoom.fulfilled
-        ),
+        isAnyOf(updateRoom.fulfilled, deleteRoom.fulfilled),
         (state) => {
+          // Removing from the state the photo prop when a user is updated/deleted so it doesnt make a request for that photo since is no longer in the back and would got a 404 in the re-render cycles of react
+          if (!Array.isArray(state.roomList)) {
+            state.roomList.photo = '';
+          }
           state.status = 'idle';
           state.error = null;
         }

@@ -9,7 +9,7 @@ import { updateRoom, fetchSingleRoom } from '../store/roomSlice';
 import { IRoomData } from '../interfaces';
 
 const roomDataSkeleton = {
-  photo: '',
+  photo: new File([], ''),
   roomName: '',
   roomNumber: 0,
   roomType: '',
@@ -88,26 +88,12 @@ const RoomEdit = () => {
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const objToUpdate = {
-      // images: roomData.photo,
-      roomName: roomData.roomName,
-      bedType: roomData.bedType,
-      roomNumber: roomData.roomNumber,
-      roomFloor: roomData.roomFloor,
-      roomDescription: roomData.roomDescription,
-      roomType: roomData.roomType,
-      ratePerNight: roomData.ratePerNight,
-      discount: roomData.checkOffer ? roomData.roomDiscount : 0,
-      facilities: roomData.facilities,
-    };
-
     if (
       !roomData.roomName.trim() ||
       !roomData.roomNumber ||
       !roomData.roomFloor.trim() ||
       !roomData.ratePerNight ||
       roomData.facilities.length === 0
-      // imagesUploadArray.length < 3
     ) {
       toast.warn('Fill all the required inputs', {
         autoClose: 3000,
@@ -115,7 +101,22 @@ const RoomEdit = () => {
       });
       return;
     }
-    const result = await dispatch(updateRoom({ id, objToUpdate }));
+
+    const discountPrice = roomData.checkOffer ? roomData.roomDiscount : 0;
+
+    const formData = new FormData();
+    formData.append('images', roomData.photo as File);
+    formData.append('roomName', roomData.roomName);
+    formData.append('bedType', roomData.bedType);
+    formData.append('roomNumber', roomData.roomNumber.toString());
+    formData.append('roomFloor', roomData.roomFloor);
+    formData.append('roomDescription', roomData.roomDescription || '');
+    formData.append('roomType', roomData.roomType);
+    formData.append('ratePerNight', roomData.ratePerNight.toString());
+    formData.append('discount', discountPrice.toString());
+    formData.append('facilities', JSON.stringify(roomData.facilities));
+
+    const result = await dispatch(updateRoom({ id, objToUpdate: formData }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
@@ -160,7 +161,9 @@ const RoomEdit = () => {
         submitHandler={submitHandler}
         facilitiesHandler={facilitiesHandler}
         roomData={roomData}
-        roomsList={roomsListRedux}
+        roomsList={
+          (!Array.isArray(roomsListRedux) && roomsListRedux) || undefined
+        }
       />
     </MainCard>
   );
