@@ -173,6 +173,7 @@ const Bookings = () => {
     setOderBy(e.target.value);
     setPage(1);
   };
+  
   const inputDateSelectHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     console.log('option selected =>', e.target.value);
   };
