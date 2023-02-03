@@ -34,7 +34,7 @@ const authReducer = (state: IReducerState, action: IReducerAction) => {
         email: '',
         token: '',
         photo: '',
-        theme: 'light',
+        theme: state.theme,
         authed: false,
       };
     }
@@ -44,10 +44,9 @@ const authReducer = (state: IReducerState, action: IReducerAction) => {
       const objToSave = {
         ...localStorageData,
         theme: theme ? 'dark' : 'light',
-        authed: state.authed,
       };
       localStorage.setItem('AUTH', JSON.stringify(objToSave));
-      return objToSave;
+      return { ...objToSave, authed: state.authed };
     }
     default:
       return state;
