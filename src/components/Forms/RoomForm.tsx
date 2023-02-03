@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   StyledLabel,
   InputText,
@@ -9,6 +10,7 @@ import {
   FlexContainer,
   InputContainer,
   InputFileContainer,
+  ImgHolder,
 } from '../Styles';
 import { IRoomData, IRoomObj } from '../../interfaces';
 import { facilitiesArray as roomAmenitiesOptionsSelect } from '../../utils';
@@ -23,18 +25,18 @@ interface IProps {
   submitHandler: (e: React.FormEvent) => Promise<void>;
   facilitiesHandler: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   roomData: IRoomData;
-  roomsList?: IRoomObj | IRoomObj[];
+  roomsList?: IRoomObj;
 }
 
 const roomTypeOptionsSelect = [
   {
-    label: 'Single Bed',
+    label: 'Single bed',
   },
   {
-    label: 'Double Bed',
+    label: 'Double bed',
   },
   {
-    label: 'Double Superior',
+    label: 'Double superior',
   },
   {
     label: 'Suite',
@@ -46,8 +48,40 @@ export const RoomForm: React.FC<IProps> = ({
   submitHandler,
   facilitiesHandler,
   roomData,
-  roomsList,
+  roomsList = undefined,
 }) => {
+  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(
+    ''
+  );
+  const readerRef = useRef(new FileReader());
+
+  useEffect(() => {
+    const reader = readerRef.current;
+    reader.onload = () => {
+      setImagePreview(reader.result);
+    };
+    return () => {
+      reader.removeEventListener('onload', () => {
+        setImagePreview(reader.result);
+      });
+    };
+  }, []);
+
+  const fileInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files![0]) {
+      stateInputsHandler({
+        roomProp: 'photo',
+        newValue: e.target.files![0],
+      });
+      readerRef.current.readAsDataURL(e.target.files![0]);
+    }
+  };
+
+  const imageDisplay = useMemo(
+    () => (imagePreview ? (imagePreview as string) : roomsList?.photo),
+    [imagePreview, roomsList]
+  );
+
   return (
     <StyledForm onSubmit={submitHandler}>
       <FlexContainer>
@@ -295,24 +329,22 @@ export const RoomForm: React.FC<IProps> = ({
           </p>
         </InputContainer>
       </FlexContainer>
+      {imageDisplay ? (
+        <ImgHolder style={{ margin: '15px auto' }} width='200px' height='200px'>
+          <img src={imageDisplay} alt='preview' />
+        </ImgHolder>
+      ) : (
+        ''
+      )}
       <InputFileContainer style={{ marginBottom: '25px', maxWidth: '450px' }}>
         <StyledLabel htmlFor='room-images'>
-          Upload images<span style={{ color: 'red' }}>*</span>{' '}
-          <span style={{ display: 'block', fontSize: '11px' }}>
-            Hold down the Ctrl (windows) or Command (Mac) button to select
-            multiple images to upload
-          </span>
+          Upload images<span style={{ color: 'red' }}>*</span>
         </StyledLabel>
         <input
+          name='photo'
           type='file'
           id='room-images'
-          onChange={(e) =>
-            stateInputsHandler({
-              roomProp: 'photo',
-              newValue: e.target.files,
-            })
-          }
-          multiple={true}
+          onChange={(e) => fileInputHandler(e)}
           accept='image/*'
         />
       </InputFileContainer>

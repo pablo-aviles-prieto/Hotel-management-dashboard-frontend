@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef, useMemo } from 'react';
 import {
   StyledForm,
   StyledLabel,
@@ -7,8 +8,9 @@ import {
   FlexContainer,
   InputContainer,
   InputFileContainer,
+  ImgHolder,
 } from '../Styles';
-import { IUserData } from '../../interfaces/IUserData';
+import { IUserObj, IUserData } from '../../interfaces';
 
 type IUserDataProps = {
   userDataProp: keyof IUserData;
@@ -32,6 +34,7 @@ interface IProps {
   userJobHandler: ({ userJobProp, newValue }: IUserJobProps) => void;
   userData: IUserData;
   userJobData: IUserJobData;
+  userList?: IUserObj;
 }
 
 const userJobPositionOptions = [
@@ -61,7 +64,40 @@ export const UserForm: React.FC<IProps> = ({
   userJobHandler,
   userData,
   userJobData,
+  userList = undefined,
 }) => {
+  const [imagePreview, setImagePreview] = useState<string | ArrayBuffer | null>(
+    ''
+  );
+  const readerRef = useRef(new FileReader());
+
+  useEffect(() => {
+    const reader = readerRef.current;
+    reader.onload = () => {
+      setImagePreview(reader.result);
+    };
+    return () => {
+      reader.removeEventListener('onload', () => {
+        setImagePreview(reader.result);
+      });
+    };
+  }, []);
+
+  const fileInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files![0]) {
+      userDataHandler({
+        userDataProp: 'photo',
+        newValue: e.target.files![0],
+      });
+      readerRef.current.readAsDataURL(e.target.files![0]);
+    }
+  };
+
+  const imageDisplay = useMemo(
+    () => (imagePreview ? (imagePreview as string) : userList?.photo),
+    [imagePreview, userList]
+  );
+
   return (
     <StyledForm onSubmit={submitHandler}>
       <FlexContainer>
@@ -254,19 +290,22 @@ export const UserForm: React.FC<IProps> = ({
           </InputSelect>
         </InputContainer>
       </FlexContainer>
+      {imageDisplay ? (
+        <ImgHolder style={{ margin: '15px auto' }} width='200px' height='200px'>
+          <img src={imageDisplay} alt='preview' />
+        </ImgHolder>
+      ) : (
+        ''
+      )}
       <InputFileContainer style={{ marginBottom: '25px', maxWidth: '450px' }}>
         <StyledLabel htmlFor='user-images'>
-          Upload image<span style={{ color: 'red' }}>*</span>{' '}
+          Upload image <span style={{ color: 'red' }}>*</span>
         </StyledLabel>
         <input
+          name='photo'
           type='file'
           id='user-images'
-          onChange={(e) =>
-            userDataHandler({
-              userDataProp: 'photo',
-              newValue: e.target.files,
-            })
-          }
+          onChange={(e) => fileInputHandler(e)}
           accept='image/*'
         />
       </InputFileContainer>

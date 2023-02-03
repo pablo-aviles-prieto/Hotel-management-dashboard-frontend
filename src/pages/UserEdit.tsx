@@ -19,7 +19,7 @@ const userDataSkeleton = {
   email: '',
   name: '',
   password: '',
-  photo: '',
+  photo: new File([], ''),
   status: '',
 };
 
@@ -133,21 +133,16 @@ const UserEdit = () => {
       return;
     }
 
-    const objToUpdate = {
-      //   photo: userPhotoInput,
-      name: userData.name,
-      job: {
-        position: userJobData.position,
-        description: userJobData.description,
-        schedule: userJobData.schedule,
-      },
-      email: userData.email,
-      password: userData.password ? userData.password : null,
-      contact: userData.contact,
-      status: userData.status,
-    };
+    const formData = new FormData();
+    formData.append('photo', userData.photo as File);
+    formData.append('name', userData.name);
+    formData.append('job', JSON.stringify(userJobData));
+    formData.append('email', userData.email);
+    formData.append('password', userData.password || '');
+    formData.append('contact', userData.contact);
+    formData.append('status', userData.status);
 
-    const result = await dispatch(updateUser({ id, objToUpdate }));
+    const result = await dispatch(updateUser({ id, objToUpdate: formData }));
 
     const hasError = result.meta.requestStatus === 'rejected';
     if (hasError) return;
@@ -181,6 +176,9 @@ const UserEdit = () => {
         userJobHandler={userJobHandler}
         userData={userData}
         userJobData={userJobData}
+        userList={
+          (!Array.isArray(usersListRedux) && usersListRedux) || undefined
+        }
       />
     </MainCard>
   );

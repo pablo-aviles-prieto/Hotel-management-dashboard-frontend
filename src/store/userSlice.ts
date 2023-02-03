@@ -60,9 +60,9 @@ export const createUser = createAsyncThunk(
         method: 'POST',
         headers: {
           Authorization: `Bearer ${getLocalStorage()?.token}`,
-          'Content-Type': 'application/json',
+          Accept: 'application/json, text/plain, /',
         },
-        body: JSON.stringify(objToSave),
+        body: objToSave,
       },
     });
     return await response.json();
@@ -84,9 +84,9 @@ export const updateUser = createAsyncThunk(
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${getLocalStorage()?.token}`,
-          'Content-Type': 'application/json',
+          Accept: 'application/json, text/plain, /',
         },
-        body: JSON.stringify(objToUpdate),
+        body: objToUpdate,
       },
     });
     return response.json();
@@ -114,13 +114,17 @@ export const userSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
+      .addCase(createUser.fulfilled, (state) => {
+        state.status = 'idle';
+        state.error = null;
+      })
       .addMatcher(
-        isAnyOf(
-          deleteUser.fulfilled,
-          updateUser.fulfilled,
-          createUser.fulfilled
-        ),
+        isAnyOf(updateUser.fulfilled, deleteUser.fulfilled),
         (state) => {
+          // Removing from the state the photo prop when a user is updated/deleted so it doesnt make a request for that photo since is no longer in the back and would got a 404 in the re-render cycles of react
+          if (!Array.isArray(state.usersList)) {
+            state.usersList.photo = '';
+          }
           state.status = 'idle';
           state.error = null;
         }

@@ -56,6 +56,8 @@ export const ContactForm: React.FC<IProps> = ({
   contactMessage,
   contactArchived,
 }) => {
+  console.log('contactArchived', contactArchived);
+
   return (
     <StyledForm onSubmit={submitHandler}>
       <FlexContainer>

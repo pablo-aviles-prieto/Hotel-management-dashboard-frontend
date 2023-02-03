@@ -59,7 +59,8 @@ const UserDetails = () => {
         autoClose: 3000,
         hideProgressBar: true,
       });
-      return navigate(`/users/`, { replace: true });
+      navigate(`/users/`, { replace: true });
+      return;
     }
 
     const result = await dispatch(deleteUser({ id }));
