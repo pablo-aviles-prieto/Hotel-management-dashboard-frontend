@@ -402,30 +402,34 @@ export const Layout: React.FC<ILayout> = ({ children, themeProp }) => {
           </h3>
         </FlexDiv>
         <FlexDiv gap='30px'>
-          <div
-            className='badge-container'
-            onClick={() => navigate('/contacts')}
-          >
-            <Mail height='25px' />
-            <div
-              className='badge-container-icon'
-              style={{ display: DUMMY_DATA1 ? 'flex' : 'none' }}
-            >
-              {DUMMY_DATA1}
-            </div>
-          </div>
-          <div
-            className='badge-container'
-            onClick={() => navigate('/bookings')}
-          >
-            <Bell height='25px' />
-            <div
-              className='badge-container-icon'
-              style={{ display: DUMMY_DATA2 ? 'flex' : 'none' }}
-            >
-              {DUMMY_DATA2}
-            </div>
-          </div>
+          {authStatus.authed && (
+            <>
+              <div
+                className='badge-container'
+                onClick={() => navigate('/contacts')}
+              >
+                <Mail height='25px' />
+                <div
+                  className='badge-container-icon'
+                  style={{ display: DUMMY_DATA1 ? 'flex' : 'none' }}
+                >
+                  {DUMMY_DATA1}
+                </div>
+              </div>
+              <div
+                className='badge-container'
+                onClick={() => navigate('/bookings')}
+              >
+                <Bell height='25px' />
+                <div
+                  className='badge-container-icon'
+                  style={{ display: DUMMY_DATA2 ? 'flex' : 'none' }}
+                >
+                  {DUMMY_DATA2}
+                </div>
+              </div>
+            </>
+          )}
           <div className='badge-container'>
             {authStatus.authed ? (
               <Logout
